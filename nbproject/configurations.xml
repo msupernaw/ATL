@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt</itemPath>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>/Users/matthewsupernaw/NetBeansProjects/ATL_v2</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>8</standard>
+          <commandLine>-DNDEBUG</commandLine>
+        </ccTool>
+      </compileType>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>6</developmentMode>
+          <standard>8</standard>
+          <commandlineTool>clang++</commandlineTool>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

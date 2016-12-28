@@ -1,0 +1,8 @@
+To Do:
+
+- Finish ET's
+- Finish Tape class
+- Optimize matrix-matrix multiplication
+- Write serializer for MPI
+- Integrate port function minimizer
+
