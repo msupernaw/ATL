@@ -22,22 +22,26 @@ namespace atl {
     template<typename T>
     struct TypeTrait {
         typedef T base_type;
+//        const std::string str = "T";
 
     };
 
     template<>
     struct TypeTrait<atl::Variable<long double> > {
         typedef long double base_type;
+//        std::string str = "long double";
     };
 
     template<>
     struct TypeTrait<atl::Variable<double> > {
         typedef double base_type;
+//        std::string str = "double";
     };
 
     template<>
     struct TypeTrait<atl::Variable<float> > {
         typedef float base_type;
+//        std::string str = "float";
     };
 
     template<typename T>

@@ -106,22 +106,96 @@ namespace atl {
         return only_copy;
     }
 
+    
+    class VISpinLock {
+            std::atomic_flag locked = ATOMIC_FLAG_INIT;
+        public:
+
+            void lock() {
+                while (locked.test_and_set(std::memory_order_acquire)) {
+
+                }
+            }
+
+            void unlock() {
+                locked.clear(std::memory_order_release);
+            }
+        };
+    
+    /**
+     * Holds unique info for \ref Variable objects.
+     */
     template<typename REAL_T>
     struct VariableInfo {
+
+        
+        static VISpinLock vinfo_mutex_g;
+        static std::vector<VariableInfo<REAL_T>* > freed;
+        std::atomic<int> count;
         uint32_t id;
         REAL_T value;
-        
-        VariableInfo(REAL_T value = static_cast<REAL_T>(0.0)) :
-        id(VariableIdGenerator::instance()->next()), value(value) {
+        bool is_nl;
+
+        /**
+         * Constructor 
+         * 
+         * @param value
+         */
+        VariableInfo(REAL_T value = static_cast<REAL_T> (0.0)) :
+        id(VariableIdGenerator::instance()->next()), value(value), count(1) {
         }
 
-        ~VariableInfo(){
+        /**
+         * Destructor. 
+         */
+        ~VariableInfo() {
             VariableIdGenerator::instance()->release(id);
         }
-        
-        
-    };
 
+        inline void Aquire() {
+            count++;
+        }
+
+        inline void Release() {
+            count--;
+
+            if ((count) == 0) {
+                //store this pointer in the freed list and delete when the gradient 
+                //structure resets.
+#ifdef ATL_THREAD_SAFE
+                VariableInfo<REAL_T>::vinfo_mutex_g.lock();
+                freed.push_back(this);
+                VariableInfo<REAL_T>::vinfo_mutex_g.unlock();
+#else
+                freed.push_back(this);
+#endif
+
+            }
+        }
+        
+          static void FreeAll() {
+
+            VariableInfo<REAL_T>::vinfo_mutex_g.lock();
+#pragma unroll
+            for (int i = 0; i < freed.size(); i++) {
+                if (freed[i] != NULL) {//memory pool may have destructed first
+                    VariableIdGenerator::instance()->release(freed[i]->id);
+                    freed[i]->value = 0;
+                    delete freed[i];
+                }
+            }
+            freed.resize(0);
+            VariableInfo<REAL_T>::vinfo_mutex_g.unlock();
+        }
+
+
+    };
+    
+     template<typename REAL_T>
+    VISpinLock VariableInfo<REAL_T>::vinfo_mutex_g;
+
+    template<typename REAL_T>
+    std::vector<VariableInfo<REAL_T>* > VariableInfo<REAL_T>::freed;
 
 }
 

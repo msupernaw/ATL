@@ -19,15 +19,45 @@
 
 namespace atl {
 
+    /**
+     * VariableVector is a 1 x M VariableMatrix.
+     */
     template<typename T>
     struct VariableVector : VariableMatrix<T> {
+        using VariableMatrix<T>::operator=;
 
-        using VariableMatrix<T>::operator =;
-        
-        VariableVector(size_t rows = 0) :
-        VariableMatrix<T>(1,rows) {
+        /**
+         * Constructor. 
+         * @param columns
+         */
+        VariableVector(size_t columns = 0) :
+        VariableMatrix<T>(1, columns) {
         }
-        
+
+        /**
+         * Sets the size of this vector.
+         * 
+         * @param size
+         */
+        void SetSize(size_t size) {
+            this->columns = size;
+            this->data_m.resize(size);
+        }
+
+        /**
+         * Returns the size of this vector.
+         * @return 
+         */
+        size_t GetSize() {
+            return this->columns;
+        }
+
+        const std::string ToExpressionTemplateString() const {
+            std::stringstream ss;
+            ss << "atl::VariableVector<T>";
+            return ss.str();
+        }
+
 
     };
 }

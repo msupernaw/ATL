@@ -61,6 +61,12 @@ namespace atl {
     class ThreadPool;
     struct WaitableFunction;
 
+    /**
+     * 
+     * WaitVariable is used in conjunction with ThreadPool runs where it is 
+     * desired to wait for threads to complete before continuing.
+     * 
+     */
     class WaitVariable {
         friend class ThreadPool;
         std::atomic<int> wait;
@@ -83,6 +89,11 @@ namespace atl {
 
     };
 
+    /**
+     * 
+     *Thread pool.
+     * 
+     */
     class ThreadPool {
 
         template<class InputIt, typename Function>
@@ -104,6 +115,8 @@ namespace atl {
 
         };
 
+        /**
+         */
         struct WaitableFunction {
             std::function<void(void) > f;
             std::atomic<int>& wait;
@@ -129,6 +142,11 @@ namespace atl {
 
     public:
 
+        /**
+         * Constructor. Sets the number of threads in this thread pool.
+         * 
+         * @param threads
+         */
         ThreadPool(int threads = std::thread::hardware_concurrency()) : shutdown_(false), started_(true) {
             // Create the specified number of threads
             threads_.reserve(threads);
@@ -153,6 +171,9 @@ namespace atl {
 
         }
 
+        /**
+         * Destructor. Shuts down all threads.
+         */
         ~ThreadPool() {
             {
                 // Unblock any threads and tell them to stop
@@ -177,10 +198,19 @@ namespace atl {
             }
         }
 
+        /**
+         * Returns the number of threads in this thread pool.
+         * @return 
+         */
         size_t Size() {
             return threads_.size();
         }
 
+        /**
+         * Do a job that doesn't require wait.
+         * 
+         * @param func
+         */
         void DoJob(std::function <void (void) > func) {
 
             // Place a job on the queue and unblock a thread
@@ -189,6 +219,11 @@ namespace atl {
             condVar_.notify_one();
         }
 
+        /**
+         * Do a job that requires wait. The wait variable is incremented.
+         * @param func
+         * @param wait
+         */
         void DoJob(std::function <void (void) > func, WaitVariable& wait) {
 
             wait.wait++;
@@ -200,6 +235,13 @@ namespace atl {
             condVar_.notify_one();
         }
 
+        /**
+         * For each job.
+         * 
+         * @param first
+         * @param elements
+         * @param function
+         */
         template<class InputIt, typename Function>
         void ForEach(InputIt first, const size_t& elements, const Function &function) {
             if (!elements)return;
@@ -229,6 +271,14 @@ namespace atl {
             }
         }
 
+        /**
+         * For each job with wait.
+         * 
+         * @param first
+         * @param elements
+         * @param function
+         * @param wait
+         */
         template<class InputIt, typename Function>
         void ForEach(InputIt first, const size_t& elements, const Function &function, WaitVariable& wait) {
             if (!elements)return;
@@ -259,17 +309,13 @@ namespace atl {
             }
         }
 
-        //            void Wait() {
-        //                while (this->wait_count != 0) {
-        //                    //wait for threads
-        //                    //                                        std::cout << this->wait_count << std::endl;
-        //                }
-        //
-        //            }
-
+        /**
+         * Wait for this wait variable to signal completion.
+         * 
+         * @param wait
+         */
         void Wait(WaitVariable& wait) {
             while (wait.wait > 0) {
-                //                    std::cout << wait.wait << std::endl;
             }
         }
 

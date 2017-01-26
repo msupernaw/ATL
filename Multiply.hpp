@@ -23,70 +23,26 @@
 
 namespace atl {
 
-
-
-
-    //Function Pointers
-
-    template <class REAL_T, class LHS, class RHS>
-    inline REAL_T EvaluateMultiplyValueCase1(int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs) {
-        size_t kmax = lhs.GetColumns();
-        REAL_T ret = static_cast<REAL_T> (0.0);
-        for (size_t k = 0; k < kmax; k++) {
-            ret += lhs.GetValue(i, k) * rhs.GetValue(k, j);
-
-        }
-        return ret;
-    }
-
-    template <class REAL_T, class LHS, class RHS>
-    REAL_T EvaluateMultiplyValueCase2(int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs) {
-
-    }
-
-    template <class REAL_T, class LHS, class RHS>
-    REAL_T EvaluateMultiplyValueCase3(int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs) {
-
-    }
-
-    template <class REAL_T, class LHS, class RHS>
-    REAL_T EvaluateMultiplyValueCase4(int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs) {
-
-        return 1;
-    }
-
-    template <class REAL_T, class LHS, class RHS>
-    inline REAL_T EvaluateMultiplyFirstDerivativeCase1(uint32_t a, size_t i, size_t j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs) {
-
-        size_t kmax = lhs.GetColumns();
-        REAL_T ret = static_cast<REAL_T> (0.0);
-
-        for (size_t k = 0; k < kmax; k++) {
-            ret += (lhs.GetValue(i, k) *
-                    rhs.EvaluateDerivative(a, k, j) +
-                    lhs.EvaluateDerivative(a, i, k) *
-                    rhs.GetValue(k, j));
-
-        }
-        return ret;
-
-    }
-
+    /**
+     * Expression template to handle multiplication.
+     * 
+     * \f$ f(x) * g(x) \f$
+     * 
+     * or
+     * 
+     * \f$ f_{i,j}(x) * g_{i,j}(x) \f$
+     * 
+     */
     template <class REAL_T, class LHS, class RHS>
     struct Multiply : public ExpressionBase<REAL_T, Multiply<REAL_T, LHS, RHS> > {
-        //        typedef REAL_T(*GetValue_ptr)(int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs);
-        //        typedef REAL_T(*FirstOrderDerivative_ptr)(uint32_t a, size_t i, size_t j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs);
-        //        typedef REAL_T(*SecondOrderDerivative_ptr)(uint32_t a, uint32_t b, int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs);
-        //        typedef REAL_T(*ThirdOrderDerivative_ptr)(uint32_t a, uint32_t b, uint32_t c, int i, int j, const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs);
-
-
-        //        GetValue_ptr value_func;
-        //        FirstOrderDerivative_ptr first_order_func;
-        //        SecondOrderDerivative_ptr second_order_func;
-        //        ThirdOrderDerivative_ptr third_order_func;
-
         bool mm_multiply = false;
 
+        /**
+         * Constructor for Variable types.
+         * 
+         * @param lhs
+         * @param rhs
+         */
         Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs)
         : lhs_m(lhs.Cast()), rhs_m(rhs.Cast()) {
             if (!lhs_m.IsScalar() && !rhs_m.IsScalar()) {
@@ -94,24 +50,46 @@ namespace atl {
                 mm_multiply = true;
             }
 
-            //             value_func = &EvaluateMultiplyValueCase1<REAL_T, LHS, RHS>;
-            //             first_order_func = &EvaluateMultiplyFirstDerivativeCase1<REAL_T, LHS, RHS>;
+
         }
 
+        /**
+         * Constructor for a real and Variable type.
+         * 
+         * @param lhs
+         * @param rhs
+         */
         Multiply(const REAL_T& lhs, const ExpressionBase<REAL_T, RHS>& rhs)
         : lhs_m(real_m), rhs_m(rhs.Cast()) {
             real_m.value = lhs;
         }
 
+        /**
+         * Constructor for Variable and real type.
+         * 
+         * @param lhs
+         * @param rhs
+         */
         Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const REAL_T& rhs)
         : lhs_m(lhs.Cast()), rhs_m(real_m) {
             real_m.value = rhs;
         }
 
+        /**
+         * Compute the value of this expression. 
+         * 
+         * @return 
+         */
         inline const REAL_T GetValue() const {
             return lhs_m.GetValue() * rhs_m.GetValue();
         }
 
+        /**
+         * Compute the value of this expression at index {i,j}.
+         * @param i
+         * @param j
+         * @return 
+         */
         inline const REAL_T GetValue(size_t i, size_t j = 0) const {
             if (!mm_multiply) {
                 return lhs_m.GetValue(i, j) * rhs_m.GetValue(i, j);
@@ -129,28 +107,108 @@ namespace atl {
             }
         }
 
+        /**
+         * Returns true if the left or right side is nonlinear, else
+         * false.
+         * @return 
+         */
+        bool IsNonlinear()const {
+            if (lhs_m.IsNonlinear() || rhs_m.IsNonlinear()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Push variable info into a set. 
+         * 
+         * @param ids
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids)const {
             lhs_m.PushIds(ids);
             rhs_m.PushIds(ids);
         }
 
+        /**
+         *  Push variable info into a set at index {i,j}. 
+         * 
+         * @param ids
+         * @param i
+         * @param j
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {
             lhs_m.PushIds(ids, i, j);
             rhs_m.PushIds(ids, i, j);
         }
 
-        inline const REAL_T EvaluateDerivative(uint32_t id) const {
-            return (lhs_m.GetValue() * rhs_m.EvaluateDerivative(id) +
-                    lhs_m.EvaluateDerivative(id) * rhs_m.GetValue());
+        inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
+            lhs_m.PushNLIds(ids, nl);
+            rhs_m.PushNLIds(ids,nl);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b) const {
-            return lhs_m.EvaluateDerivative(a) * rhs_m.EvaluateDerivative(b) +
-                    lhs_m.GetValue() * rhs_m.EvaluateDerivative(a, b) +
-                    lhs_m.EvaluateDerivative(b) * rhs_m.EvaluateDerivative(a) +
-                    rhs_m.GetValue() * lhs_m.EvaluateDerivative(a, b);
+        inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
+            return lhs_m.ComplexEvaluate(x, h) * rhs_m.ComplexEvaluate(x, h);
         }
 
+        /**
+         * Evaluates the derivative of this expression with respect to x.
+         * 
+         * \f$f\left(x\right)\,\left({{d}\over{d\,x}}\,g\left(x\right)\right)+g\left(x\right)\,\left({{d}\over{d\,x}}\,f\left(x\right)\right)\f$
+         * 
+         * @param x
+         * @return 
+         */
+        inline const REAL_T EvaluateDerivative(uint32_t x) const {
+            return (lhs_m.GetValue() * rhs_m.EvaluateDerivative(x) +
+                    lhs_m.EvaluateDerivative(x) * rhs_m.GetValue());
+        }
+
+        /**
+         * 
+         * Evaluates the second-order mixed partial derivative of this expression 
+         * with respect to x and y.
+         * 
+         * \f${{d}\over{d\,x}}\,f\left(x , y , z\right)\,\left({{d}\over{d\,y}}\,
+         * g\left(x , y , z\right)\right)+f\left(x , y , z\right)\,\left({{d^2
+         * }\over{d\,x\,d\,y}}\,g\left(x , y , z\right)\right)+{{d}\over{d\,y}}
+         * \,f\left(x , y , z\right)\,\left({{d}\over{d\,x}}\,g\left(x , y , z
+         * \right)\right)+g\left(x , y , z\right)\,\left({{d^2}\over{d\,x\,d\,y
+         * }}\,f\left(x , y , z\right)\right)\f$
+         * @param x
+         * @param y
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return lhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y) +
+                    lhs_m.GetValue() * rhs_m.EvaluateDerivative(x, y) +
+                    lhs_m.EvaluateDerivative(y) * rhs_m.EvaluateDerivative(x) +
+                    rhs_m.GetValue() * lhs_m.EvaluateDerivative(x, y);
+        }
+
+        /**
+         * Evaluates the third-order mixed partial derivative of this expression 
+         * with respect to x, y, and z.
+         * 
+         * \f$ {{d^2}\over{d\,x\,d\,y}}\,f\left(x , y , z\right)\,\left({{d}\over{
+         * d\,z}}\,g\left(x , y , z\right)\right)+{{d}\over{d\,x}}\,f\left(x , 
+         * y , z\right)\,\left({{d^2}\over{d\,y\,d\,z}}\,g\left(x , y , z
+         * \right)\right)+{{d^2}\over{d\,x\,d\,z}}\,f\left(x , y , z\right)\,
+         * \left({{d}\over{d\,y}}\,g\left(x , y , z\right)\right)+{{d}\over{d\,
+         * y}}\,f\left(x , y , z\right)\,\left({{d^2}\over{d\,x\,d\,z}}\,g
+         * \left(x , y , z\right)\right)+ \\ f\left(x , y , z\right)\,\left({{d^3
+         * }\over{d\,x\,d\,y\,d\,z}}\,g\left(x , y , z\right)\right)+{{d}\over{
+         * d\,z}}\,f\left(x , y , z\right)\,\left({{d^2}\over{d\,x\,d\,y}}\,g
+         * \left(x , y , z\right)\right)+{{d^2}\over{d\,y\,d\,z}}\,f\left(x , y
+         * , z\right)\,\left({{d}\over{d\,x}}\,g\left(x , y , z\right)\right)+
+         * g\left(x , y , z\right)\,\left({{d^3}\over{d\,x\,d\,y\,d\,z}}\,f
+         * \left(x , y , z\right)\right) \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
                     (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))
@@ -162,7 +220,17 @@ namespace atl {
                     + rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y, z));
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, size_t i, size_t j = 0) const {
+        /**
+         * Evaluates the derivative of this expression
+         * with respect to x at index {i,j}. 
+         * 
+         * \f$f_{i,j}(x)\,\left({{d}\over{d\,x}}\,g_{i,j}(x)\right)+g_{i,j}(x)\,
+         * \left({{d}\over{d\,x}}\,f_{i,j}(x)\right)\f$
+         * 
+         * @param x
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
 
             ////            return first_order_func(a,i,j,lhs_m.Cast(), rhs_m.Cast());
             //            
@@ -184,8 +252,8 @@ namespace atl {
             //                        rhs_m.GetValue());
             if (!mm_multiply) {
                 return (lhs_m.GetValue(i, j) *
-                        rhs_m.EvaluateDerivative(a,i, j) +
-                        lhs_m.EvaluateDerivative(a, i, j) *
+                        rhs_m.EvaluateDerivative(x, i, j) +
+                        lhs_m.EvaluateDerivative(x, i, j) *
                         rhs_m.GetValue(i, j));
             } else { //matrix multiply
 
@@ -195,8 +263,8 @@ namespace atl {
                 REAL_T ret = static_cast<REAL_T> (0.0);
                 for (size_t k = 0; k < kmax; k++) {
                     ret += (lhs_m.GetValue(i, k) *
-                            rhs_m.EvaluateDerivative(a, k, j) +
-                            lhs_m.EvaluateDerivative(a, i, k) *
+                            rhs_m.EvaluateDerivative(x, k, j) +
+                            lhs_m.EvaluateDerivative(x, i, k) *
                             rhs_m.GetValue(k, j));
 
                 }
@@ -204,34 +272,49 @@ namespace atl {
             }
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
+        /**
+         * Evaluates the second-order mixed partial derivative of this expression with respect to x and y at 
+         * index {i,j}.
+         * 
+         * \f$ {{d}\over{d\,x}}\,f_{i,j}(x,y)\,\left({{d}\over{d\,y}}\,g_{i,j}(x,y
+         * )\right)+f_{i,j}(x,y)\,\left({{d^2}\over{d\,x\,d\,y}}\,g_{i,j}(x,y)
+         * \right)+{{d}\over{d\,y}}\,f_{i,j}(x,y)\,\left({{d}\over{d\,x}}\,g_{i
+         * ,j}(x,y)\right)+g_{i,j}(x,y)\,\left({{d^2}\over{d\,x\,d\,y}}\,f_{i,j
+         * }(x,y)\right) \f$
+         * @param x
+         * @param y
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
-                    return lhs_m.EvaluateDerivative(a) *
-                            rhs_m.EvaluateDerivative(b) +
+                    return lhs_m.EvaluateDerivative(x) *
+                            rhs_m.EvaluateDerivative(y) +
                             lhs_m.GetValue() *
-                            rhs_m.EvaluateDerivative(a, b) +
-                            lhs_m.EvaluateDerivative(b) *
-                            rhs_m.EvaluateDerivative(a) +
+                            rhs_m.EvaluateDerivative(x, y) +
+                            lhs_m.EvaluateDerivative(y) *
+                            rhs_m.EvaluateDerivative(x) +
                             rhs_m.GetValue() *
-                            lhs_m.EvaluateDerivative(a, b);
+                            lhs_m.EvaluateDerivative(x, y);
                 } else {//scalar/matrix multiply
-                    return lhs_m.EvaluateDerivative(a) *
-                            rhs_m.EvaluateDerivative(a, i, j) +
+                    return lhs_m.EvaluateDerivative(x) *
+                            rhs_m.EvaluateDerivative(x, i, j) +
                             lhs_m.GetValue() *
-                            rhs_m.EvaluateDerivative(a, b, i, j) +
-                            lhs_m.EvaluateDerivative(b) *
-                            rhs_m.EvaluateDerivative(a, i, j) +
+                            rhs_m.EvaluateDerivative(x, y, i, j) +
+                            lhs_m.EvaluateDerivative(y) *
+                            rhs_m.EvaluateDerivative(x, i, j) +
                             rhs_m.GetValue(i, j) *
-                            lhs_m.EvaluateDerivative(a, b);
+                            lhs_m.EvaluateDerivative(x, y);
                 }
             } else if (rhs_m.IsScalar()) {//scalar/matrix multiply
-                return lhs_m.EvaluateDerivative(a, i, j) *
-                        rhs_m.EvaluateDerivative(b) + lhs_m.GetValue(i, j) *
-                        rhs_m.EvaluateDerivative(a, b) +
-                        lhs_m.EvaluateDerivative(b, i, j) *
-                        rhs_m.EvaluateDerivative(a) + rhs_m.GetValue() *
-                        lhs_m.EvaluateDerivative(a, b, i, j);
+                return lhs_m.EvaluateDerivative(x, i, j) *
+                        rhs_m.EvaluateDerivative(y) + lhs_m.GetValue(i, j) *
+                        rhs_m.EvaluateDerivative(x, y) +
+                        lhs_m.EvaluateDerivative(y, i, j) *
+                        rhs_m.EvaluateDerivative(x) + rhs_m.GetValue() *
+                        lhs_m.EvaluateDerivative(x, y, i, j);
             } else { //matrix multiply
 
                 assert(lhs_m.GetRows() == rhs_m.GetColumns());
@@ -239,20 +322,43 @@ namespace atl {
                 size_t kmax = lhs_m.GetColumns();
                 REAL_T ret = static_cast<REAL_T> (0.0);
                 for (size_t k = 0; k < kmax; k++) {
-                    ret += lhs_m.EvaluateDerivative(a, i, k) *
-                            rhs_m.EvaluateDerivative(b, k, j) +
+                    ret += lhs_m.EvaluateDerivative(x, i, k) *
+                            rhs_m.EvaluateDerivative(y, k, j) +
                             lhs_m.GetValue(i, k) *
-                            rhs_m.EvaluateDerivative(a, b, k, j) +
-                            lhs_m.EvaluateDerivative(b, i, k) *
-                            rhs_m.EvaluateDerivative(a, k, j) +
+                            rhs_m.EvaluateDerivative(x, y, k, j) +
+                            lhs_m.EvaluateDerivative(y, i, k) *
+                            rhs_m.EvaluateDerivative(x, k, j) +
                             rhs_m.GetValue(k, j) *
-                            lhs_m.EvaluateDerivative(a, b, i, k);
+                            lhs_m.EvaluateDerivative(x, y, i, k);
 
                 }
                 return ret;
             }
         }
 
+        /**
+         * Evaluates the third-order mixed partial derivative of this expression 
+         * with respect to x, y, and z at index {i,j}.
+         * 
+         * \f$ {{d^2}\over{d\,x\,d\,y}}\,f_{i,j}(x,y,z)\,\left({{d}\over{d\,z}}\,g
+         *  _{i,j}(x,y,z)\right)+{{d}\over{d\,x}}\,f_{i,j}(x,y,z)\,\left({{d^2
+         *  }\over{d\,y\,d\,z}}\,g_{i,j}(x,y,z)\right)+{{d^2}\over{d\,x\,d\,z}}
+         *  \,f_{i,j}(x,y,z)\,\left({{d}\over{d\,y}}\,g_{i,j}(x,y,z)\right)+{{d
+         *  }\over{d\,y}}\,f_{i,j}(x,y,z)\,\left({{d^2}\over{d\,x\,d\,z}}\,g_{i,
+         *  j}(x,y,z)\right)+ \\ f_{i,j}(x,y,z)\,\left({{d^3}\over{d\,x\,d\,y\,d\,z
+         *  }}\,g_{i,j}(x,y,z)\right)+{{d}\over{d\,z}}\,f_{i,j}(x,y,z)\,\left({{
+         *  d^2}\over{d\,x\,d\,y}}\,g_{i,j}(x,y,z)\right)+{{d^2}\over{d\,y\,d\,z
+         *  }}\,f_{i,j}(x,y,z)\,\left({{d}\over{d\,x}}\,g_{i,j}(x,y,z)\right)+g
+         *  _{i,j}(x,y,z)\,\left({{d^3}\over{d\,x\,d\,y\,d\,z}}\,f_{i,j}(x,y,z)
+         *  \right) \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param i
+         * @param j
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
@@ -305,6 +411,11 @@ namespace atl {
             }
         }
 
+        /**
+         * Return the number of columns.
+         * 
+         * @return 
+         */
         size_t GetColumns() const {
             if (!lhs_m.IsScalar() && !rhs_m.IsScalar()) {
                 size_t lc = lhs_m.GetColumns();
@@ -317,6 +428,11 @@ namespace atl {
             }
         }
 
+        /**
+         * Return the number of rows. 
+         * 
+         * @return 
+         */
         size_t GetRows() const {
             if (!lhs_m.IsScalar() && !rhs_m.IsScalar()) {
                 size_t lc = lhs_m.GetRows();
@@ -329,6 +445,11 @@ namespace atl {
             }
         }
 
+        /**
+         * True if this expression is a scalar.
+         * 
+         * @return 
+         */
         bool IsScalar() const {
             if (lhs_m.IsScalar() && rhs_m.IsScalar()) {
                 return true;
@@ -336,7 +457,15 @@ namespace atl {
             return false;
         }
 
-
+        /**
+         * Create a string representation of this expression template. 
+         * @return 
+         */
+        const std::string ToExpressionTemplateString() const {
+            std::stringstream ss;
+            ss << "atl::Multiply<T," << lhs_m.ToExpressionTemplateString() << ", " << rhs_m.ToExpressionTemplateString() << " >";
+            return ss.str();
+        }
 
         atl::Real<REAL_T> real_m; //used for operations involving real numbers
         const LHS& lhs_m;
@@ -344,8 +473,6 @@ namespace atl {
         REAL_T value_m;
     };
 
-    
-    
     /**
      * Operator for addition of two expression templates.
      * @param a
@@ -358,6 +485,12 @@ namespace atl {
         return Multiply<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
     }
 
+    /**
+     * 
+     * @param a
+     * @param b
+     * @return 
+     */
     template <class REAL_T, class LHS>
     inline const Multiply<REAL_T, LHS, Real<REAL_T> > operator*(const ExpressionBase<REAL_T, LHS>& a,
             REAL_T b) {
@@ -365,7 +498,13 @@ namespace atl {
         return Multiply<REAL_T, LHS, Real<REAL_T> > (a.Cast(), b);
     }
 
-    template <class REAL_T, class LHS, class RHS>
+    /**
+     * 
+     * @param a
+     * @param b
+     * @return 
+     */
+    template <class REAL_T, class RHS>
     inline const Multiply<REAL_T, Real<REAL_T>, RHS> operator*(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Multiply<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());

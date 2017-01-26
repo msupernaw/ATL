@@ -16,6 +16,9 @@
 
 #include <cassert>
 #include "Tape.hpp"
+#include <sstream>
+#include <ostream>
+#include <complex>
 
 namespace atl {
 
@@ -33,16 +36,14 @@ namespace atl {
         REAL_VECTOR_EXPRESSION,
         VARIABLE_VECTOR_EXPRESSION
     };
-    
-    
+
     template<typename T>
-    struct ExpressionTrait{
+    struct ExpressionTrait {
         static ExpressionType et_type;
     };
     template<typename T>
     ExpressionType ExpressionTrait<T>::et_type = ET_BASE;
-    
-    
+
     template<class REAL_T, class A>
     struct ExpressionBase {
 
@@ -76,28 +77,40 @@ namespace atl {
             Cast().PushIds(ids);
         }
 
+        inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
+            Cast().PushIds(ids,nl);
+        }
+
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {
             Cast().PushIds(ids, i, j);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a) const {
-            return Cast().EvaluateDerivative(a);
+        inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
+            return Cast().ComplexEvaluate(x, h);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b) const {
-            return Cast().EvaluateDerivative(a, b);
+        inline REAL_T EvaluateDerivative(uint32_t x) const {
+            return Cast().EvaluateDerivative(x);
+        }
+
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return Cast().EvaluateDerivative(x, y);
         }
 
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return Cast().EvaluateDerivative(x, y, z);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, size_t i, size_t j = 0) const {
-            return Cast().EvaluateDerivative(a, i, j);
+        inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, size_t i, size_t j = 0, REAL_T h = 1e-20) const {
+            return Cast().ComplexEvaluate(x, i, j, h);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
-            return Cast().EvaluateDerivative(a, b, i, j);
+        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+            return Cast().EvaluateDerivative(x, i, j);
+        }
+
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return Cast().EvaluateDerivative(x, y, i, j);
         }
 
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
@@ -120,11 +133,23 @@ namespace atl {
             return Cast().IsScalar();
         }
 
+        /**
+         * Create a string representation of this expression template. 
+         * @return 
+         */
+        std::string ToExpressionTemplateString() const {
+            return Cast().ToExpressionTemplateString();
+        }
 
     };
 
 }
 
+template<typename T, typename A>
+std::ostream& operator<<(std::ostream& out, const atl::ExpressionBase<T, A>& expr) {
+    out << expr.GetValue();
+    return out;
+}
 
 
 #endif /* EXPRESSION_HPP */

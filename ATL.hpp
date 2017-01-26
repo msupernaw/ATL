@@ -13,51 +13,50 @@
 
 #ifndef ATL_HPP
 #define ATL_HPP
+
+
+//#include "MinMax.hpp"
+
 #include "ThreadPool.hpp"
-#include "Variable.hpp"
-#include "Fabs.hpp"
 namespace atl {
 
 
     //global thread pool
     atl::ThreadPool thread_pool_g;
 
-    
-    
-    
-    
+
+
+
+
     /***********************************
      * Miscellaneous Functions Below   *
      ***********************************/
+
+
+
+
+
+
+
+
+
+    /**
+     * Introduction
+     */
+
+    /**
+     * Automatic Differentiation
+     */
+
+    /**
+     * Optimization
+     */
+
+    /**
+     * Concurrency
+     */
     
-    /**
-     * Returns the maximum between a and b in a continuous manner using:
-     * 
-     * (a + b + |a - b|) / 2.0;
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    template <typename T>
-    inline const atl::Variable<T> max(const atl::Variable<T>& a, const atl::Variable<T>& b) {
-        return (a + b + atl::fabs(a - b)) / 2.0;
-    }
-
-    /**
-     * Returns the minimum between a and b in a continuous manner using:
-     * 
-     * (a + b - |a - b|) / 2.0;
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    template <typename T>
-    inline const atl::Variable<T> min(const atl::Variable<T>& a, const atl::Variable<T>& b) {
-        return (a + b - atl::fabs(a - b)) / 2.0;
-    }
-
+    
 
 }
 

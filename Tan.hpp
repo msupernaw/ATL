@@ -39,40 +39,134 @@
 
 namespace atl {
 
+    /**
+     * Expression template to handle tangent for variable or 
+     * container expressions. 
+     * 
+     * \f$  \tan f(x) \f$
+     * 
+     * or 
+     * 
+     * \f$ \tan f_{i,j}(x)  \f$
+     * 
+     */
     template<class REAL_T, class EXPR>
     struct Tan : public ExpressionBase<REAL_T, Tan<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        /**
+         * Constructor 
+         * 
+         * @param a
+         */
         Tan(const ExpressionBase<REAL_T, EXPR>& a)
         : expr_m(a.Cast()) {
         }
 
+        /**
+         * Computes the tangent of the evaluated expression.
+         */
         inline const REAL_T GetValue() const {
             return std::tan(expr_m.GetValue());
         }
 
+        /**
+         * Computes the tangent of the evaluated expression at index {i,j}.
+         */
         inline const REAL_T GetValue(size_t i, size_t j = 0) const {
             return std::tan(expr_m.GetValue(i, j));
         }
 
+        /**
+         * Returns true.
+         * 
+         * @return 
+         */
+        inline bool IsNonlinear() const {
+            return true;
+        }
+
+        /**
+         * Push variable info into a set.
+         *  
+         * @param ids
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids)const {
             expr_m.PushIds(ids);
         }
 
+        /**
+         * Push variable info into a set at index {i,j}.
+         * 
+         * @param ids
+         * @param i
+         * @param j
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {
             expr_m.PushIds(ids, i, j);
         }
 
-        inline const REAL_T EvaluateDerivative(uint32_t id) const {
-            return expr_m.EvaluateDerivative(id) * (1.0 / std::cos(expr_m.GetValue()))*(1.0 / std::cos(expr_m.GetValue()));
+        inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
+            expr_m.PushNLIds(ids, true);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b) const {
+        inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
+            return std::tan(expr_m.ComplexEvaluate(x, h));
+        }
+
+        /**
+         * Evaluates the first-order derivative with respect to x.
+         * 
+         * \f$ \sec ^2f(x)\,\left({{d}\over{d\,x}}\,f(x)\right) \f$
+         * 
+         * @param x
+         * @return 
+         */
+        inline const REAL_T EvaluateDerivative(uint32_t x) const {
+            return expr_m.EvaluateDerivative(x) * (1.0 / std::cos(expr_m.GetValue()))*(1.0 / std::cos(expr_m.GetValue()));
+        }
+
+        /**
+         * Evaluates the second-order derivative with respect to x and y.
+         * 
+         * \f$ 2\,\sec ^2f(x,y)\,\tan f(x,y)\,\left({{d}\over{d\,x}}\,
+         *  f(x,y)\right)\,\left({{d}\over{d\,y}}\,f(x,y)\right)+
+         *  \sec ^2f(x,y)\,\left({{d^2}\over{d\,x\,d\,y}}\,f(x,y)
+         *  \right) \f$
+         * 
+         * @param x
+         * @param y
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
             REAL_T sec2 = (1.0 / std::cos(expr_m.GetValue())) * (1.0 / std::cos(expr_m.GetValue()));
-            return 2.0 * sec2 * this->GetValue() * expr_m.EvaluateDerivative(a) * expr_m.EvaluateDerivative(b) +
-                    sec2 * expr_m.EvaluateDerivative(a, b);
+            return 2.0 * sec2 * this->GetValue() * expr_m.EvaluateDerivative(x) * expr_m.EvaluateDerivative(y) +
+                    sec2 * expr_m.EvaluateDerivative(x, y);
         }
 
+        /**
+         * Evaluates the third-order derivative with respect to x, y, and z.
+         * 
+         * \f$ 4\,\sec ^2f(x,y,z)\,\tan ^2f(x,y,z)\,\left({{d}\over{d
+         *  \,x}}\,f(x,y,z)\right)\,\left({{d}\over{d\,y}}\,f(x,y,z)
+         *  \right)\,\left({{d}\over{d\,z}}\,f(x,y,z)\right)+ \\ 2\,\sec ^4f
+         * (x,y,z)\,\left({{d}\over{d\,x}}\,f(x,y,z)\right)\,\left({{
+         *  d}\over{d\,y}}\,f(x,y,z)\right)\,\left({{d}\over{d\,z}}\,f
+         * (x,y,z)\right)+ \\ 2\,\sec ^2f(x,y,z)\,\tan f(x,y,z)\,
+         *  \left({{d^2}\over{d\,x\,d\,y}}\,f(x,y,z)\right)\,\left({{d
+         *  }\over{d\,z}}\,f(x,y,z)\right)+ \\ 2\,\sec ^2f(x,y,z)\,\tan 
+         *  f(x,y,z)\,\left({{d}\over{d\,x}}\,f(x,y,z)\right)\,
+         *  \left({{d^2}\over{d\,y\,d\,z}}\,f(x,y,z)\right)+ \\ 2\,\sec ^2f
+         * (x,y,z)\,\tan f(x,y,z)\,\left({{d^2}\over{d\,x\,d\,z}}\,f
+         * (x,y,z)\right)\,\left({{d}\over{d\,y}}\,f(x,y,z)\right)+ \\
+         *  \sec ^2f(x,y,z)\,\left({{d^3}\over{d\,x\,d\,y\,d\,z}}\,f
+         *  (x,y,z)\right) \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             REAL_T sec = (1.0 / std::cos(expr_m.GetValue()));
             return 4.0 * std::pow(sec, 2.0) * std::pow(std::tan(expr_m.GetValue()), 2.0)
@@ -88,16 +182,67 @@ namespace atl {
                     *(expr_m.EvaluateDerivative(y)) + std::pow(sec, 2.0)* (expr_m.EvaluateDerivative(x, y, z));
         }
 
-        inline const REAL_T EvaluateDerivative(uint32_t id, size_t i, size_t j = 0) const {
-            return expr_m.EvaluateDerivative(id, i, j) * (1.0 / std::cos(expr_m.GetValue(i, j)))*(1.0 / std::cos(expr_m.GetValue(i, j)));
+        /**
+         * Evaluates the first-order derivative with respect to x at index{i,j}.
+         * 
+         * \f$ \sec ^2f_{i,j}(x)\,\left({{d}\over{d\,x}}\,f_{i,j}(x)\right) \f$
+         * 
+         * @param x
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline const REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+            return expr_m.EvaluateDerivative(x, i, j) * (1.0 / std::cos(expr_m.GetValue(i, j)))*(1.0 / std::cos(expr_m.GetValue(i, j)));
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
+        /**
+         * Evaluates the second-order derivative with respect to x and y
+         * at index {i,j}.
+         * 
+         * \f$ 2\,\sec ^2f_{i,j}(x,y)\,\tan f_{i,j}(x,y)\,\left({{d}\over{d\,x}}\,
+         *  f_{i,j}(x,y)\right)\,\left({{d}\over{d\,y}}\,f_{i,j}(x,y)\right)+
+         *  \sec ^2f_{i,j}(x,y)\,\left({{d^2}\over{d\,x\,d\,y}}\,f_{i,j}(x,y)
+         *  \right) \f$
+         * 
+         * @param x
+         * @param y
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             REAL_T sec2 = (1.0 / std::cos(expr_m.GetValue(i, j))) * (1.0 / std::cos(expr_m.GetValue(i, j)));
-            return 2.0 * sec2 * this->GetValue(i, j) * expr_m.EvaluateDerivative(a, i, j) * expr_m.EvaluateDerivative(b, i, j) +
-                    sec2 * expr_m.EvaluateDerivative(a, b, i, j);
+            return 2.0 * sec2 * this->GetValue(i, j) * expr_m.EvaluateDerivative(x, i, j) * expr_m.EvaluateDerivative(y, i, j) +
+                    sec2 * expr_m.EvaluateDerivative(x, y, i, j);
         }
 
+        /**
+         * Evaluates the third-order derivative with respect to x, y, and z at 
+         * index {i,j}.
+         * 
+         * \f$ 4\,\sec ^2f_{i,j}(x,y,z)\,\tan ^2f_{i,j}(x,y,z)\,\left({{d}\over{d
+         *  \,x}}\,f_{i,j}(x,y,z)\right)\,\left({{d}\over{d\,y}}\,f_{i,j}(x,y,z)
+         *  \right)\,\left({{d}\over{d\,z}}\,f_{i,j}(x,y,z)\right)+ \\ 2\,\sec ^4f_{
+         *  i,j}(x,y,z)\,\left({{d}\over{d\,x}}\,f_{i,j}(x,y,z)\right)\,\left({{
+         *  d}\over{d\,y}}\,f_{i,j}(x,y,z)\right)\,\left({{d}\over{d\,z}}\,f_{i,
+         *  j}(x,y,z)\right)+ \\ 2\,\sec ^2f_{i,j}(x,y,z)\,\tan f_{i,j}(x,y,z)\,
+         *  \left({{d^2}\over{d\,x\,d\,y}}\,f_{i,j}(x,y,z)\right)\,\left({{d
+         *  }\over{d\,z}}\,f_{i,j}(x,y,z)\right)+ \\ 2\,\sec ^2f_{i,j}(x,y,z)\,\tan 
+         *  f_{i,j}(x,y,z)\,\left({{d}\over{d\,x}}\,f_{i,j}(x,y,z)\right)\,
+         *  \left({{d^2}\over{d\,y\,d\,z}}\,f_{i,j}(x,y,z)\right)+ \\ 2\,\sec ^2f_{i
+         *  ,j}(x,y,z)\,\tan f_{i,j}(x,y,z)\,\left({{d^2}\over{d\,x\,d\,z}}\,f_{
+         *  i,j}(x,y,z)\right)\,\left({{d}\over{d\,y}}\,f_{i,j}(x,y,z)\right)+ \\
+         *  \sec ^2f_{i,j}(x,y,z)\,\left({{d^3}\over{d\,x\,d\,y\,d\,z}}\,f_{i,j}
+         *  (x,y,z)\right) \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param i
+         * @param j
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             REAL_T sec = (1.0 / std::cos(expr_m.GetValue(i, j)));
             return 4.0 * std::pow(sec, 2.0) * std::pow(std::tan(expr_m.GetValue(i, j)), 2.0)
@@ -113,21 +258,44 @@ namespace atl {
                     *(expr_m.EvaluateDerivative(y, i, j)) + std::pow(sec, 2.0)* (expr_m.EvaluateDerivative(x, y, z, i, j));
         }
 
-        size_t GetColumns() const {
-            return expr_m.GetColumns();
-        }
-
+        /**
+         * Return the number of rows.
+         * 
+         * @return 
+         */
         size_t GetRows() const {
             return expr_m.GetRows();
         }
 
+        /**
+         * True if this expression is a scalar.
+         * 
+         * @return 
+         */
         bool IsScalar() const {
             return expr_m.IsScalar();
         }
 
+        /**
+         * Create a string representation of this expression template. 
+         * @return 
+         */
+        const std::string ToExpressionTemplateString() const {
+            std::stringstream ss;
+            ss << "atl::Tan<T," << expr_m.ToExpressionTemplateString() << " >";
+            return ss.str();
+        }
+
+
         const EXPR& expr_m;
     };
 
+    /**
+     * Creates a expression template representing tangent. 
+     * 
+     * @param exp
+     * @return 
+     */
     template<class REAL_T, class EXPR>
     inline const Tan<REAL_T, EXPR> tan(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Tan<REAL_T, EXPR>(exp.Cast());

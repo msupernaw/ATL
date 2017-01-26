@@ -38,40 +38,135 @@
 
 namespace atl {
 
+    /**
+     * Expression template to handle log for variable or 
+     * container expressions. 
+     * 
+     * \f$ \log f(x,y) \f$
+     * 
+     * or 
+     * 
+     * \f$ \log f_{i,j}(x,y) \f$
+     * 
+     */
     template<class REAL_T, class EXPR>
     struct Log : public ExpressionBase<REAL_T, Log<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        /**
+         * Constructor 
+         * 
+         * @param a
+         */
         Log(const ExpressionBase<REAL_T, EXPR>& a)
         : expr_m(a.Cast()) {
         }
 
+        /**
+         * Computes the log of the evaluated expression.
+         * 
+         * @return 
+         */
         inline const REAL_T GetValue() const {
             return std::log(expr_m.GetValue());
         }
 
+        /**
+         * Computes the log of the evaluated expression at index {i,j}.
+         * 
+         * @param i
+         * @param j
+         * @return 
+         */
         inline const REAL_T GetValue(size_t i, size_t j = 0) const {
             return std::log(expr_m.GetValue(i, j));
         }
 
+        /**
+         * Returns true.
+         * 
+         * @return 
+         */
+        inline bool IsNonlinear() const {
+            return true;
+        }
+
+        /**
+         * Push variable info into a set.
+         *  
+         * @param ids
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids)const {
             expr_m.PushIds(ids);
         }
 
+        /**
+         * Push variable info into a set at index {i,j}.
+         * 
+         * @param ids
+         * @param i
+         * @param j
+         */
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {
             expr_m.PushIds(ids, i, j);
         }
 
-        inline const REAL_T EvaluateDerivative(uint32_t id) const {
-            return expr_m.EvaluateDerivative(id) / expr_m.GetValue();
+        inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
+            expr_m.PushNLIds(ids, true);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b) const {
-            return (expr_m.EvaluateDerivative(a, b) / this->GetValue()) -
-                    (expr_m.EvaluateDerivative(a) * expr_m.EvaluateDerivative(b))
+        inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
+            return std::log(expr_m.ComplexEvaluate(x, h));
+        }
+
+        /**
+         * Evaluates the first-order derivative with respect to x.
+         * 
+         * \f$ {{{{d}\over{d\,x}}\,f_{i,j}(x)}\over{f_{i,j}(x)}} \f$
+         * 
+         * @param x
+         * @return 
+         */
+        inline const REAL_T EvaluateDerivative(uint32_t x) const {
+            return expr_m.EvaluateDerivative(x) / expr_m.GetValue();
+        }
+
+        /**
+         * Evaluates the second-order derivative with respect to x and y.
+         * 
+         * \f$ {{{{d^2}\over{d\,x\,d\,y}}\,f(x,y)}\over{f(x,y)}}-{{{{d
+         *  }\over{d\,x}}\,f(x,y)\,\left({{d}\over{d\,y}}\,f(x,y)
+         *  \right)}\over{f(x,y)^2}} \f$
+         * 
+         * @param x
+         * @param y
+         * 
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return (expr_m.EvaluateDerivative(x, y) / this->GetValue()) -
+                    (expr_m.EvaluateDerivative(x) * expr_m.EvaluateDerivative(y))
                     / (expr_m.GetValue() * this->GetValue());
         }
 
+        /**
+         * Evaluates the third-order derivative with respect to x, y, and z.
+         * 
+         * \f$ {{2\,\left({{d}\over{d\,x}}\,f(x,y,z)\right)\,\left({{d
+         *  }\over{d\,y}}\,f(x,y,z)\right)\,\left({{d}\over{d\,z}}\,f_{i,j
+         *  }(x,y,z)\right)}\over{f(x,y,z)^3}}-{{{{d^2}\over{d\,x\,d\,y}}
+         *  \,f(x,y,z)\,\left({{d}\over{d\,z}}\,f(x,y,z)\right)
+         *  }\over{f(x,y,z)^2}}-{{{{d}\over{d\,x}}\,f(x,y,z)\,\left(
+         *  {{d^2}\over{d\,y\,d\,z}}\,f(x,y,z)\right)}\over{f(x,y,z)
+         *  ^2}}-{{{{d^2}\over{d\,x\,d\,z}}\,f(x,y,z)\,\left({{d}\over{d\,
+         *  y}}\,f(x,y,z)\right)}\over{f(x,y,z)^2}}+{{{{d^3}\over{d
+         *  \,x\,d\,y\,d\,z}}\,f(x,y,z)}\over{f(x,y,z)}} \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return (2.0 * (expr_m.EvaluateDerivative(x))*(expr_m.EvaluateDerivative(y))
                     *(expr_m.EvaluateDerivative(z))) /
@@ -83,16 +178,62 @@ namespace atl {
                     + expr_m.EvaluateDerivative(x, y, z) / this->GetValue();
         }
 
-        inline const REAL_T EvaluateDerivative(uint32_t id, size_t i, size_t j = 0) const {
-            return expr_m.EvaluateDerivative(id, i, j) / expr_m.GetValue(i, j);
+        /**
+         * Evaluates the first-order derivative with respect to x at 
+         * index {i,j}.
+         * 
+         * \f$ {{{{d}\over{d\,x}}\,f_{i,j}(x)}\over{f_{i,j}(x)}} \f$
+         * 
+         * @param x
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline const REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+            return expr_m.EvaluateDerivative(x, i, j) / expr_m.GetValue(i, j);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
-            return (expr_m.EvaluateDerivative(a, b, i, j) / this->GetValue(i, j)) -
-                    (expr_m.EvaluateDerivative(a, i, j) * expr_m.EvaluateDerivative(b, i, j))
+        /**
+         * Evaluates the second-order derivative with respect to x and y at 
+         * index {i,j}.
+         * 
+         * \f$ {{{{d^2}\over{d\,x\,d\,y}}\,f_{i,j}(x,y)}\over{f_{i,j}(x,y)}}-{{{{d
+         *  }\over{d\,x}}\,f_{i,j}(x,y)\,\left({{d}\over{d\,y}}\,f_{i,j}(x,y)
+         *  \right)}\over{f_{i,j}(x,y)^2}} \f$
+         * 
+         * @param x
+         * @param y
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return (expr_m.EvaluateDerivative(x, y, i, j) / this->GetValue(i, j)) -
+                    (expr_m.EvaluateDerivative(x, i, j) * expr_m.EvaluateDerivative(y, i, j))
                     / (expr_m.GetValue(i, j) * this->GetValue(i, j));
         }
 
+        /**
+         * Evaluates the third-order derivative with respect to x, y, and z 
+         * at index {i,j}.
+         * 
+         * \f$ {{2\,\left({{d}\over{d\,x}}\,f_{i,j}(x,y,z)\right)\,\left({{d
+         *  }\over{d\,y}}\,f_{i,j}(x,y,z)\right)\,\left({{d}\over{d\,z}}\,f_{i,j
+         *  }(x,y,z)\right)}\over{f_{i,j}(x,y,z)^3}}-{{{{d^2}\over{d\,x\,d\,y}}
+         *  \,f_{i,j}(x,y,z)\,\left({{d}\over{d\,z}}\,f_{i,j}(x,y,z)\right)
+         *  }\over{f_{i,j}(x,y,z)^2}}-{{{{d}\over{d\,x}}\,f_{i,j}(x,y,z)\,\left(
+         *  {{d^2}\over{d\,y\,d\,z}}\,f_{i,j}(x,y,z)\right)}\over{f_{i,j}(x,y,z)
+         *  ^2}}-{{{{d^2}\over{d\,x\,d\,z}}\,f_{i,j}(x,y,z)\,\left({{d}\over{d\,
+         *  y}}\,f_{i,j}(x,y,z)\right)}\over{f_{i,j}(x,y,z)^2}}+{{{{d^3}\over{d
+         *  \,x\,d\,y\,d\,z}}\,f_{i,j}(x,y,z)}\over{f_{i,j}(x,y,z)}} \f$
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param i
+         * @param j
+         * @return 
+         */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return (2.0 * (expr_m.EvaluateDerivative(x, i, j))*(expr_m.EvaluateDerivative(y, i, j))
                     *(expr_m.EvaluateDerivative(z, i, j))) /
@@ -104,21 +245,44 @@ namespace atl {
                     + expr_m.EvaluateDerivative(x, y, z, i, j) / this->GetValue(i, j);
         }
 
-        size_t GetColumns() const {
-            return expr_m.GetColumns();
-        }
-
+        /**
+         * Return the number of rows.
+         * 
+         * @return 
+         */
         size_t GetRows() const {
             return expr_m.GetRows();
         }
 
+        /**
+         * True if this expression is a scalar.
+         * 
+         * @return 
+         */
         bool IsScalar() const {
             return expr_m.IsScalar();
         }
 
+        /**
+         * Create a string representation of this expression template. 
+         * @return 
+         */
+        const std::string ToExpressionTemplateString() const {
+            std::stringstream ss;
+            ss << "atl::Log<T," << expr_m.ToExpressionTemplateString() << " >";
+            return ss.str();
+        }
+
+
         const EXPR& expr_m;
     };
 
+    /**
+     * Returns an expression template representing log. 
+     * 
+     * @param exp
+     * @return 
+     */
     template<class REAL_T, class EXPR>
     inline const Log<REAL_T, EXPR> log(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Log<REAL_T, EXPR>(exp.Cast());
