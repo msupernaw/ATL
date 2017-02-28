@@ -144,9 +144,10 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return (expr_m.EvaluateDerivative(x, y) / this->GetValue()) -
+    
+            return (expr_m.EvaluateDerivative(x, y) / expr_m.GetValue()) -
                     (expr_m.EvaluateDerivative(x) * expr_m.EvaluateDerivative(y))
-                    / (expr_m.GetValue() * this->GetValue());
+                    / (expr_m.GetValue() * expr_m.GetValue());
         }
 
         /**

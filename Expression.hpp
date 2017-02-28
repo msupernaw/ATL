@@ -37,6 +37,12 @@ namespace atl {
         VARIABLE_VECTOR_EXPRESSION
     };
 
+    enum BinaryMethod {
+        EXP_EXP = 0,
+        EXP_REAL,
+        REAL_EXP
+    };
+
     template<typename T>
     struct ExpressionTrait {
         static ExpressionType et_type;
@@ -78,7 +84,7 @@ namespace atl {
         }
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
-            Cast().PushIds(ids,nl);
+            Cast().PushIds(ids, nl);
         }
 
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {

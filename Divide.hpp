@@ -600,7 +600,7 @@ namespace atl {
         return Divide<REAL_T, LHS, Real<REAL_T> > (a.Cast(), b);
     }
 
-    template <class REAL_T, class LHS, class RHS>
+    template <class REAL_T,class RHS>
     inline const Divide<REAL_T, Real<REAL_T>, RHS> operator/(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Divide<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());

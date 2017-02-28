@@ -34,6 +34,10 @@ namespace atl {
     struct Pow : public ExpressionBase<REAL_T, Pow<REAL_T, LHS, RHS> > {
         typedef REAL_T BASE_TYPE;
 
+
+
+        BinaryMethod pow_method;
+
         /**
          * Constructor for two expression template types.
          * 
@@ -120,7 +124,7 @@ namespace atl {
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
             lhs_m.PushNLIds(ids, true);
-            rhs_m.PushNLIds(ids,true);
+            rhs_m.PushNLIds(ids, true);
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
@@ -169,31 +173,17 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-
-            //            return (std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+2))*std::log(lhs_m.GetValue())^2*(rhs_m.EvaluateDerivative(x))+(std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+1))*rhs_m.GetValue()*std::log(lhs_m.GetValue())+std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+1))*(lhs_m.EvaluateDerivative(x)))*
-            //(rhs_m.EvaluateDerivative(y))+std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+2))*std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x,y))+(std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+1))*rhs_m.GetValue()*std::log(lhs_m.GetValue())+std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+1)))*
-            //(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))+(std::pow(lhs_m.GetValue(),rhs_m.GetValue())*std::pow(rhs_m.GetValue(),2.0)-std::pow(lhs_m.GetValue(),rhs_m.GetValue())*rhs_m.GetValue())*(lhs_m.EvaluateDerivative(x))*(lhs_m.EvaluateDerivative(y))+std::pow(lhs_m.GetValue(),(rhs_m.GetValue()+1))*rhs_m.GetValue()*
-            //(lhs_m.EvaluateDerivative(x,y)))/(std::pow(lhs_m.GetValue(),2.0);
-
-
-            return std::pow(lhs_m.GetValue(), rhs_m.GetValue())*(((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))) / lhs_m.GetValue() + std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x, y))+((lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))) / lhs_m.GetValue()-
-                    (rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x))*(lhs_m.EvaluateDerivative(y))) / std::pow(lhs_m.GetValue(), 2.0)+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y))) / lhs_m.GetValue()) + std::pow(lhs_m.GetValue(), rhs_m.GetValue())*(std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x))+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x))) / lhs_m.GetValue())*
-                    (std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(y))+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(y))) / lhs_m.GetValue());
-
-            //            if (x == y) {
-            //                uint32_t xx = x;
-            //
-            //                return std::pow(lhs_m.GetValue(), rhs_m.GetValue())*(std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(xx, xx))+(2 * (lhs_m.EvaluateDerivative(xx))*(rhs_m.EvaluateDerivative(xx))) / lhs_m.GetValue()+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(xx, xx))) / lhs_m.GetValue()-(rhs_m.GetValue() * std::pow((lhs_m.EvaluateDerivative(xx)), 2.0)) / std::pow(lhs_m.GetValue(), 2.0)) +
-            //                        std::pow(lhs_m.GetValue(), rhs_m.GetValue()) * std::pow((std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(xx))+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(xx))) / lhs_m.GetValue()), 2.0);
-            //
-            //
-            //            } else {
-            //
-            //                return std::pow(lhs_m.GetValue(), rhs_m.GetValue())*(((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(x))) / lhs_m.GetValue() + std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x, y))+((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(x))) / lhs_m.GetValue()-
-            //                        (rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x))*(lhs_m.EvaluateDerivative(x))) / std::pow(lhs_m.GetValue(), 2.0) + (rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y))) / lhs_m.GetValue()) + std::pow(lhs_m.GetValue(), rhs_m.GetValue())*(std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x))+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x))) / lhs_m.GetValue())*
-            //                        (std::log(lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x))+(rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x))) / lhs_m.GetValue());
-            //
-            //            }
+            REAL_T fxy = lhs_m.EvaluateDerivative(x, y);
+            REAL_T g = rhs_m.GetValue();
+            REAL_T f = lhs_m.GetValue();
+            REAL_T fx = lhs_m.EvaluateDerivative(x);
+            REAL_T gy = rhs_m.EvaluateDerivative(y);
+            REAL_T fy = lhs_m.EvaluateDerivative(y);
+            REAL_T gx = rhs_m.EvaluateDerivative(x);
+            REAL_T gxy = rhs_m.EvaluateDerivative(x, y);
+            return std::pow(f, g)*(((fx * gy) / f) + std::log(f) * gxy + (fy * gx / f) -
+                    (g * fx * fy) / (f * f) + g * fxy / f) + std::pow(f, g)*(std::log(f) * gx +
+                    g * fx / f)*(std::log(f) * gy + g * fy / f);
         }
 
         /**
@@ -336,21 +326,18 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            if (x == y) {
-                uint32_t xx = x;
 
-
-                return std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(xx, xx, i, j))+(2 * (lhs_m.EvaluateDerivative(xx, i, j))*(rhs_m.EvaluateDerivative(xx, i, j))) / lhs_m.GetValue(i, j)+(rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(xx, xx, i, j))) / lhs_m.GetValue(i, j)-(rhs_m.GetValue(i, j) * std::pow((lhs_m.EvaluateDerivative(xx, i, j)), 2.0)) / std::pow(lhs_m.GetValue(i, j), 2.0)) +
-                        std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j)) * std::pow((std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(xx, i, j))+(rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(xx, i, j))) / lhs_m.GetValue(i, j)), 2.0);
-
-
-            } else {
-
-                return std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, y, i, j))+((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j)-
-                        (rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0) + (rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(x, y, i, j))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, i, j))+(rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j))*
-                        (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, i, j))+(rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j));
-
-            }
+            REAL_T fxy = lhs_m.EvaluateDerivative(x, y, i, j);
+            REAL_T g = rhs_m.GetValue(i, j);
+            REAL_T f = lhs_m.GetValue(i, j);
+            REAL_T fx = lhs_m.EvaluateDerivative(x, i, j);
+            REAL_T gy = rhs_m.EvaluateDerivative(y, i, j);
+            REAL_T fy = lhs_m.EvaluateDerivative(y, i, j);
+            REAL_T gx = rhs_m.EvaluateDerivative(x, i, j);
+            REAL_T gxy = rhs_m.EvaluateDerivative(x, y, i, j);
+            return std::pow(f, g)*(((fx * gy) / f) + std::log(f) * gxy + (fy * gx / f) -
+                    (g * fx * fy) / (f * f) + g * fxy / f) + std::pow(f, g)*(std::log(f) * gx +
+                    g * fx / f)*(std::log(f) * gy + g * fy / f);
         }
 
         /**
@@ -547,7 +534,7 @@ namespace atl {
      * @param b
      * @return 
      */
-    template <class REAL_T, class LHS, class RHS>
+    template <class REAL_T, class RHS>
     inline const Pow<REAL_T, Real<REAL_T>, RHS> pow(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Pow<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());

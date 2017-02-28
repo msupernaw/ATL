@@ -210,7 +210,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
+              return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
                     (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))
                     +(lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))
                     +(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))

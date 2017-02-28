@@ -45,7 +45,7 @@ namespace atl {
     struct StackEntry {
         VariableInfo<REAL_T>* w;
         std::string exp;
-        typedef std::set<VariableInfo<REAL_T>* > vi_storage;
+        typedef std::unordered_set<VariableInfo<REAL_T>* > vi_storage;
         typedef typename vi_storage::iterator vi_iterator;
 
         bool is_nl = false;
@@ -60,8 +60,12 @@ namespace atl {
         StackEntry() {
         }
 
+        //        StackEntry(const StackEntry<REAL_T>& other) :
+        //        w(other.w), ids(other.ids), first(other.first), second(other.second), third(other.third) {
+        //        }
+
         StackEntry(const StackEntry<REAL_T>& other) :
-        w(other.w), ids(other.ids), first(other.first), second(other.second), third(other.third) {
+        w(other.w), exp(other.exp), is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third) {
         }
 
         /**
@@ -106,7 +110,7 @@ namespace atl {
             third.clear(); //.resize(0);
             ids.clear();
             pushed_ids.clear();
-            id_list.resize(0);
+            id_list.clear();
             nl_ids.clear();
         }
 
@@ -121,6 +125,7 @@ namespace atl {
         out << "--------------------------------------------------------------\n";
         out << entry.exp << "\n";
         out << "w = " << entry.w->id << "\n";
+        out << " value = " << entry.w->value << "\n";
         typename StackEntry<T>::vi_iterator it;
 
         out << "ids[ ";
@@ -238,7 +243,7 @@ namespace atl {
         third_order_container third_order_derivatives;
         typedef typename third_order_container::iterator third_order_iterator;
 
-        //        typedef typename std::unordered_map<uint32_t, REAL_T>::iterator first_order_iterator;
+        //                typedef typename std::unordered_map<uint32_t, REAL_T>::iterator first_order_iterator;
         //        typedef typename std::unordered_map<uint32_t, REAL_T> first_order_container;
         //        typedef typename std::unordered_map<uint32_t, first_order_container > second_order_container;
         //        typedef typename std::unordered_map<uint32_t, first_order_container >::iterator second_order_iterator;
@@ -414,31 +419,34 @@ namespace atl {
         }
 
         void AccumulateFirstOrder() {
-            this->first_order_derivatives.clear();
-            this->first_order_derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
-            REAL_T w = static_cast<REAL_T> (0.0);
-            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-            size_t index;
-            for (int i = (stack_current - 1); i >= 0; i--) {
+            if (recording) {
+                this->first_order_derivatives.clear();
+                this->first_order_derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+                REAL_T w = static_cast<REAL_T> (0.0);
+                typename atl::StackEntry< REAL_T>::vi_iterator vit;
+                size_t index;
+                for (int i = (stack_current - 1); i >= 0; i--) {
 
-                REAL_T& W = this->first_order_derivatives[this->stack[i].w->id];
-                if (W != static_cast<REAL_T> (0.0)) {
-                    w = W;
+                    REAL_T& W = this->first_order_derivatives[this->stack[i].w->id];
+                    if (W != static_cast<REAL_T> (0.0)) {
+                        w = W;
 
-                    W = static_cast<REAL_T> (0.0);
-                    index = 0;
-                    for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
-                        this->first_order_derivatives[(*vit)->id] += w * this->stack[i].first[index];
-                        index++;
+                        W = static_cast<REAL_T> (0.0);
+                        index = 0;
+                        for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
+                            this->first_order_derivatives[(*vit)->id] += w * this->stack[i].first[index];
+                            index++;
+                        }
+
                     }
-
                 }
             }
         }
 
         void AccumulateSecondOrder() {
             if (recording) {
-
+                this->first_order_derivatives.clear();
+                this->second_order_derivatives.clear();
 
                 REAL_T w;
                 REAL_T w2;
@@ -565,7 +573,7 @@ namespace atl {
                             }
 
 
-                            if (/*std::fabs(entry)*/entry != REAL_T(0.0) && entry == entry) {//h[j][k] needs to be updated
+                            if (/*std::fabs(entry)*/entry != REAL_T(0.0) ) {//h[j][k] needs to be updated
                                 if (entry != entry) {
 
                                     std::cout << entry << " Derivative signaling NaN\n" << current_entry << "\n";
@@ -585,12 +593,15 @@ namespace atl {
 
                         if (current_entry.w->is_nl) {
                             typename atl::StackEntry<REAL_T>::vi_iterator nl_it;
-                            for (nl_it = current_entry.nl_ids.begin(); nl_it != current_entry.nl_ids.end(); ++nl_it) {
-                                stack[i - 1].Push((*nl_it));
-                            }
-                                                        for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
-                                                            stack[i - 1].Push(current_entry.id_list[ii]);
+                                                        for (nl_it = current_entry.nl_ids.begin(); nl_it != current_entry.nl_ids.end(); ++nl_it) {
+                            //                                stack[i - 1].Push((*nl_it));
+                                                            stack[i - 1].nl_ids.insert((*nl_it));
                                                         }
+//                            for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
+//                                if (this->Value(current_entry.w->id, current_entry.id_list[ii]->id) != static_cast<REAL_T> (0.0)) {
+//                                    stack[i - 1].Push(current_entry.id_list[ii]);
+//                                }
+//                            }
                         }
 
                     }
@@ -603,7 +614,9 @@ namespace atl {
         void AccumulateThirdOrder() {
 
             if (recording) {
-
+                this->first_order_derivatives.clear();
+                this->second_order_derivatives.clear();
+                this->third_order_derivatives.clear();
 
                 REAL_T w;
 
@@ -705,6 +718,8 @@ namespace atl {
                         for (unsigned k = j; k < ID_LIST_SIZE; k++) {
                             vk = current_entry.id_list[k];
 
+
+
                             vijk_[(j * ID_LIST_SIZE) + k] = 0.0;
                             vijk_[(j * ID_LIST_SIZE) + k] = Value(vi->id, vj->id, vk->id);
 
@@ -728,7 +743,7 @@ namespace atl {
 
                         if (j == 0) {
 #pragma unroll
-                            for (int k = j; k < rows; k++) {
+                            for (int k = 0; k < rows; k++) {
                                 hdj = 0;
                                 hdj = current_entry.first[k];
                                 atl::VariableInfo<REAL_T>* vk = current_entry.id_list[k];
@@ -792,8 +807,11 @@ namespace atl {
                             pjk = current_entry.second[j * rows + k];
                             int ind = (j * rows * rows) + (k * rows);
                             for (int l = k; l < rows; l++) {
+                                if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                    std::cout << current_entry << "\n";
+                                }
                                 vl = current_entry.id_list[l];
-                                entry_3 = 0;
+                                entry_3 = 0.0;
 
                                 dl = current_entry.first[l];
                                 pjl = current_entry.second[j * rows + l];
@@ -809,15 +827,22 @@ namespace atl {
                                         + (dk * dl * viij_[j])
                                         + (pjk * dl * hii);
 
-
+if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                        std::cout << "e3 1 = " << (vijk_[(j * ID_LIST_SIZE + k)]) << "\n";
+                                    }
                                 entry_3 += (pjk * vij[l])
                                         + (dk * vijk_[(j * ID_LIST_SIZE + l)]);
-
+if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                        std::cout << "e3 1 = " << entry_3 << "\n";
+                                    }
 
                                 entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (pkl * hii)+(dl * viij_[k]) + (dk * viij_[l])
                                         +(dk * dl * diii));
 
                                 if (entry_3 != 0.0) {
+                                    if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                        std::cout << "e3 1 = " << entry_3 << "\n";
+                                    }
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
 
                                 }
@@ -825,7 +850,9 @@ namespace atl {
                             }
 
                             for (int l = rows; l < ID_LIST_SIZE; l++) {
-
+                                if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                    std::cout << current_entry << "\n";
+                                }
                                 vl = current_entry.id_list[l];
                                 entry_3 = 0;
 
@@ -844,6 +871,9 @@ namespace atl {
                                     std::cout << "Derivative signaling NaN\n";
                                 }
                                 if (entry_3 != 0.0) {
+                                    if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                        std::cout << "e3 2= " << entry_3 << "\n";
+                                    }
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
 
                                 }
@@ -857,6 +887,9 @@ namespace atl {
                                 atl::VariableInfo<REAL_T>* vk = current_entry.id_list[k];
 #pragma unroll
                                 for (int l = k; l < ID_LIST_SIZE; l++) {
+                                    if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                        std::cout << current_entry << "\n";
+                                    }
                                     atl::VariableInfo<REAL_T>* vl = current_entry.id_list[l];
                                     entry_3 = dj * (vijk_[(k * ID_LIST_SIZE + l)]);
 
@@ -864,6 +897,9 @@ namespace atl {
                                         std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (entry_3 != 0.0) {
+                                        if (vj->id == 4 && vk->id == 4 && vl->id == 4) {
+                                            std::cout << "e3 3= " << entry_3 << "\n";
+                                        }
                                         Reference(vj->id, vk->id, vl->id) += entry_3;
                                     }
 
@@ -878,12 +914,15 @@ namespace atl {
 
                         if (current_entry.w->is_nl) {
                             typename atl::StackEntry<REAL_T>::vi_iterator nl_it;
-                            for (nl_it = current_entry.nl_ids.begin(); nl_it != current_entry.nl_ids.end(); ++nl_it) {
-                                stack[i - 1].Push((*nl_it));
-                            }
-                                                        for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
-                                                            stack[i - 1].Push(current_entry.id_list[ii]);
+                                                        for (nl_it = current_entry.nl_ids.begin(); nl_it != current_entry.nl_ids.end(); ++nl_it) {
+                            //                                stack[i - 1].Push((*nl_it));
+                                                            stack[i - 1].nl_ids.insert((*nl_it));
                                                         }
+//                            for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
+//                                if (this->Value(current_entry.w->id, current_entry.id_list[ii]->id) != static_cast<REAL_T> (0.0)) {
+//                                    stack[i - 1].Push(current_entry.id_list[ii]);
+//                                }
+//                            }
                         }
 
                     }
@@ -899,12 +938,12 @@ namespace atl {
             this->second_order_derivatives.clear();
             this->third_order_derivatives.clear();
 
-            for (int i = 0; i < this->stack.size(); i++) {
+            for (int i = 0; i < this->stack_current; i++) {
                 stack[i].Reset();
             }
 
             if (empty_trash) {
-                //                atl::VariableInfo< REAL_T>::FreeAll();
+                //                                atl::VariableInfo< REAL_T>::FreeAll();
             }
 
             this->stack_current = 0;

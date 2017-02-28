@@ -47,12 +47,12 @@ namespace atl {
         }
 
         Variable(const Variable<REAL_T>& other) {
-            info->value = other.GetValue();
+            info = other.info;
         }
 
         ~Variable() {
             if (this->info) {
-                info->Release();
+                //                info->Release();
             }
         }
 
@@ -61,11 +61,11 @@ namespace atl {
             return *this;
         }
 
-
-        //        Variable& operator = (const Variable<REAL_T>& other){
-        //            this->info->value = other.info->value;
-        //            return *this;
-        //        }
+        Variable& operator=(const Variable<REAL_T>& other) {
+            size_t index = atl::Variable<REAL_T>::tape.NextIndex();
+            this->Assign(Variable<REAL_T>::tape, other, index);
+            return *this;
+        }
 
         template<class A>
         Variable(const ExpressionBase<REAL_T, A>& exp) {
@@ -74,23 +74,23 @@ namespace atl {
 
         }
 
-        /**
-         * Returns a reference to the raw value.
-         * 
-         * @return 
-         */
-        REAL_T& operator*() {
-            return this->info->value;
-        }
-
-        /**
-         * Returns a const reference to the raw value.
-         * 
-         * @return 
-         */
-        const REAL_T& operator*() const {
-            return this->info->value;
-        }
+//        /**
+//         * Returns a reference to the raw value.
+//         * 
+//         * @return 
+//         */
+//        REAL_T& operator*() {
+//            return this->info->value;
+//        }
+//
+//        /**
+//         * Returns a const reference to the raw value.
+//         * 
+//         * @return 
+//         */
+//        const REAL_T& operator*() const {
+//            return this->info->value;
+//        }
 
         template<class A>
         inline Variable& operator=(const ExpressionBase<REAL_T, A>& exp) {
@@ -172,6 +172,7 @@ namespace atl {
             if (tape.recording) {
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
+                entry.exp = exp.ToExpressionTemplateString();
                 entry.w = this->info;
                 entry.first.resize(entry.ids.size());
                 typename atl::StackEntry<REAL_T>::vi_iterator it;
@@ -191,8 +192,9 @@ namespace atl {
 
                     case SECOND_ORDER_REVERSE:
                         entry.is_nl = exp.IsNonlinear();
-                        exp.PushNLIds(entry.nl_ids);
-                        entry.second.resize(entry.ids.size() * entry.ids.size());
+                        //                        exp.PushNLIds(entry.nl_ids);
+                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
+
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             j = 0;
@@ -206,9 +208,9 @@ namespace atl {
 
                     case THIRD_ORDER_REVERSE:
                         entry.is_nl = exp.IsNonlinear();
-                        exp.PushNLIds(entry.nl_ids);
-                        entry.second.resize(entry.ids.size() * entry.ids.size());
-                        entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size());
+                        //                        exp.PushNLIds(entry.nl_ids);
+                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
+                        entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             j = 0;
@@ -216,7 +218,9 @@ namespace atl {
                                 entry.second[i * entry.ids.size() + j] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
                                 k = 0;
                                 for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
-                                    entry.third[i * entry.ids.size() * entry.ids.size() + j * entry.ids.size() + k] = exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id);
+
+                                    entry.third[i * entry.ids.size() * entry.ids.size() + j * entry.ids.size() + k] =
+                                            exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id);
                                     k++;
                                 }
                                 j++;
@@ -250,7 +254,7 @@ namespace atl {
             return *this;
         }
 
-        inline const Variable operator-() {
+        inline Variable<REAL_T> operator-() const {
             return static_cast<REAL_T> (-1.0) * (*this);
         }
 
@@ -385,7 +389,7 @@ namespace atl {
 
         const std::string ToExpressionTemplateString() const {
             std::stringstream ss;
-            ss << "atl::Variable<T>";
+            ss << "atl::Variable<T>[" << this->info->value << "]";
             return ss.str();
         }
 

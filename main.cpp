@@ -63,16 +63,17 @@ public:
     void Initialize() {
         a = 12.0;
         b = 4.0;
-        x.resize(100000);
+        x.resize(5000);
         this->Register(a);
         this->Register(b);
         for(int i=0; i < x.size(); i++)
-            x[i] = (T)(i+1)/1000.0;
+            x[i] = (T)(i+1);
     }
 
     void ObjectiveFunction(atl::Variable<T>& f) {
+        f = 0.0;
         for(int i=0; i < x.size(); i++)
-        f += x[i] * (atl::pow(a, 2.0) + atl::pow(b, 4.0) / a);
+        f += x[i] + (atl::pow(a, 2.0) + atl::pow(b, 3.0)) / a;
     }
 
 
@@ -280,7 +281,7 @@ inline const atl::Variable<double> ad_min_max_test(int nvar, std::vector<atl::Va
  */
 int main(int argc, char** argv) {
     
-    atl::tests::auto_diff::Ackley<double> a(std::cout, 5);
+    atl::tests::auto_diff::Run(std::cout);
 
     //    atl::Variable<std::complex<double> > a(std::complex<double>(12.0));
     //    atl::Variable<std::complex<double> > b(std::complex<double>(12.0));
@@ -288,7 +289,7 @@ int main(int argc, char** argv) {
     //    std::cout<<a<<", "<<b<<"\n";
     //    std::complex<double> dx = (atl::max(a, b)).EvaluateDerivative(a.info->id) / 1e-20;
     //    std::cout<<dx;
-    //    exit(0);
+        exit(0);
     atl::Variable<double>::tape.derivative_trace_level = atl::THIRD_ORDER_REVERSE;
     atl::Variable<double> f;
     atl::Variable<double>::tape.recording = true;

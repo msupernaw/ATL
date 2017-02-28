@@ -310,7 +310,7 @@ namespace atl {
      * @param b
      * @return 
      */
-    template <class REAL_T, class LHS, class RHS>
+    template <class REAL_T,class RHS>
     inline const Subtract<REAL_T, Real<REAL_T>, RHS> operator-(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Subtract<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
