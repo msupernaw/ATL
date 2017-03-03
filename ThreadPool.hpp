@@ -126,11 +126,11 @@ namespace atl {
             }
 
             WaitableFunction(const std::function<void(void) >& f, std::atomic<int>& wait) :
-            wait(wait), f(f) {
+            f(f), wait(wait) {
             }
 
             WaitableFunction(std::function<void(void) >&& f, std::atomic<int>&& wait) :
-            wait(wait), f(f) {
+            f(f), wait(wait) {
             }
 
             void operator()(void) {

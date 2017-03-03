@@ -37,22 +37,27 @@ namespace atl {
 
     template<typename REAL_T>
     struct Variable : atl::ExpressionBase<REAL_T, Variable<REAL_T> > {
+           typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         static Tape<REAL_T> tape;
         typedef REAL_T base_type;
 
-        atl::VariableInfo<REAL_T>* info = new atl::VariableInfo<REAL_T>();
+        VariableInfoPtr info;//(new atl::VariableInfo<REAL_T>());
 
         Variable(REAL_T v = static_cast<REAL_T> (0.0)) {
-            info->value = v;
+            
+            info = std::make_shared<VariableInfo<REAL_T> >(v);
+//            info->value = v;
         }
 
         Variable(const Variable<REAL_T>& other) {
             info = other.info;
+//            info->Aquire();
         }
 
         ~Variable() {
             if (this->info) {
-                //                info->Release();
+//                this->info->value=static_cast<REAL_T>(0.0);
+//                                info->Release();
             }
         }
 
@@ -69,6 +74,7 @@ namespace atl {
 
         template<class A>
         Variable(const ExpressionBase<REAL_T, A>& exp) {
+            info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T>(0.0));
             size_t index = atl::Variable<REAL_T>::tape.NextIndex();
             this->Assign(Variable<REAL_T>::tape, exp, index);
 
@@ -174,7 +180,7 @@ namespace atl {
                 exp.PushIds(entry.ids);
                 entry.exp = exp.ToExpressionTemplateString();
                 entry.w = this->info;
-                entry.first.resize(entry.ids.size());
+                entry.first.resize(entry.ids.size(),static_cast<REAL_T>(0.0));
                 typename atl::StackEntry<REAL_T>::vi_iterator it;
                 typename atl::StackEntry<REAL_T>::vi_iterator jt;
                 typename atl::StackEntry<REAL_T>::vi_iterator kt;
@@ -192,10 +198,11 @@ namespace atl {
 
                     case SECOND_ORDER_REVERSE:
                         entry.is_nl = exp.IsNonlinear();
-                        //                        exp.PushNLIds(entry.nl_ids);
+//                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             j = 0;
                             for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
@@ -208,7 +215,7 @@ namespace atl {
 
                     case THIRD_ORDER_REVERSE:
                         entry.is_nl = exp.IsNonlinear();
-                        //                        exp.PushNLIds(entry.nl_ids);
+//                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
@@ -397,7 +404,7 @@ namespace atl {
     };
 
     template<typename REAL_T>
-    Tape<REAL_T> Variable<REAL_T>::tape;
+    Tape<REAL_T> Variable<REAL_T>::tape(100000);
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const Variable<REAL_T>& v) {

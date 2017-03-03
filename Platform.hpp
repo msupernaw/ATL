@@ -2,6 +2,19 @@
 #define ATL_PLATFORM
 
 
+#if defined(__BORLANDC__)
+    typedef unsigned char uint8_t;
+    typedef __int64 int64_t;
+    typedef unsigned long uintptr_t;
+#elif defined(_MSC_VER)
+    typedef unsigned char uint8_t;
+    typedef __int64 int64_t;
+#else
+    #include <stdint.h>
+#endif
+
+
+
 #if defined(linux) || defined(__linux) || defined(__linux__)
 #  define ATL_LINUX
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)

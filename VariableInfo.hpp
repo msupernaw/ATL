@@ -84,7 +84,7 @@ namespace atl {
 
         //    private:
 
-        VariableIdGenerator() : _id(1), available_size(0) {
+        VariableIdGenerator() :  available_size(0),_id(1) {
         }
 
         std::atomic<uint32_t> _id;
@@ -142,14 +142,15 @@ namespace atl {
          * @param value
          */
         VariableInfo(REAL_T value = static_cast<REAL_T> (0.0)) :
-        id(VariableIdGenerator::instance()->next()), value(value), count(1) {
+        id(VariableIdGenerator::instance()->next()), count(1) , value(value){
         }
 
         /**
          * Destructor. 
          */
         ~VariableInfo() {
-            VariableIdGenerator::instance()->release(id);
+//            if(VariableIdGenerator::instance(). != 0)
+//            VariableIdGenerator::instance()->release(id);
         }
 
         inline void Aquire() {
@@ -175,17 +176,19 @@ namespace atl {
         
           static void FreeAll() {
 
-            VariableInfo<REAL_T>::vinfo_mutex_g.lock();
-#pragma unroll
-            for (int i = 0; i < freed.size(); i++) {
-                if (freed[i] != NULL) {//memory pool may have destructed first
-                    VariableIdGenerator::instance()->release(freed[i]->id);
-                    freed[i]->value = 0;
-                    delete freed[i];
-                }
-            }
-            freed.resize(0);
-            VariableInfo<REAL_T>::vinfo_mutex_g.unlock();
+//            VariableInfo<REAL_T>::vinfo_mutex_g.lock();
+//#pragma unroll
+//            for (int i = 0; i < freed.size(); i++) {
+//                if (freed[i] != NULL) {//memory pool may have destructed first
+//                    VariableIdGenerator::instance()->release(freed[i]->id);
+//                    freed[i]->value = 0;
+//                    freed[i]->is_nl = false;
+////                    freed[i]->id= 0;
+//                    delete freed[i];
+//                }
+//            }
+//            freed.resize(0);
+//            VariableInfo<REAL_T>::vinfo_mutex_g.unlock();
         }
 
 

@@ -66,14 +66,14 @@ public:
         x.resize(5000);
         this->Register(a);
         this->Register(b);
-        for(int i=0; i < x.size(); i++)
-            x[i] = (T)(i+1);
+        for (int i = 0; i < x.size(); i++)
+            x[i] = (T) (i + 1);
     }
 
     void ObjectiveFunction(atl::Variable<T>& f) {
         f = 0.0;
-        for(int i=0; i < x.size(); i++)
-        f += x[i] + (atl::pow(a, 2.0) + atl::pow(b, 3.0)) / a;
+        for (int i = 0; i < x.size(); i++)
+            f += x[i] + (atl::pow(a, 2.0) + atl::pow(b, 3.0)) / a;
     }
 
 
@@ -280,18 +280,50 @@ inline const atl::Variable<double> ad_min_max_test(int nvar, std::vector<atl::Va
  * 
  */
 int main(int argc, char** argv) {
-    
-    atl::tests::auto_diff::Run(std::cout);
 
+    atl::tests::auto_diff::Run(std::cout);
+    exit(0);
+    atl::Variable<double>::tape.Reset();
+    atl::tests::auto_diff::LogTheta2<double> l;
+
+    l.Initialize();
+    std::valarray<std::valarray<double> > eh = l.EstimatedHessian();
+    atl::Variable<double>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
+
+    atl::Variable<double> f;
+    l.ObjectiveFunction(f);
+    atl::Variable<double>::tape.AccumulateSecondOrder();
+    std::cout << std::fixed;
+    std::cout << "\n";
+    std::cout << "\n";
+    const std::vector<atl::Variable<double>*>& p = l.GetActiveParameters();
+    for (int i = 0; i < p.size(); i++) {
+        for (int j = 0; j < p.size(); j++) {
+            std::cout << atl::Variable<double>::tape.Value(p[i]->info->id, p[j]->info->id) << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+    std::cout << "\n";
+
+    for (int i = 0; i < p.size(); i++) {
+        for (int j = 0; j < p.size(); j++) {
+            std::cout << eh[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+
+    exit(0);
+    //(std::cout);
     //    atl::Variable<std::complex<double> > a(std::complex<double>(12.0));
     //    atl::Variable<std::complex<double> > b(std::complex<double>(12.0));
     //    b.info->value.imag(1e-20);
     //    std::cout<<a<<", "<<b<<"\n";
     //    std::complex<double> dx = (atl::max(a, b)).EvaluateDerivative(a.info->id) / 1e-20;
     //    std::cout<<dx;
-        exit(0);
+    exit(0);
     atl::Variable<double>::tape.derivative_trace_level = atl::THIRD_ORDER_REVERSE;
-    atl::Variable<double> f;
+    //    atl::Variable<double> f;
     atl::Variable<double>::tape.recording = true;
     mytest<double> test(std::cout);
     //        std::cout<<std::fixed;
