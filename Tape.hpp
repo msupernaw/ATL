@@ -24,8 +24,8 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
-
-
+#include <cfloat>
+#include <cmath>
 
 
 namespace atl {
@@ -275,7 +275,7 @@ namespace atl {
          */
         Tape(size_t size = 10000000) {
             stack.reserve(size);
-            std::cout << "Capacity = " << stack.capacity() << "\n";
+//            std::cout << "Capacity = " << stack.capacity() << "\n";
         }
 
         ~Tape() {
@@ -549,7 +549,7 @@ namespace atl {
 
 
 
-                            if (FP_ZERO != fpclassify(entry)) {//h[j][k] needs to be updated
+                            if (FP_ZERO != std::fpclassify(entry)) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
                                 gh[j * ID_LIST_SIZE + k] = true;
                                 gh[k * ID_LIST_SIZE + j] = true;
@@ -579,7 +579,7 @@ namespace atl {
                             }
 
 
-                            if (FP_ZERO != fpclassify(entry)) {//h[j][k] needs to be updated
+                            if (FP_ZERO != std::fpclassify(entry)) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
                                 gh[j * ID_LIST_SIZE + k] = true;
                                 gh[k * ID_LIST_SIZE + j] = true;
