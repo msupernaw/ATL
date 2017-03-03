@@ -111,7 +111,7 @@ namespace atl {
         rows(rows), columns(columns) {
             data_m.resize(rows * columns);
             for (int i = 0; i < data_m.size(); i++) {
-                data_m[i] = atl::Variable<T>(initial_value);
+                data_m[i].info->value = initial_value;//std::make_shared<VariableInfo<T> >(initial_value);//atl::Variable<T>(initial_value);
             }
         }
 
@@ -451,6 +451,7 @@ namespace atl {
                         temp, index_start, start, end, exp)), wv);
 
             }
+            
             atl::thread_pool_g.Wait(wv);
 
             for (int i = 0; i < data_m.size(); i++) {
