@@ -281,6 +281,21 @@ inline const atl::Variable<double> ad_min_max_test(int nvar, std::vector<atl::Va
  */
 int main(int argc, char** argv) {
 
+//    atl::Variable<double>::tape.recording = false;
+//    atl::VariableMatrix<double> a(500, 500);
+//    a = .01233;
+//    atl::VariableMatrix<double> b(500, 500);
+//    b = 2.0;
+//
+//    std::cout<<a(0,0).info->id<<" "<<a(0,1).info->id<<"\n";
+//    
+//    atl::VariableMatrix<double> c;
+//    atl::Variable<double>::tape.recording = true;
+//    std::cout << "Starting assign concurrent\n";
+//    c.AssignConcurrent(atl::pow(a, b)*(a + b));
+//
+//    
+
     atl::tests::auto_diff::Run(std::cout);
     exit(0);
     atl::Variable<double>::tape.Reset();

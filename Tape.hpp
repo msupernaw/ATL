@@ -275,7 +275,7 @@ namespace atl {
          */
         Tape(size_t size = 10000000) {
             stack.reserve(size);
-//            std::cout << "Capacity = " << stack.capacity() << "\n";
+            //            std::cout << "Capacity = " << stack.capacity() << "\n";
         }
 
         ~Tape() {
@@ -589,11 +589,11 @@ namespace atl {
                     }
 
                     if (i > 0) {
-                        if (current_entry.is_nl && stack[i - 1].is_nl) {
+                        if (current_entry.is_nl) {
                             for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
                                 bool p = false;
                                 for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
-                                    if (gh[ii * ID_LIST_SIZE + jj]) {
+                                    if (std::fpclassify(vij[jj]) != gh[ii * ID_LIST_SIZE + jj]) {
                                         stack[i - 1].Push(current_entry.id_list[jj]);
                                     }
                                 }
@@ -606,355 +606,364 @@ namespace atl {
             }
 
         }
-    
 
-    void AccumulateThirdOrder() {
+        void AccumulateThirdOrder() {
 
-        if (recording) {
-            this->first_order_derivatives.clear();
-            this->second_order_derivatives.clear();
-            this->third_order_derivatives.clear();
+            if (recording) {
+                this->first_order_derivatives.clear();
+                this->second_order_derivatives.clear();
+                this->third_order_derivatives.clear();
 
-            REAL_T w;
+                REAL_T w;
 
-            //initialize w
-            this->Reference(stack[stack_current - 1].w->id) = static_cast<REAL_T> (1.0);
-            unsigned rows = 0; //the size of the local derivatives, anything higher was pushed from previous calculation
+                //initialize w
+                this->Reference(stack[stack_current - 1].w->id) = static_cast<REAL_T> (1.0);
+                unsigned rows = 0; //the size of the local derivatives, anything higher was pushed from previous calculation
 
-            std::vector<REAL_T> vij; //holds current second order derivative for i wrt j
-            std::vector<REAL_T> viij_;
-            std::vector<REAL_T> vijk_;
-
-
-            REAL_T hii = 0.0;
-            REAL_T diii = 0.0;
-            //                REAL_T dijk = 0.0;
-            //                REAL_T diil = 0.0;
-            REAL_T dj = 0.0;
-            REAL_T dk = 0.0;
-            REAL_T dl = 0.0;
-            REAL_T pjl = 0.0;
-            REAL_T pkl = 0.0;
-            REAL_T entry_3 = 0;
-            REAL_T d3 = 0.0;
-            REAL_T hij = 0.0;
-            REAL_T pjk = 0.0;
+                std::vector<REAL_T> vij; //holds current second order derivative for i wrt j
+                std::vector<REAL_T> viij_;
+                std::vector<REAL_T> vijk_;
 
 
-            for (int i = (stack_current - 1); i >= 0; i--) {
-                atl::StackEntry<REAL_T>& current_entry = this->stack[i];
-                VariableInfoPtr vi = current_entry.w; //variable info for i
-                REAL_T& W = this->Reference(vi->id);
-                w = W;
-                W = 0.0;
-
-                rows = current_entry.first.size();
-
-                hii = 0.0;
-
-                //get h[i][i]
-                hii = Value(vi->id, vi->id);
-
-                if (hii != 0.0) {
-                    Reference(vi->id, vi->id) = 0.0;
-                }
+                REAL_T hii = 0.0;
+                REAL_T diii = 0.0;
+                //                REAL_T dijk = 0.0;
+                //                REAL_T diil = 0.0;
+                REAL_T dj = 0.0;
+                REAL_T dk = 0.0;
+                REAL_T dl = 0.0;
+                REAL_T pjl = 0.0;
+                REAL_T pkl = 0.0;
+                REAL_T entry_3 = 0;
+                REAL_T d3 = 0.0;
+                REAL_T hij = 0.0;
+                REAL_T pjk = 0.0;
 
 
-                diii = 0.0;
-                diii = Value(vi->id, vi->id, vi->id);
+                for (int i = (stack_current - 1); i >= 0; i--) {
+                    atl::StackEntry<REAL_T>& current_entry = this->stack[i];
+                    VariableInfoPtr vi = current_entry.w; //variable info for i
+                    REAL_T& W = this->Reference(vi->id);
+                    w = W;
+                    W = 0.0;
 
-                if (diii != 0.0) {
-                    Reference(vi->id, vi->id, vi->id) = 0.0;
-                }
+                    rows = current_entry.first.size();
 
+                    hii = 0.0;
 
-                //prepare for the third-order calculation. 
-                //builds a list of variables to use, statement level variables come first,
-                current_entry.Prepare();
+                    //get h[i][i]
+                    hii = Value(vi->id, vi->id);
 
-                size_t ID_LIST_SIZE = current_entry.id_list.size();
-                std::vector<bool> gh(ID_LIST_SIZE*ID_LIST_SIZE, false);
-
-                vij.resize(ID_LIST_SIZE);
-                viij_.resize(ID_LIST_SIZE);
-                vijk_.resize(ID_LIST_SIZE * ID_LIST_SIZE);
-
-
-                //compute gradient
-                if (w != REAL_T(0.0)) {
-                    for (unsigned j = 0; j < rows; j++) {
-                        this->Reference(current_entry.id_list[j]->id) += w * current_entry.first[j];
-                    }
-                }
-                VariableInfoPtr vk;
-                VariableInfoPtr vj;
-                VariableInfoPtr vl;
-                //prepare higher order stuff
-
-                for (unsigned j = 0; j < ID_LIST_SIZE; j++) {
-
-                    vj = current_entry.id_list[j];
-
-                    //load second order partial derivative for i wrt j and k
-                    vij[j] = 0.0;
-                    vij[j] = Value(vi->id, vj->id);
-
-                    if (std::fabs(vij[j]) > 0.0) {
-                        Reference(vi->id, vj->id) = static_cast<REAL_T> (0.0);
-                    }
-
-                    viij_[j] = 0.0;
-                    viij_[j] = Value(vi->id, vi->id, vj->id);
-
-                    if (std::fabs(viij_[j]) > 0.0) {
-                        Reference(vi->id, vi->id, vj->id) = static_cast<REAL_T> (0.0);
+                    if (hii != 0.0) {
+                        Reference(vi->id, vi->id) = 0.0;
                     }
 
 
-#pragma unroll
-                    for (unsigned k = j; k < ID_LIST_SIZE; k++) {
-                        vk = current_entry.id_list[k];
+                    diii = 0.0;
+                    diii = Value(vi->id, vi->id, vi->id);
+
+                    if (diii != 0.0) {
+                        Reference(vi->id, vi->id, vi->id) = 0.0;
+                    }
 
 
+                    //prepare for the third-order calculation. 
+                    //builds a list of variables to use, statement level variables come first,
+                    current_entry.Prepare();
 
-                        vijk_[(j * ID_LIST_SIZE) + k] = 0.0;
-                        vijk_[(j * ID_LIST_SIZE) + k] = Value(vi->id, vj->id, vk->id);
+                    size_t ID_LIST_SIZE = current_entry.id_list.size();
+                    std::vector<bool> gh(ID_LIST_SIZE*ID_LIST_SIZE, false);
+                    std::vector<bool> ghh(ID_LIST_SIZE * ID_LIST_SIZE*ID_LIST_SIZE, false);
+                    vij.resize(ID_LIST_SIZE);
+                    viij_.resize(ID_LIST_SIZE);
+                    vijk_.resize(ID_LIST_SIZE * ID_LIST_SIZE);
 
-                        if (vijk_[(j * ID_LIST_SIZE) + k] != 0.0) {
-                            Reference(vi->id, vj->id, vk->id) = static_cast<REAL_T> (0.0);
+
+                    //compute gradient
+                    if (w != REAL_T(0.0)) {
+                        for (unsigned j = 0; j < rows; j++) {
+                            this->Reference(current_entry.id_list[j]->id) += w * current_entry.first[j];
+                        }
+                    }
+                    VariableInfoPtr vk;
+                    VariableInfoPtr vj;
+                    VariableInfoPtr vl;
+                    //prepare higher order stuff
+
+                    for (unsigned j = 0; j < ID_LIST_SIZE; j++) {
+
+                        vj = current_entry.id_list[j];
+
+                        //load second order partial derivative for i wrt j and k
+                        vij[j] = 0.0;
+                        vij[j] = Value(vi->id, vj->id);
+
+                        if (std::fabs(vij[j]) > 0.0) {
+                            Reference(vi->id, vj->id) = static_cast<REAL_T> (0.0);
                         }
 
-                        vijk_[(k * ID_LIST_SIZE) + j] = vijk_[(j * ID_LIST_SIZE) + k]; // dijk;
+                        viij_[j] = 0.0;
+                        viij_[j] = Value(vi->id, vi->id, vj->id);
+
+                        if (std::fabs(viij_[j]) > 0.0) {
+                            Reference(vi->id, vi->id, vj->id) = static_cast<REAL_T> (0.0);
+                        }
+
+
+#pragma unroll
+                        for (unsigned k = j; k < ID_LIST_SIZE; k++) {
+                            vk = current_entry.id_list[k];
+
+
+
+                            vijk_[(j * ID_LIST_SIZE) + k] = 0.0;
+                            vijk_[(j * ID_LIST_SIZE) + k] = Value(vi->id, vj->id, vk->id);
+
+                            if (vijk_[(j * ID_LIST_SIZE) + k] != 0.0) {
+                                Reference(vi->id, vj->id, vk->id) = static_cast<REAL_T> (0.0);
+                            }
+
+                            vijk_[(k * ID_LIST_SIZE) + j] = vijk_[(j * ID_LIST_SIZE) + k]; // dijk;
+                        }
                     }
-                }
 
 
 
-                REAL_T entry;
-                REAL_T hdk;
-                REAL_T hdj;
+                    REAL_T entry;
+                    REAL_T hdk;
+                    REAL_T hdj;
 
-                for (int j = 0; j < rows; j++) {
-                    vj = current_entry.id_list[j];
-                    dj = current_entry.first[j];
+                    for (int j = 0; j < rows; j++) {
+                        vj = current_entry.id_list[j];
+                        dj = current_entry.first[j];
 
-                    if (j == 0) {
+                        if (j == 0) {
 #pragma unroll
-                        for (int k = 0; k < rows; k++) {
-                            hdj = 0;
-                            hdj = current_entry.first[k];
-                            VariableInfoPtr vk = current_entry.id_list[k];
+                            for (int k = 0; k < rows; k++) {
+                                hdj = 0;
+                                hdj = current_entry.first[k];
+                                VariableInfoPtr vk = current_entry.id_list[k];
 #pragma unroll
 
+                                for (int l = k; l < rows; l++) {
+
+                                    vl = current_entry.id_list[l];
+                                    hdk = 0;
+
+                                    entry = 0.0; //the entry value for h[j][k]
+
+                                    hdk = current_entry.first[l];
+
+
+                                    entry += vij[l] * hdj + (vij[k] * hdk) + hii * hdj*hdk;
+
+
+                                    entry += w * current_entry.second[k * rows + l];
+
+
+                                    if (entry != entry) {
+                                        std::cout << "Derivative signaling NaN\n";
+                                    }
+                                    if (/*std::fabs(entry)*/entry != REAL_T(0.0)) {//h[j][k] needs to be updated
+                                        this->Reference(vk->id, vl->id) += entry;
+                                        gh[l * ID_LIST_SIZE + k] = true;
+                                        gh[k * ID_LIST_SIZE + l] = true;
+
+                                    }
+                                }
+
+                                for (int l = rows; l < ID_LIST_SIZE; l++) {
+
+                                    vl = current_entry.id_list[l];
+
+                                    hdk = 0;
+
+                                    entry = 0.0; //the entry value for h[j][k]
+
+                                    entry += vij[l] * hdj; // + (vij[k] * hdk) + hii * hdj*hdk;
+
+                                    if (entry_3 != entry_3) {
+                                        std::cout << "Derivative signaling NaN\n";
+                                    }
+                                    if (entry != REAL_T(0.0)) {//h[j][k] needs to be updated
+                                        Reference(vk->id, vl->id) += entry;
+                                        gh[l * ID_LIST_SIZE + k] = true;
+                                        gh[k * ID_LIST_SIZE + l] = true;
+
+
+                                    }
+                                }
+                            }
+                        }
+
+#pragma unroll
+                        for (int k = j; k < rows; k++) {
+                            vk = current_entry.id_list[k];
+
+                            dk = current_entry.first[k];
+                            pjk = current_entry.second[j * rows + k];
+                            int ind = (j * rows * rows) + (k * rows);
                             for (int l = k; l < rows; l++) {
 
                                 vl = current_entry.id_list[l];
-                                hdk = 0;
+                                entry_3 = 0.0;
 
-                                entry = 0.0; //the entry value for h[j][k]
+                                dl = current_entry.first[l];
+                                pjl = current_entry.second[j * rows + l];
+                                pkl = current_entry.second[k * rows + l];
 
-                                hdk = current_entry.first[l];
+                                d3 = current_entry.third[ind + l];
+
+                                entry_3 += (d3 * w)
+                                        +(pjl * vij[k])
+                                        + (dk * pjl * hii)
+                                        + (dl * vijk_[(j * ID_LIST_SIZE + k)])
+                                        + (pkl * vij[j])
+                                        + (dk * dl * viij_[j])
+                                        + (pjk * dl * hii);
 
 
-                                entry += vij[l] * hdj + (vij[k] * hdk) + hii * hdj*hdk;
+                                entry_3 += (pjk * vij[l])
+                                        + (dk * vijk_[(j * ID_LIST_SIZE + l)]);
 
 
-                                entry += w * current_entry.second[k * rows + l];
+                                entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (pkl * hii)+(dl * viij_[k]) + (dk * viij_[l])
+                                        +(dk * dl * diii));
 
-
-                                if (entry != entry) {
-                                    std::cout << "Derivative signaling NaN\n";
+                                if (entry_3 != 0.0) {
+                                    Reference(vj->id, vk->id, vl->id) += entry_3;
+                                    ghh[j * ID_LIST_SIZE * ID_LIST_SIZE + k * ID_LIST_SIZE + j] = true;
                                 }
-                                if (/*std::fabs(entry)*/entry != REAL_T(0.0)) {//h[j][k] needs to be updated
-                                    this->Reference(vk->id, vl->id) += entry;
-                                    gh[l * ID_LIST_SIZE + k] = true;
-                                    gh[k * ID_LIST_SIZE + l] = true;
 
-                                }
                             }
 
                             for (int l = rows; l < ID_LIST_SIZE; l++) {
 
                                 vl = current_entry.id_list[l];
+                                entry_3 = 0;
 
-                                hdk = 0;
-
-                                entry = 0.0; //the entry value for h[j][k]
-
-                                entry += vij[l] * hdj; // + (vij[k] * hdk) + hii * hdj*hdk;
-
-                                if (entry_3 != entry_3) {
-                                    std::cout << "Derivative signaling NaN\n";
-                                }
-                                if (entry != REAL_T(0.0)) {//h[j][k] needs to be updated
-                                    Reference(vk->id, vl->id) += entry;
-                                    gh[l * ID_LIST_SIZE + k] = true;
-                                    gh[k * ID_LIST_SIZE + l] = true;
+                                dl = 0.0;
+                                pjl = 0.0;
+                                pkl = 0.0;
 
 
-                                }
-                            }
-                        }
-                    }
-
-#pragma unroll
-                    for (int k = j; k < rows; k++) {
-                        vk = current_entry.id_list[k];
-
-                        dk = current_entry.first[k];
-                        pjk = current_entry.second[j * rows + k];
-                        int ind = (j * rows * rows) + (k * rows);
-                        for (int l = k; l < rows; l++) {
-
-                            vl = current_entry.id_list[l];
-                            entry_3 = 0.0;
-
-                            dl = current_entry.first[l];
-                            pjl = current_entry.second[j * rows + l];
-                            pkl = current_entry.second[k * rows + l];
-
-                            d3 = current_entry.third[ind + l];
-
-                            entry_3 += (d3 * w)
-                                    +(pjl * vij[k])
-                                    + (dk * pjl * hii)
-                                    + (dl * vijk_[(j * ID_LIST_SIZE + k)])
-                                    + (pkl * vij[j])
-                                    + (dk * dl * viij_[j])
-                                    + (pjk * dl * hii);
+                                entry_3 += (pjk * vij[l])
+                                        + (dk * vijk_[(j * ID_LIST_SIZE + l)]);
 
 
-                            entry_3 += (pjk * vij[l])
-                                    + (dk * vijk_[(j * ID_LIST_SIZE + l)]);
-
-
-                            entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (pkl * hii)+(dl * viij_[k]) + (dk * viij_[l])
-                                    +(dk * dl * diii));
-
-                            if (entry_3 != 0.0) {
-                                Reference(vj->id, vk->id, vl->id) += entry_3;
-                            }
-
-                        }
-
-                        for (int l = rows; l < ID_LIST_SIZE; l++) {
-
-                            vl = current_entry.id_list[l];
-                            entry_3 = 0;
-
-                            dl = 0.0;
-                            pjl = 0.0;
-                            pkl = 0.0;
-
-
-                            entry_3 += (pjk * vij[l])
-                                    + (dk * vijk_[(j * ID_LIST_SIZE + l)]);
-
-
-                            entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (dk * viij_[l]));
-
-                            if (entry_3 != entry_3) {
-                                std::cout << "Derivative signaling NaN\n";
-                            }
-                            if (entry_3 != 0.0) {
-                                Reference(vj->id, vk->id, vl->id) += entry_3;
-                            }
-
-                        }
-                    }
-
-                    if (dj != 0.0) {
-#pragma unroll
-                        for (int k = rows; k < ID_LIST_SIZE; k++) {
-                            VariableInfoPtr vk = current_entry.id_list[k];
-#pragma unroll
-                            for (int l = k; l < ID_LIST_SIZE; l++) {
-
-                                VariableInfoPtr vl = current_entry.id_list[l];
-                                entry_3 = dj * (vijk_[(k * ID_LIST_SIZE + l)]);
+                                entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (dk * viij_[l]));
 
                                 if (entry_3 != entry_3) {
                                     std::cout << "Derivative signaling NaN\n";
                                 }
                                 if (entry_3 != 0.0) {
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
+                                    ghh[j * ID_LIST_SIZE * ID_LIST_SIZE + k * ID_LIST_SIZE + j] = true;
+
                                 }
 
                             }
                         }
-                    }
-                }
 
+                        if (dj != 0.0) {
+#pragma unroll
+                            for (int k = rows; k < ID_LIST_SIZE; k++) {
+                                VariableInfoPtr vk = current_entry.id_list[k];
+#pragma unroll
+                                for (int l = k; l < ID_LIST_SIZE; l++) {
 
+                                    VariableInfoPtr vl = current_entry.id_list[l];
+                                    entry_3 = dj * (vijk_[(k * ID_LIST_SIZE + l)]);
 
-                if (i > 0) {
-                    if (current_entry.is_nl && stack[i - 1].is_nl) {
-                        for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
-                            for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
-                                if (gh[ii * ID_LIST_SIZE + jj]) {
-                                    stack[i - 1].Push(current_entry.id_list[jj]);
+                                    if (entry_3 != entry_3) {
+                                        std::cout << "Derivative signaling NaN\n";
+                                    }
+                                    if (entry_3 != 0.0) {
+                                        Reference(vj->id, vk->id, vl->id) += entry_3;
+                                        ghh[j * ID_LIST_SIZE * ID_LIST_SIZE + k * ID_LIST_SIZE + j] = true;
+
+                                    }
+
                                 }
                             }
                         }
                     }
 
+
+
+                    if (i > 0) {
+                        if (current_entry.is_nl && stack[i - 1].is_nl) {
+                            for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
+                                for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
+                                    if (std::fpclassify(vij[jj]) != gh[ii * ID_LIST_SIZE + jj]) {
+                                        stack[i - 1].Push(current_entry.id_list[jj]);
+                                    }
+                                    for (int kk = jj; kk < ID_LIST_SIZE; kk++) {
+                                        if (std::fpclassify(viij_[kk]) != gh[ii * ID_LIST_SIZE * ID_LIST_SIZE + jj* ID_LIST_SIZE +kk]) {
+                                            stack[i - 1].Push(current_entry.id_list[kk]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
                 }
+
+
             }
 
+        }
+
+        void Reset(bool empty_trash = true) {
+            this->first_order_derivatives.clear();
+            this->second_order_derivatives.clear();
+            this->third_order_derivatives.clear();
+
+            for (int i = 0; i < this->stack_current; i++) {
+                stack[i].Reset();
+            }
+
+            if (empty_trash) {
+                //                                                atl::VariableInfo< REAL_T>::FreeAll();
+            }
+
+            this->stack_current = 0;
 
         }
 
-    }
-
-    void Reset(bool empty_trash = true) {
-        this->first_order_derivatives.clear();
-        this->second_order_derivatives.clear();
-        this->third_order_derivatives.clear();
-
-        for (int i = 0; i < this->stack_current; i++) {
-            stack[i].Reset();
-        }
-
-        if (empty_trash) {
-            //                                                atl::VariableInfo< REAL_T>::FreeAll();
-        }
-
-        this->stack_current = 0;
-
-    }
-
-    void DumpDerivatives() {
+        void DumpDerivatives() {
 
 
-        first_order_iterator ft;
-        second_order_iterator st;
-        third_order_iterator tt;
+            first_order_iterator ft;
+            second_order_iterator st;
+            third_order_iterator tt;
 
-        std::cout << "first:\n";
-        for (ft = this->first_order_derivatives.begin();
-                ft != this->first_order_derivatives.end(); ++ft) {
-
-            std::cout << "[" << (*ft).first << "," << (*ft).second << "] ";
-
-        }
-        std::cout << "\n\nSecond:\n";
-
-        for (st = this->second_order_derivatives.begin(); st != this->second_order_derivatives.end(); ++st) {
-
-            for (ft = (*st).second.begin(); ft != (*st).second.end(); ++ft) {
+            std::cout << "first:\n";
+            for (ft = this->first_order_derivatives.begin();
+                    ft != this->first_order_derivatives.end(); ++ft) {
 
                 std::cout << "[" << (*ft).first << "," << (*ft).second << "] ";
 
             }
-            std::cout << "\n\n";
+            std::cout << "\n\nSecond:\n";
+
+            for (st = this->second_order_derivatives.begin(); st != this->second_order_derivatives.end(); ++st) {
+
+                for (ft = (*st).second.begin(); ft != (*st).second.end(); ++ft) {
+
+                    std::cout << "[" << (*ft).first << "," << (*ft).second << "] ";
+
+                }
+                std::cout << "\n\n";
+
+            }
 
         }
 
-    }
 
 
-
-};
+    };
 
 
 }

@@ -135,6 +135,7 @@ namespace atl {
         uint32_t id;
         REAL_T value;
         bool is_nl;
+        long index = -999;
 
         /**
          * Constructor 

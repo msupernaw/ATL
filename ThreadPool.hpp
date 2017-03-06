@@ -158,7 +158,7 @@ namespace atl {
 #ifndef NOAA_TP_WINDOWS
 
             sched_param sch;
-            sch.sched_priority = 50;
+            sch.sched_priority = 70;
             for (int i = 0; i < threads_.size(); i++) {
                 pthread_setschedparam(threads_[i].native_handle(), SCHED_FIFO, &sch);
             }

@@ -47,7 +47,10 @@
 #  define ATL_WINDOWS
 #endif
 
-
+#if defined(ATL_LINUX)
+#include <malloc.h>
+#endif
+    
 namespace atl{
     
     template <int alignment =16> void* AllocateAligned (std::size_t size);
