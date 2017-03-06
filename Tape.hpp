@@ -109,9 +109,9 @@ namespace atl {
             exp = "";
             w.reset(); // = NULL;
             is_nl = false;
-            first.clear();
-            second.clear();
-            third.clear();
+            first.resize(0);
+            second.resize(0);
+            third.resize(0);
             ids.clear();
             pushed_ids.clear();
             id_list.clear();
@@ -892,14 +892,14 @@ namespace atl {
 
 
                     if (i > 0) {
-                        if (current_entry.is_nl && stack[i - 1].is_nl) {
+                        if (current_entry.is_nl) {
                             for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
                                 for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
                                     if (std::fpclassify(vij[jj]) != gh[ii * ID_LIST_SIZE + jj]) {
                                         stack[i - 1].Push(current_entry.id_list[jj]);
                                     }
                                     for (int kk = jj; kk < ID_LIST_SIZE; kk++) {
-                                        if (std::fpclassify(viij_[kk]) != gh[ii * ID_LIST_SIZE * ID_LIST_SIZE + jj* ID_LIST_SIZE +kk]) {
+                                        if (std::fpclassify(viij_[kk]) != ghh[ii * ID_LIST_SIZE * ID_LIST_SIZE + jj* ID_LIST_SIZE +kk]) {
                                             stack[i - 1].Push(current_entry.id_list[kk]);
                                         }
                                     }
