@@ -17,7 +17,8 @@
 #include "Expression.hpp"
 #include "Tape.hpp"
 #include "Variable.hpp"
-#include "ATL.hpp"
+#include "Real.hpp"
+//#include "ATL.hpp"
 #include "ThreadPool.hpp"
 #include "CLFAllocator.hpp"
 namespace atl {
@@ -451,7 +452,7 @@ namespace atl {
                         temp, index_start, start, end, exp)), wv);
 
             }
-            
+
             atl::thread_pool_g.Wait(wv);
 
             for (int i = 0; i < data_m.size(); i++) {
@@ -523,7 +524,7 @@ namespace atl {
 
         const std::string ToExpressionTemplateString() const {
             std::stringstream ss;
-            ss << "atl::Matrix<T>";
+            ss << "atl::VariableMatrix<T>";
             return ss.str();
         }
 
@@ -542,6 +543,258 @@ namespace atl {
         return out;
     }
 
+    template<typename T>
+    struct RealMatrix : atl::ExpressionBase<T, RealMatrix<T> > {
+        size_t rows;
+        size_t columns;
+
+        std::vector<T, atl::clfallocator<T > > data_m;
+
+        /**
+         * Constructor.
+         * 
+         * @param rows
+         * @param columns
+         * @param initial_value
+         */
+        RealMatrix(size_t rows = 0, size_t columns = 1, T initial_value = static_cast<T> (0.0)) :
+        rows(rows), columns(columns) {
+            data_m.resize(rows * columns);
+            for (int i = 0; i < data_m.size(); i++) {
+                data_m[i] = initial_value;
+            }
+        }
+        
+        template<class A>
+        RealMatrix(const ExpressionBase<T, A>& exp) {
+
+            this->columns = exp.GetColumns();
+            this->rows = exp.GetRows();
+            data_m.resize(columns * rows);
+
+            size_t k = 0;
+            for (size_t i = 0; i < this->rows; i++) {
+                for (size_t j = 0; j < this->columns; j++) {
+                    data_m[i * columns + j] = exp.GetValue(i, j);
+                }
+            }
+        }
+
+        /**
+         * Assignment operator. Sets all entries to 
+         * value. 
+         * @param value
+         * @return 
+         */
+        inline RealMatrix& operator=(const T& value) {
+            for (int i = 0; i < data_m.size(); i++) {
+                data_m[i] = value;
+            }
+            return *this;
+        }
+
+        /**
+         * Assignment operator for expression template types.
+         * 
+         * @param exp
+         * @return 
+         */
+        template<class A>
+        inline RealMatrix& operator=(const ExpressionBase<T, A>& exp) {
+
+            this->columns = exp.GetColumns();
+            this->rows = exp.GetRows();
+            std::vector<T > temp(this->rows * this->columns);
+            data_m.resize(columns * rows);
+
+            size_t k = 0;
+            for (size_t i = 0; i < this->rows; i++) {
+                for (size_t j = 0; j < this->columns; j++) {
+                    temp[i * columns + j] = exp.GetValue(i, j);
+                }
+            }
+
+            //in case there is aliasing
+            for (int i = 0; i < data_m.size(); i++) {
+                data_m[i] = temp[i];
+            }
+
+            return *this;
+        }
+
+        /**
+         * Assignment function for concurrent assignment. This function 
+         * guarantees proper tape recording by reserving a block of entries from
+         * the \ref Tape and allocating among threads accordingly. Each thread 
+         * receives a reference to exp and its range of \ref Tape entries.
+         * 
+         * @param exp
+         * @return 
+         */
+        template<class A>
+        inline RealMatrix& AssignConcurrent(const ExpressionBase<T, A>& exp) {
+            throw std::invalid_argument("not yet implemented.");
+            return *this;
+        }
+
+        /**
+         * Push variable info into a set for index {0,0}..
+         *  
+         * @param ids
+         */
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        }
+
+        /**
+         * Push variable info into a set at index {i,j}.
+         *  
+         * @param ids
+         */
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        }
+
+        /**
+         * 
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline T& operator()(size_t i, size_t j = 0) {
+            return this->data_m[i * columns + j];
+        }
+
+        /**
+         * 
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline const T& operator()(size_t i, size_t j = 0) const {
+            return this->data_m[i * columns + j];
+        }
+
+        /**
+         * throws std::invalid_argument
+         * @return 
+         */
+        inline const T GetValue() const {
+            throw std::invalid_argument("GetValue() called on matrix template.");
+            return this->data_m[0].GetValue();
+        }
+
+        /**
+         * Returns the real value at index {i,j}. 
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline const T GetValue(size_t i, size_t j = 0) const {
+            return this->data_m[i * columns + j];
+        }
+
+        /**
+         * Returns false.
+         * 
+         * @return 
+         */
+        inline bool IsNonlinear() const {
+            return false;
+        }
+
+        /**
+         * throws std::invalid_argument
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x) const {
+            throw std::invalid_argument("EvaluateDerivative(uint32_t x) called on matrix template.");
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * throws std::invalid_argument
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            throw std::invalid_argument("EvaluateDerivative(uint32_t x,uint32_t y) called on matrix template.");
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * throws std::invalid_argument
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            throw std::invalid_argument("EvaluateDerivative(uint32_t x, uint32_t y,uint32_t z) called on matrix template.");
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * Evaluates the first-order derivative at index {i,j}.
+         * 
+         * Returns 1 if index {i,j} is equal to x, else it returns 0.
+         * 
+         * @param x
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * Returns 0.
+         * 
+         * @param x
+         * @param x
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * Returns 0.
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+            return static_cast<T> (0.0);
+        }
+
+        /**
+         * Returns the number of columns.
+         * 
+         * @return 
+         */
+        size_t GetColumns() const {
+            return columns;
+        }
+
+        /**
+         * Returns the number of rows.
+         * 
+         * @return 
+         */
+        size_t GetRows() const {
+            return rows;
+        }
+
+        /**
+         * Returns false.
+         */
+        bool IsScalar()const {
+            return false;
+        }
+
+    };
 
 
 }
