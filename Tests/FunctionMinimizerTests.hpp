@@ -227,9 +227,9 @@ namespace atl {
 
                 atl::tests::fmin::Rosenbrock<double> rosenbrock;
                 rosenbrock.Initialize();
-                atl::LBFGS<double> rm;
-                rm.SetObjectiveFunction(&rosenbrock);
-                rm.Run();
+                atl::LBFGS<double> lbfgs;
+                lbfgs.SetObjectiveFunction(&rosenbrock);
+                lbfgs.Run();
                 if (rosenbrock.Check()) {
                     std::cout << "Rosenbrock test passed.\n";
                 } else {
@@ -238,9 +238,8 @@ namespace atl {
 
                 Schaffer<double> shaffer;
                 shaffer.Initialize();
-                atl::LBFGS<double> sm;
-                sm.SetObjectiveFunction(&shaffer);
-                sm.Run();
+                lbfgs.SetObjectiveFunction(&shaffer);
+                lbfgs.Run();
                 if (shaffer.Check()) {
                     std::cout << "Shaefer test passed.\n";
                 } else {
@@ -249,9 +248,8 @@ namespace atl {
 
                 atl::tests::fmin::McCormick<double> mccormick;
                 mccormick.Initialize();
-                atl::LBFGS<double> mm;
-                mm.SetObjectiveFunction(&mccormick);
-                mm.Run();
+                lbfgs.SetObjectiveFunction(&mccormick);
+                lbfgs.Run();
                 if (mccormick.Check()) {
                     std::cout << "McCormick test passed.\n";
                 } else {
@@ -261,9 +259,8 @@ namespace atl {
 
                 atl::tests::fmin::Easom<double> easom;
                 easom.Initialize();
-                atl::PortMinimizer<double> em;
-                em.SetObjectiveFunction(&easom);
-                em.Run();
+                lbfgs.SetObjectiveFunction(&easom);
+                lbfgs.Run();
                 if (easom.Check()) {
                     std::cout << "Easom test passed.\n";
                 } else {
@@ -272,9 +269,8 @@ namespace atl {
 
                 atl::tests::fmin::Bukin<double> bukin;
                 bukin.Initialize();
-                atl::LBFGS<double> bm;
-                bm.SetObjectiveFunction(&bukin);
-                bm.Run();
+                lbfgs.SetObjectiveFunction(&bukin);
+                lbfgs.Run();
                 if (bukin.Check()) {
                     std::cout << "Bukin test passed.\n";
                 } else {
