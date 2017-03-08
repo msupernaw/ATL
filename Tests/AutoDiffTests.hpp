@@ -368,7 +368,7 @@ namespace atl {
                     out << "Time to estimate Hessian: " << estimated_time.count() << " sec\n";
                     out << "Time to estimate Third-Order: " << estimated_to_time.count() << " sec\n";
                     out << "Gradient Speed up = " << estimatedg_time / exact_gtime << "\n";
-                    out << "Hessain Speed up = " << estimated_time / exact_time << "\n\n";
+                    out << "Hessain Speed up = " << estimated_time / exact_time << "\n";
                     out << "Third-Order Speed up = " << estimated_to_time / exact_to_time << "\n\n";
 
 
@@ -2305,7 +2305,7 @@ namespace atl {
 
             };
 
-            template<class T>
+            template<typename T>
             class EasomAutoDiffTest : public AutoDiffTest<T> {
             public:
                 typedef atl::Variable<T> var;
@@ -2340,6 +2340,7 @@ namespace atl {
 
             };
 
+        
             template<class T>
             class McCormickAutoDiffTest : public AutoDiffTest<T> {
             public:
@@ -2377,13 +2378,13 @@ namespace atl {
             };
 
             template<class T>
-            class SchaeferAutoDiffTest : public AutoDiffTest<T> {
+            class SchafferAutoDiffTest : public AutoDiffTest<T> {
             public:
                 typedef atl::Variable<T> var;
                 var x;
                 var y;
 
-                SchaeferAutoDiffTest(std::ostream& out) {
+                SchafferAutoDiffTest(std::ostream& out) {
                     this->RunTestToFile(out);
                 }
 
@@ -2454,7 +2455,7 @@ namespace atl {
                 atl::tests::auto_diff::BukinAutoDiffTest<real_t> bukin(out);
                 atl::tests::auto_diff::EasomAutoDiffTest<real_t> easom(out);
                 atl::tests::auto_diff::McCormickAutoDiffTest<real_t> mccormick(out);
-                atl::tests::auto_diff::SchaeferAutoDiffTest<real_t> shaefer(out);
+                atl::tests::auto_diff::SchafferAutoDiffTest<real_t> shaefer(out);
                 std::cout << "Test complete.\n";
                 if (atl::tests::auto_diff::fail == 0) {
                     std::cout << "All tests passed."; //, review file \"autodiff_test.txt\" for details." << std::endl;

@@ -282,6 +282,10 @@ namespace atl {
             std::cout << "Destructing tape " << std::endl;
         }
 
+        void SetRecording(bool record) {
+            this->recording = record;
+        }
+
         /**
          * Atomic operation.
          * 
@@ -326,6 +330,10 @@ namespace atl {
             stack_lock.unlock();
 #endif       
             return ret;
+        }
+
+        inline StackEntry<REAL_T>& NextEntry() {
+            return this->stack[this->NextIndex()];
         }
 
         inline REAL_T& Reference(uint32_t i) {
@@ -497,11 +505,11 @@ namespace atl {
                         this->Reference(vi->id, vi->id) = 0.0;
                     }
 
-//                    if (hii != hii) {
-//                        std::cout << "i " << i << " of " << stack_current << "\n NaN" << std::endl;
-//                        exit(0);
-//
-//                    }
+                    //                    if (hii != hii) {
+                    //                        std::cout << "i " << i << " of " << stack_current << "\n NaN" << std::endl;
+                    //                        exit(0);
+                    //
+                    //                    }
 
                     current_entry.Prepare();
 
@@ -899,7 +907,7 @@ namespace atl {
                                         stack[i - 1].Push(current_entry.id_list[jj]);
                                     }
                                     for (int kk = jj; kk < ID_LIST_SIZE; kk++) {
-                                        if (std::fpclassify(viij_[kk]) != ghh[ii * ID_LIST_SIZE * ID_LIST_SIZE + jj* ID_LIST_SIZE +kk]) {
+                                        if (std::fpclassify(viij_[kk]) != ghh[ii * ID_LIST_SIZE * ID_LIST_SIZE + jj * ID_LIST_SIZE + kk]) {
                                             stack[i - 1].Push(current_entry.id_list[kk]);
                                         }
                                     }

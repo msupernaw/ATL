@@ -16,7 +16,9 @@
 
 #include "VariableInfo.hpp"
 #include "Expression.hpp"
-//#include "Traits.hpp"
+#include "Transformations.h"
+#include <vector>
+#include <valarray>
 
 namespace atl {
 
@@ -43,23 +45,47 @@ namespace atl {
 
         VariableInfoPtr info; //(new atl::VariableInfo<REAL_T>());
 
-        Variable(REAL_T v = static_cast<REAL_T> (0.0)) {
+        static LogitParameterTransformation<REAL_T> default_transformation;
+        ParameterTransformation<REAL_T>* transformation;
 
-            info = std::make_shared<VariableInfo<REAL_T> >(v);
+        REAL_T min_boundary_m;
+        REAL_T max_boundary_m;
+        bool bounded_m;
+        std::string name;
+
+        Variable(REAL_T value = static_cast<REAL_T> (0.0),
+                REAL_T min_boundary = std::numeric_limits<REAL_T>::min(),
+                REAL_T max_boundary = std::numeric_limits<REAL_T>::max()) :
+        bounded_m(false),
+        min_boundary_m(min_boundary),
+        max_boundary_m(max_boundary),
+        transformation(&default_transformation) {
+
+            info = std::make_shared<VariableInfo<REAL_T> >(value);
             //            info->value = v;
         }
 
-        Variable(const Variable<REAL_T>& other) {
-//            info = std::make_shared<VariableInfo<REAL_T> >(other.info->value);
-            this->info = other.info;
-            //            info->Aquire();
+        Variable(const Variable<REAL_T>& other) :
+        info(other.info),
+        min_boundary_m(other.min_boundary_m),
+        max_boundary_m(other.max_boundary_m),
+        bounded_m(other.bounded_m),
+        transformation(other.transformation) {
+        }
+
+        template<class A>
+        Variable(const ExpressionBase<REAL_T, A>& exp) :
+        bounded_m(false),
+        min_boundary_m(std::numeric_limits<REAL_T>::min()),
+        max_boundary_m(std::numeric_limits<REAL_T>::max()),
+        transformation(&default_transformation) {
+            info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (0.0));
+            size_t index = atl::Variable<REAL_T>::tape.NextIndex();
+            this->Assign(Variable<REAL_T>::tape, exp, index);
         }
 
         ~Variable() {
-            if (this->info) {
-                //                this->info->value=static_cast<REAL_T>(0.0);
-                //                                info->Release();
-            }
+
         }
 
         Variable& operator=(const REAL_T& v) {
@@ -73,13 +99,7 @@ namespace atl {
             return *this;
         }
 
-        template<class A>
-        Variable(const ExpressionBase<REAL_T, A>& exp) {
-            info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (0.0));
-            size_t index = atl::Variable<REAL_T>::tape.NextIndex();
-            this->Assign(Variable<REAL_T>::tape, exp, index);
 
-        }
 
         //        /**
         //         * Returns a reference to the raw value.
@@ -177,12 +197,12 @@ namespace atl {
         inline Variable& Assign(atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
 
             if (tape.recording) {
-                
-//                this->info = std::make_shared<atl::VariableInfo<REAL_T> >(0.0);
-//                if(this->info->index == -999){
-//                    this->info->index = index;
-//                }
-                
+
+                //                this->info = std::make_shared<atl::VariableInfo<REAL_T> >(0.0);
+                //                if(this->info->index == -999){
+                //                    this->info->index = index;
+                //                }
+
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
                 entry.exp = exp.ToExpressionTemplateString();
@@ -322,6 +342,70 @@ namespace atl {
             return temp;
         }
 
+        /**
+         * Returns the variables name.
+         * 
+         * @return 
+         */
+        std::string GetName() const {
+            return name;
+        }
+
+        /**
+         * Sets the variables name. 
+         * 
+         * @param name
+         */
+        void SetName(std::string name) {
+            this->name = name;
+        }
+
+        /**
+         * Returns the variables transformation functor.
+         * @return 
+         */
+        ParameterTransformation<REAL_T>& GetParameterTransformation() {
+            return this->transformation;
+        }
+
+        /**
+         * Returns the max boundary.
+         * 
+         * @return 
+         */
+        REAL_T GetMaxBoundary() const {
+            return max_boundary_m;
+        }
+
+        /**
+         * Sets the max boundary.
+         * 
+         * @param max_boundary
+         */
+        void SetMaxBoundary(REAL_T max_boundary) {
+            this->max_boundary_m = max_boundary;
+        }
+
+        /**
+         * Returns the min boundary.
+         * 
+         * @return 
+         */
+        REAL_T GetMinBoundary() const {
+            return min_boundary_m;
+        }
+
+        /**
+         * Sets the min boundary.
+         */
+        void SetMinBoundary(REAL_T min_boundary) {
+            this->min_boundary_m = min_boundary;
+        }
+
+        bool IsBounded() const {
+            return this->bounded_m;
+        }
+
         inline void SetValue(const REAL_T& val) {
             this->info->value = val;
         }
@@ -332,6 +416,47 @@ namespace atl {
 
         inline const REAL_T GetValue(size_t i, size_t j = 0) const {
             return info->value;
+        }
+
+        /**
+         * Returns the internal value from the variables transformation.
+         */
+        inline const REAL_T GetInternalValue() const {
+            if (this->IsBounded()) {
+                return this->transformation->External2Internal(this->GetValue(), this->GetMinBoundary(), this->GetMaxBoundary());
+            } else {
+                return this->GetValue();
+            }
+        }
+
+        /**
+         * Returns the scaled gradient value from the variables transformation.
+         * @param x
+         * @return 
+         */
+        REAL_T GetScaledGradient(REAL_T x) {
+            if (bounded_m) {
+                return this->transformation->DerivativeInternal2External(x, min_boundary_m, max_boundary_m);
+            } else {
+                return 1.0;
+            }
+        }
+
+        /**
+         * If this variable is bounded, the value of
+         * v will be transformed from internal to external
+         * representation and set to the value of this
+         * variable. See class ParameterTransformation
+         * @param v
+         */
+        inline void UpdateValue(REAL_T v) {
+
+            if (this->IsBounded()) {
+                this->SetValue(this->transformation->Internal2External(v, this->GetMinBoundary(), this->GetMaxBoundary()));
+
+            } else {
+                this->SetValue(v);
+            }
         }
 
         /**
@@ -407,11 +532,158 @@ namespace atl {
             return ss.str();
         }
 
+        static void SetRecording(bool recording) {
+            atl::Variable<REAL_T>::tape.recording = recording;
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient 
+         * into a std::vector. 
+         * 
+         * @param gs
+         * @param variables
+         * @param gradient
+         */
+        static void ComputeGradient(Tape<REAL_T>& gs, std::vector<atl::Variable<REAL_T>* >& variables, std::vector<REAL_T>& gradient) {
+            gs.AccumulateFirstOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id);
+            }
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient 
+         * into a std::valarray. 
+         * 
+         * @param gs
+         * @param variables
+         * @param gradient
+         */
+        static void ComputeGradient(Tape<REAL_T>& gs, std::vector<atl::Variable<REAL_T>* >& variables, std::valarray<REAL_T>& gradient) {
+            gs.AccumulateFirstOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id);
+            }
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient 
+         * and second order derivatives into std::vector's.  
+         * @param gs
+         * @param variables
+         * @param gradient
+         * @param hessian
+         */
+        static void ComputeGradientAndHessian(Tape<REAL_T>& gs,
+                std::vector<atl::Variable<REAL_T>* >& variables,
+                std::vector<REAL_T>& gradient, std::vector<std::vector<REAL_T> >& hessian) {
+            gs.AccumulateSecondOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            hessian.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id);
+                hessian[i].resize(size);
+                for (int j = 0; j < size; j++) {
+                    hessian[i][j] = gs.Value(variables[i]->info->id, variables[j]->info->id); //hessian_row[variables[j]->info];
+                }
+            }
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient 
+         * and second order derivatives into std::valarray's.  
+         * @param gs
+         * @param variables
+         * @param gradient
+         * @param hessian
+         */
+        static void ComputeGradientAndHessian(Tape<REAL_T>& gs,
+                std::vector<atl::Variable<REAL_T>* >& variables,
+                std::valarray<REAL_T>& gradient, std::valarray<std::valarray<REAL_T> >& hessian) {
+            gs.AccumulateSecondOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            hessian.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id);
+                hessian[i].resize(size);
+                for (int j = 0; j < size; j++) {
+                    hessian[i][j] = gs.Value(variables[i]->info->id, variables[j]->info->id);
+                }
+            }
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient, 
+         * second and third order derivatives into std::vector's.  
+         * @param gs
+         * @param variables
+         * @param gradient
+         * @param hessian
+         */
+        static void ComputeUpToThirdOrderMixed(Tape<REAL_T>& gs,
+                std::vector<atl::Variable<REAL_T>* >& variables,
+                std::vector<REAL_T>& gradient, std::vector<std::vector<REAL_T> >& hessian,
+                std::vector<std::vector<std::vector<REAL_T> > >& third) {
+            gs.AccumulateThirdOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            hessian.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id); //variables[i]->info->dvalue;
+                hessian[i].resize(size);
+                for (int j = 0; j < size; j++) {
+                    hessian[i][j] = gs.Value(variables[i]->info->id, variables[j]->info->id); //variables[i]->info->GetHessianRowValue(variables[j]->info);
+                    for (int k = 0; k < size; k++) {
+                        third[i][j][k] = gs.Value(variables[i]->info->id, variables[j]->info->id, variables[k]->info->id); //variables[i]->info->GetThirdOrderValue(variables[j]->info, variables[k]->info);
+                    }
+                }
+
+            }
+        }
+
+        /**
+         * Accumulates derivatives in a GradientStructure and puts the gradient, 
+         * second and third order derivatives into std::valarray's.  
+         * @param gs
+         * @param variables
+         * @param gradient
+         * @param hessian
+         */
+        static void ComputeUpToThirdOrderMixed(Tape<REAL_T>& gs,
+                std::vector<atl::Variable<REAL_T>* >& variables,
+                std::valarray<REAL_T>& gradient, std::valarray<std::valarray<REAL_T> >& hessian,
+                std::valarray<std::valarray<std::valarray<REAL_T> > >& third) {
+            gs.AccumulateThirdOrder();
+            int size = variables.size();
+            gradient.resize(size);
+            hessian.resize(size);
+            for (int i = 0; i < size; i++) {
+                gradient[i] = gs.Value(variables[i]->info->id);
+                hessian[i].resize(size);
+                for (int j = 0; j < size; j++) {
+                    hessian[i][j] = gs.Value(variables[i]->info->id, variables[j]->info->id); //variables[i]->info->GetHessianRowValue(variables[j]->info);
+                    for (int k = 0; k < size; k++) {
+                        third[i][j][k] = gs.Value(variables[i]->info->id, variables[j]->info->id, variables[k]->info->id); //variables[i]->info->GetThirdOrderValue(variables[j]->info, variables[k]->info);
+                    }
+                }
+
+            }
+        }
+
 
     };
 
     template<typename REAL_T>
     Tape<REAL_T> Variable<REAL_T>::tape(100000);
+
+    template<typename REAL_T>
+    LogitParameterTransformation<REAL_T> Variable<REAL_T>::default_transformation;
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const Variable<REAL_T>& v) {

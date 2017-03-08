@@ -43,7 +43,10 @@
 #include "Pow.hpp"
 #include "Helpers.hpp"
 #include "Tests/AutoDiffTests.hpp"
+#include "Optimization.hpp"
 #include <chrono>
+#include "Tests/FunctionMinimizerTests.hpp"
+
 using namespace std;
 
 template <typename T>
@@ -280,7 +283,7 @@ inline const atl::Variable<double> ad_min_max_test(int nvar, std::vector<atl::Va
  * 
  */
 int main(int argc, char** argv) {
-
+    
 //    atl::Variable<double>::tape.recording = false;
 //    atl::VariableMatrix<double> a(500, 500);
 //    a = .01233;
@@ -298,6 +301,7 @@ int main(int argc, char** argv) {
 
 //    while(true)
     atl::tests::auto_diff::Run(std::cout);
+    atl::tests::fmin::Run();
     exit(0);
     atl::Variable<double>::tape.Reset();
     atl::tests::auto_diff::LogTheta2<double> l;
