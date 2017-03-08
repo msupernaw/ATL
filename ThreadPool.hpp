@@ -361,6 +361,8 @@ namespace atl {
         std::vector <std::thread> threads_;
     };
 
+    //global thread pool
+    atl::ThreadPool thread_pool_g;
 
 }
 

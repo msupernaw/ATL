@@ -15,7 +15,7 @@
 #define VARIABLEINFO_HPP
 #include <stack>
 #include <mutex>
-
+#include <vector>
 namespace atl {
 
     /*!

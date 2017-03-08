@@ -497,11 +497,11 @@ namespace atl {
                         this->Reference(vi->id, vi->id) = 0.0;
                     }
 
-                    if (hii != hii) {
-                        std::cout << "i " << i << " of " << stack_current << "\n NaN" << std::endl;
-                        exit(0);
-
-                    }
+//                    if (hii != hii) {
+//                        std::cout << "i " << i << " of " << stack_current << "\n NaN" << std::endl;
+//                        exit(0);
+//
+//                    }
 
                     current_entry.Prepare();
 

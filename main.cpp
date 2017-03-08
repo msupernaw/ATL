@@ -296,6 +296,7 @@ int main(int argc, char** argv) {
 //
 //    
 
+//    while(true)
     atl::tests::auto_diff::Run(std::cout);
     exit(0);
     atl::Variable<double>::tape.Reset();

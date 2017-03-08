@@ -18,11 +18,52 @@
 //#include "MinMax.hpp"
 
 #include "ThreadPool.hpp"
+#include "ACos.hpp"
+#include "ad_cmath.hpp"
+#include "Add.hpp"
+#include "ASin.hpp"
+#include "ATan.hpp"
+#include "Ceil.hpp"
+#include "CLFAllocator.hpp"
+#include "Cos.hpp"
+#include "Cosh.hpp"
+#include "Divide.hpp"
+#include "Exp.hpp"
+#include "Expression.hpp"
+#include "Fabs.hpp"
+#include "Floor.hpp"
+#include "FunctionMinimizer.hpp"
+#include "Helpers.hpp"
+#include "Log.hpp"
+#include "Log10.hpp"
+//#include "Matrix.hpp"
+#include "MinMax.hpp"
+#include "Multiply.hpp"
+#include "Platform.hpp"
+#include "Pow.hpp"
+#include "Real.hpp"
+#include "Serialize.hpp"
+#include "SIMD.hpp"
+#include "Sin.hpp"
+#include "Sinh.hpp"
+#include "Sqrt.hpp"
+#include "Subtract.hpp"
+#include "Tan.hpp"
+#include "Tanh.hpp"
+#include "Tape.hpp"
+#include "ThreadPool.hpp"
+#include "Variable.hpp"
+#include "Vector.hpp"
+
+
+
 namespace atl {
 
 
-    //global thread pool
-    atl::ThreadPool thread_pool_g;
+    
+    
+    
+    
 
 
 

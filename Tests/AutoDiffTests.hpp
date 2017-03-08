@@ -886,7 +886,7 @@ namespace atl {
 
                     for (int i = 0; i < X.size(); i++) {
                         X[i] = 1.0; //atl::Variable<T>(0.012);
-//                                                this->Register(X[i]);
+                        //                                                this->Register(X[i]);
                     }
                     //                    std::cout<<logK.info->id<<" --- "<<logQ.info->id<<"\n";
                     //                    exit(0);
@@ -906,7 +906,7 @@ namespace atl {
 
                 virtual void ObjectiveFunction(atl::Variable<T>& f) {
 
-                    size_t timeSteps = Y.size();
+                    size_t timeSteps = 5; //Y.size();
                     atl::Variable<T> r0 = atl::exp(logr0);
                     atl::Variable<T> theta = atl::exp(logtheta);
                     atl::Variable<T> K = atl::exp(logK);
@@ -926,11 +926,11 @@ namespace atl {
                     //        atl::Variable<T> sqrtq = atl::sqrt(Q);
                     for (int i = 1; i < timeSteps; i++) {
                         atl::Variable<T> m = X[i - 1] + r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / K, theta));
-                        f -= this->dnorm(X[i], m, atl::pow(Q, 0.5), true);
+                        f -= this->dnorm(X[i], m, atl::sqrt(Q), true);
                     }
                     //        atl::Variable<T> sqrtr = atl::sqrt(R);
                     for (int i = 0; i < timeSteps; i++) {
-                        f -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::pow(R, 0.5), true);
+                        f -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::sqrt(R), true);
                     }
                 }
 
@@ -1748,7 +1748,7 @@ namespace atl {
                 }
 
                 void ObjectiveFunction(var& f) {
-                    f = atl::log((a + b));
+                    f = atl::log(((a + b)));
                 }
 
 
@@ -2091,6 +2091,327 @@ namespace atl {
 
             };
 
+            template<class T>
+            class RastriginAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                std::vector<var> x;
+
+                RastriginAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x.resize(10);
+                    T temp = -5.1;
+                    for (int i = 0; i < x.size(); i++) {
+                        x[i] = temp++; //(var(i));
+                        this->Register(x[i]);
+
+                    }
+
+
+
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Rastrigin Function:\n";
+                    out << "Parameters:\nVariable A = 10.0;\n vector<Variable> x;\n";
+                    out << "Variable f = 0.0;\nfor(int i =0; i < x.size(); i++){\n";
+                    out << "    f+=atl::pow(x[i],2.0) - A*atl::cos(2*M_PI*x[i]);\n";
+                    out << "}\n";
+                    out << "f = A*static_cast<T>(x.size())+f;\n" << std::endl;
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = static_cast<T> (0.0);
+                    var A = static_cast<T> (10.0);
+                    var sum;
+                    for (int i = 0; i < x.size(); i++) {
+                        sum += atl::pow(x[i], 2.0) - A * atl::cos(2.0 * M_PI * x[i]);
+                    }
+                    f = A * static_cast<T> (x.size()) + sum;
+                }
+
+
+            };
+
+            template<class T>
+            class SphereAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                std::vector<var> x;
+
+                SphereAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x.resize(10);
+                    T temp = -1.0;
+                    for (int i = 0; i < x.size(); i++) {
+                        x[i] = temp += .002; //(var(i));
+                        this->Register(x[i]);
+
+                    }
+
+
+
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Sphere Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable f = 0.0;\nfor(int i =0; i < x.size(); i++){\n";
+                    out << "    f+=atl::pow(x[i],2.0);\n";
+                    out << "}\n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    var two(2.0);
+                    f = static_cast<T> (0.0);
+                    for (int i = 0; i < x.size(); i++) {
+                        f += atl::pow(x[i], 2.0);
+                    }
+                }
+
+
+            };
+
+            template<class T>
+            class RosenbrockAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                std::vector<var> x;
+
+                RosenbrockAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x.resize(10);
+                    T temp = -1.0;
+                    for (int i = 0; i < x.size(); i++) {
+                        x[i] = temp += .002; //(var(i));
+                        this->Register(x[i]);
+
+                    }
+
+
+
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Rosenbrock Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable f = 0.0;\nfor(int i =0; i < x.size()-1; i++){\n";
+                    out << "    f+=100.0*atl::pow((x[i+1] - atl::pow(x[i],2.0),2.0)+atl::pow(x[i]-1.0,2.0);\n";
+                    out << "}\n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = static_cast<T> (0.0);
+                    for (int i = 0; i < x.size() - 1; i++) {
+                        f += 100.0 * atl::pow(x[i + 1] - atl::pow(x[i], 2.0), 2.0) + atl::pow(x[i] - 1.0, 2.0);
+                    }
+                }
+
+
+            };
+
+            template<class T>
+            class StyblinskiTangAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                std::vector<var> x;
+
+                StyblinskiTangAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x.resize(10);
+                    T temp = -5.0;
+                    for (int i = 0; i < x.size(); i++) {
+                        x[i] = temp += .002; //(var(i));
+                        this->Register(x[i]);
+
+                    }
+
+
+
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Styblinski-Tang Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable sum, f = 0.0;\nfor(int i =0; i < x.size(); i++){\n";
+                    out << "    sum+=atl::pow(x[i],4.0)- 16.0*atl::pow(x[i],2.0)+5.0*x[i];\n";
+                    out << "}\n";
+                    out << "f = sum/2.0;";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = static_cast<T> (0.0);
+                    var sum;
+                    for (int i = 0; i < x.size() - 1; i++) {
+                        sum += atl::pow(x[i], 4.0) - 16.0 * atl::pow(x[i], 2.0) + 5.0 * x[i];
+                    }
+                    f = sum / 2.0;
+                }
+
+
+            };
+
+            template<class T>
+            class BukinAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                var x;
+                var y;
+
+                BukinAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x = -10.0;
+                    y = 2.0;
+                    this->Register(x);
+                    this->Register(y);
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Bukin Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable f = 0.0;\n";
+                    out << "f = 100.0*atl::sqrt(atl::ad_fabs(y-.01*atl::pow(x,2.0),1e-6))+.01*atl::ad_fabs(x+10.0,1e-6); \n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = 100.0 * atl::sqrt(atl::ad_fabs<T>(y - .01 * atl::pow(x, 2.0), 1e-6)) + .01 * atl::ad_fabs<T>(x + 10.0, 1e-6);
+                }
+
+
+            };
+
+            template<class T>
+            class EasomAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                var x;
+                var y;
+
+                EasomAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x = M_PI + .01;
+                    y = M_PI + .01;
+
+                    this->Register(x);
+                    this->Register(y);
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Easom Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable f = 0.0;\n";
+                    out << "f = -atl::cos(x)*atl::cos(y)*atl::exp(-(atl::pow(x-M_PI,2.0)+atl::pow(y-M_PI,2.0))); \n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = -1.0 * atl::cos(x) * atl::cos(y) * atl::exp(-1.0 * (atl::pow(x - M_PI, 2.0) + atl::pow(y - M_PI, 2.0)));
+                }
+
+
+            };
+
+            template<class T>
+            class McCormickAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                var x;
+                var y;
+
+                McCormickAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x = -1.4;
+                    y = 2.0;
+
+                    this->Register(x);
+                    this->Register(y);
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "McCormick Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable x,y \n";
+                    out << "Variable f = 0.0;\n";
+                    out << "f = atl::sin(x+y)+atl::pow(x-y,2.0) - 1.5*x + 2.5*y+1.0; \n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = atl::sin(x + y) + atl::pow(x - y, 2.0) - 1.5 * x + 2.5 * y + 1.0;
+                }
+
+
+            };
+
+            template<class T>
+            class SchaeferAutoDiffTest : public AutoDiffTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                var x;
+                var y;
+
+                SchaeferAutoDiffTest(std::ostream& out) {
+                    this->RunTestToFile(out);
+                }
+
+                void Initialize() {
+                    x = -0.0324234;
+                    y = 1.01;
+
+                    this->Register(x);
+                    this->Register(y);
+                }
+
+                void Description(std::stringstream& out) {
+                    out << "Test Problem:\n";
+                    out << "Schaefer Function:\n";
+                    out << "Parameters:\n";
+                    out << "Variable x,y \n";
+                    out << "Variable f = 0.0;\n";
+                    out << "f = 0.5 + (atl::pow(atl::sin(atl::pow(x,2.0)- atl::pow(y,2.0)),2.0)-0.5)/atl::pow(1.0+.001*(atl::pow(x,2.0)+atl::pow(y,2.0)),2.0); \n";
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = 0.5 + (atl::pow(atl::sin(atl::pow(x,2.0)- atl::pow(y,2.0)),2.0)-0.5)/atl::pow(1.0+.001*(atl::pow(x,2.0)+atl::pow(y,2.0)),2.0);
+                }
+
+
+            };
+
             void Run(std::ostream& out) {
                 typedef double real_t;
                 atl::tests::auto_diff::AddAutoDiffTest<real_t> add(out);
@@ -2126,6 +2447,14 @@ namespace atl {
                 atl::tests::auto_diff::FloorAutoDiffTest<real_t> floor(out);
                 atl::tests::auto_diff::Ackley<real_t> a(out);
                 atl::tests::auto_diff::LogTheta2<real_t> l(out);
+                atl::tests::auto_diff::RastriginAutoDiffTest<real_t> r(out);
+                atl::tests::auto_diff::SphereAutoDiffTest<real_t> sphere(out);
+                atl::tests::auto_diff::RosenbrockAutoDiffTest<real_t> rosenbrock(out);
+                atl::tests::auto_diff::StyblinskiTangAutoDiffTest<real_t> styblinskitang(out);
+                atl::tests::auto_diff::BukinAutoDiffTest<real_t> bukin(out);
+                atl::tests::auto_diff::EasomAutoDiffTest<real_t> easom(out);
+                atl::tests::auto_diff::McCormickAutoDiffTest<real_t> mccormick(out);
+                atl::tests::auto_diff::SchaeferAutoDiffTest<real_t> shaefer(out);
                 std::cout << "Test complete.\n";
                 if (atl::tests::auto_diff::fail == 0) {
                     std::cout << "All tests passed."; //, review file \"autodiff_test.txt\" for details." << std::endl;

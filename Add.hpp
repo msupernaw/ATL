@@ -14,7 +14,7 @@
 #ifndef ADD_HPP
 #define ADD_HPP
 
-#include "Traits.hpp"
+//#include "Traits.hpp"
 #include "Real.hpp"
 #include <cassert>
 
