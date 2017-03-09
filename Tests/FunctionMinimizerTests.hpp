@@ -21,7 +21,18 @@ namespace atl {
         namespace fmin {
 
             template<typename T>
-            struct Rosenbrock : atl::ObjectiveFunction<T> {
+            struct MinimizerTest {
+
+                bool const IsClose(const T& f1, const T& f2, T figures_tolerance = 3.0) {
+                    T res = f1 - f2;
+                    res = res * std::pow(10.0, figures_tolerance);
+                    return !bool(int(res));
+                }
+
+            };
+
+            template<typename T>
+            struct Rosenbrock : atl::ObjectiveFunction<T>, MinimizerTest<T> {
                 typedef atl::Variable<T> var;
                 std::vector<var> x;
                 T f_;
@@ -57,7 +68,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (std::fabs(this->f_) < static_cast<T> (1e-5)) {
+                    if (this->IsClose(this->f_, 1e-5, 3.0)) {
                         return true;
                     } else {
                         return false;
@@ -68,7 +79,7 @@ namespace atl {
             };
 
             template<class T>
-            class Schaffer : public atl::ObjectiveFunction<T> {
+            class Schaffer : public atl::ObjectiveFunction<T>, MinimizerTest<T> {
             public:
                 typedef atl::Variable<T> var;
                 var x;
@@ -97,7 +108,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (std::fabs(this->f_) < static_cast<T> (1e-5)) {
+                    if (this->IsClose(this->f_, 1e-5, 3.0)) {
                         return true;
                     } else {
                         return false;
@@ -107,7 +118,7 @@ namespace atl {
             };
 
             template<class T>
-            class McCormick : public atl::ObjectiveFunction<T> {
+            class McCormick : public atl::ObjectiveFunction<T>, MinimizerTest<T> {
             public:
                 typedef atl::Variable<T> var;
                 var x;
@@ -130,7 +141,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (this->f_ < static_cast<T> (-1.9131) && this->f_ > static_cast<T> (-1.9134)) {
+                    if (this->IsClose(x.GetValue(), -0.54719, 3.0) && this->IsClose(y.GetValue(), -1.54719,3.0)) {
                         return true;
                     } else {
                         return false;
@@ -146,7 +157,7 @@ namespace atl {
             };
 
             template<class T>
-            class Easom : public atl::ObjectiveFunction<T> {
+            class Easom : public atl::ObjectiveFunction<T>, MinimizerTest<T> {
             public:
                 typedef atl::Variable<T> var;
                 var x;
@@ -169,7 +180,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (this->f_ < static_cast<T> (-1.0 + .003) && this->f_ > static_cast<T> (-1.0 - .001)) {
+                    if (this->IsClose(x.GetValue(), M_PI, 3.0) && this->IsClose(y.GetValue(), M_PI, 3.0)) {
                         return true;
                     } else {
                         return false;
@@ -185,7 +196,7 @@ namespace atl {
             };
 
             template<class T>
-            class Bukin : public atl::ObjectiveFunction<T> {
+            class Bukin : public atl::ObjectiveFunction<T>, MinimizerTest<T> {
             public:
                 typedef atl::Variable<T> var;
                 var x;
@@ -207,7 +218,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (std::fabs(this->f_) < static_cast<T> (1e-5)) {
+                    if (this->IsClose(x.GetValue(),-10.0) && this->IsClose(y.GetValue(),1.0)) {
                         return true;
                     } else {
                         return false;
