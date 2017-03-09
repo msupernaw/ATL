@@ -15,6 +15,7 @@
 #define FUNCTIONMINIMIZERTESTS_HPP
 
 #include "../Optimization.hpp"
+#include <vector>
 
 namespace atl {
     namespace tests {
@@ -141,7 +142,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (this->IsClose(x.GetValue(), -0.54719, 3.0) && this->IsClose(y.GetValue(), -1.54719,3.0)) {
+                    if (this->IsClose(x.GetValue(), -0.54719, 3.0) && this->IsClose(y.GetValue(), -1.54719, 3.0)) {
                         return true;
                     } else {
                         return false;
@@ -218,7 +219,7 @@ namespace atl {
                 }
 
                 bool Check() {
-                    if (this->IsClose(x.GetValue(),-10.0) && this->IsClose(y.GetValue(),1.0)) {
+                    if (this->IsClose(x.GetValue(), -10.0) && this->IsClose(y.GetValue(), 1.0)) {
                         return true;
                     } else {
                         return false;
@@ -234,11 +235,60 @@ namespace atl {
 
             };
 
+            template<class T>
+            class StyblinskiTang : public atl::ObjectiveFunction<T>, MinimizerTest<T> {
+            public:
+                typedef atl::Variable<T> var;
+                std::vector<var> x;
+
+                void Initialize() {
+                    x.resize(10);
+                    T temp = -5.0;
+                    for (int i = 0; i < x.size(); i++) {
+                        x[i] = temp += .002; //(var(i));
+                        std::stringstream ss;
+                        ss<<"x_"<<i;
+                        x[i].SetName(ss.str());
+                        this->RegisterParameter(x[i]);
+
+                    }
+
+
+
+                }
+
+                void ObjectiveFunction(var& f) {
+                    f = static_cast<T> (0.0);
+                    var sum;
+                    for (int i = 0; i < x.size(); i++) {
+                        sum += atl::pow(x[i], 4.0) - 16.0 * atl::pow(x[i], 2.0) + 5.0 * x[i];
+                    }
+                    f = sum / 2.0;
+                }
+
+                bool Check() {
+                    for (int i = 0; i < x.size(); i++) {
+                        if (!this->IsClose(x[i].GetValue(), -2.9035, 3.0)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                const atl::Variable<T> Evaluate() {
+                    atl::Variable<T> f;
+                    this->ObjectiveFunction(f);
+                    return f;
+                }
+
+
+            };
+
             void Run() {
 
                 atl::tests::fmin::Rosenbrock<double> rosenbrock;
                 rosenbrock.Initialize();
-                atl::LBFGS<double> lbfgs;
+                atl::PortMinimizer<double> lbfgs;
                 lbfgs.SetObjectiveFunction(&rosenbrock);
                 lbfgs.Run();
                 if (rosenbrock.Check()) {
@@ -289,6 +339,15 @@ namespace atl {
                 }
 
 
+                atl::tests::fmin::StyblinskiTang<double> styblinski_tang;
+                styblinski_tang.Initialize();
+                lbfgs.SetObjectiveFunction(&styblinski_tang);
+                lbfgs.Run();
+                if (styblinski_tang.Check()) {
+                    std::cout << "StyblinskiTang test passed.\n";
+                } else {
+                    std::cout << "StyblinskiTang test failed.\n";
+                }
 
             }
 

@@ -13,7 +13,8 @@
 #include <iostream>
 #include <cfloat>
 #include <limits.h>
-
+#include <vector>
+#include <string>
 
 namespace port {
 
@@ -45,6 +46,11 @@ namespace port {
     static integer c__1 = 1;
     static double c_b33 = 1.;
     static double c_b44 = -1.;
+    static double c_b32 = 1.;
+    static double c_b38 = 1.;
+    static double c_b43 = -1.;
+    static double c_b5 = 0.;
+    static double c_b23 = 1.;
 
     int stopx_(integer* i) {
 
@@ -1421,7 +1427,7 @@ L70:
         /*     ***  FEMNSQ = SQUARE OF 2-NORM OF FEMUR, SCALED BY GNORM**-1. */
         /* Computing 2nd power */
         d__1 = t1;
-        t = t2 / (t1 + sqrt(d__1 * d__1 + femnsq * t2));
+        t = t2 / (t1 + std::sqrt(d__1 * d__1 + femnsq * t2));
         /*     ***  DOGLEG STEP  =  CAUCHY STEP  +  T * FEMUR. */
         t1 = (t - 1.) * cfact;
         v[45] = t1;
@@ -2335,12 +2341,12 @@ L999:
             goto L10;
         }
         theta = shs * .90000000000000002 / (shs - ys);
-        epsrt = sqrt(.1);
+        epsrt = std::sqrt(.1);
         cy = theta / (shs * epsrt);
         cs = ((theta - 1.) / epsrt + 1.) / shs;
         goto L20;
 L10:
-        cy = 1. / (sqrt(ys) * sqrt(shs));
+        cy = 1. / (std::sqrt(ys) * std::sqrt(shs));
         cs = 1. / shs;
 L20:
         dl7ivm_(n, &z__[1], &l[1], &y[1]);
@@ -2484,7 +2490,7 @@ L20:
             s = a * lambda[j];
             /* Computing 2nd power */
             d__1 = theta;
-            lj = sqrt(d__1 * d__1 + a * s);
+            lj = std::sqrt(d__1 * d__1 + a * s);
             if (theta > 0.) {
                 lj = -lj;
             }
@@ -2547,8 +2553,8 @@ L50:
         /* Initialized data */
 
         static doublereal big = 0.;
-        static char* cngd[] = {"---C", "HANG", "ED V"};
-        static char* dflt[] = {"NOND", "EFAU", "LT V"};
+        static std::vector<std::string> cngd = {"---C", "HANG", "ED V"};
+        static std::vector<std::string> dflt = {"NOND", "EFAU", "LT V"};
         static integer ijmp = 33;
         static integer jlim[4] = {0, 24, 0, 24};
         static integer ndflt[4] = {32, 25, 32, 25};
@@ -2556,7 +2562,7 @@ L50:
         static doublereal machep = -1.;
         static doublereal tiny = 1.;
         static doublereal zero = 0.;
-        static char* vn[] = {"EPSL", "ON..", "PHMN", "FC..", "PHMX", "FC..", "DECF",
+        static std::vector<std::string> vn = {"EPSL", "ON..", "PHMN", "FC..", "PHMX", "FC..", "DECF",
             "AC..", "INCF", "AC..", "RDFC", "MN..", "RDFC", "MX..", "TUNE", "R1..",
             "TUNE", "R2..", "TUNE", "R3..", "TUNE", "R4..", "TUNE", "R5..", "AFCT",
             "OL..", "RFCT", "OL..", "XCTO", "L...", "XFTO", "L...", "LMAX", "0...",
@@ -2570,8 +2576,8 @@ L50:
         static doublereal vx[34] = {.9, -.001, 10., .8, 100., .8, 100., .5, .5, 1., 1., 0.0,
             0.0, .1, 1., 1., 0.0, 0.0, 1., 0.0, 0.0, 0.0, 1., 1., 1., 1., 1e10, 0.0, 1., 0.0,
             1., 1., 1., 1.};
-        static char* varnm[] = {"P", "P"};
-        static char* sh[] = {"S", "H"};
+        static std::vector<std::string> varnm = {"P", "P"};
+        static std::vector<std::string> sh = {"S", "H"};
 
         /* Format strings */
         static char fmt_10[] = "(/\002 THE FIRST PARAMETER TO DIVSET SHOULD B"
@@ -3083,6 +3089,596 @@ L999:
     } /* dparck_ */
 
     template<typename doublereal>
+    doublereal dh2rfg_(doublereal *a, doublereal *b, doublereal *x, doublereal *y,
+            doublereal *z__) {
+        /* Initialized data */
+
+        static doublereal zero = 0.;
+
+        /* System generated locals */
+        doublereal ret_val, d__1, d__2;
+
+        /* Builtin functions */
+//        double sqrt(doublereal);
+
+        /* Local variables */
+        static doublereal c__, t, a1, b1;
+
+
+        /*  ***  DETERMINE X, Y, Z SO  I + (1,Z)**T * (X,Y)  IS A 2X2 */
+        /*  ***  HOUSEHOLDER REFLECTION SENDING (A,B)**T INTO (C,0)**T, */
+        /*  ***  WHERE  C = -SIGN(A)*SQRT(A**2 + B**2)  IS THE VALUE DH2RFG */
+        /*  ***  RETURNS. */
+
+
+        /* /+ */
+        /* / */
+
+        /*  ***  BODY  *** */
+
+        if (*b != zero) {
+            goto L10;
+        }
+        *x = zero;
+        *y = zero;
+        *z__ = zero;
+        ret_val = *a;
+        goto L999;
+L10:
+        t = std::fabs(*a) + std::fabs(*b);
+        a1 = *a / t;
+        b1 = *b / t;
+        /* Computing 2nd power */
+        d__1 = a1;
+        /* Computing 2nd power */
+        d__2 = b1;
+        c__ = sqrt(d__1 * d__1 + d__2 * d__2);
+        if (a1 > zero) {
+            c__ = -c__;
+        }
+        a1 -= c__;
+        *z__ = b1 / a1;
+        *x = a1 / c__;
+        *y = b1 / c__;
+        ret_val = t * c__;
+L999:
+        return ret_val;
+        /*  ***  LAST LINE OF DH2RFG FOLLOWS  *** */
+    } /* dh2rfg_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int dh2rfa_(integer *n, doublereal *a, doublereal *b,
+            doublereal *x, doublereal *y, doublereal *z__) {
+        /* System generated locals */
+        integer i__1;
+
+        /* Local variables */
+        static integer i__;
+        static doublereal t;
+
+
+        /*  ***  APPLY 2X2 HOUSEHOLDER REFLECTION DETERMINED BY X, Y, Z TO */
+        /*  ***  N-VECTORS A, B  *** */
+
+        /* Parameter adjustments */
+        --b;
+        --a;
+
+        /* Function Body */
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            t = a[i__] * *x + b[i__] * *y;
+            a[i__] += t;
+            b[i__] += t * *z__;
+            /* L10: */
+        }
+        /* L999: */
+        return 0;
+        /*  ***  LAST LINE OF DH2RFA FOLLOWS  *** */
+    } /* dh2rfa_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int dq7rsh_(integer *k, integer *p, logical *havqtr,
+            doublereal *qtr, doublereal *r__, doublereal *w) {
+        /* Initialized data */
+
+        static doublereal zero = 0.;
+
+        /* System generated locals */
+        integer i__1, i__2;
+
+        /* Local variables */
+        static doublereal a, b;
+        static integer i__, j;
+        static doublereal t, x, y, z__;
+        static integer i1, j1, k1;
+        static doublereal wj;
+        static integer jm1, km1, jp1, pm1;
+        //        extern /* Subroutine */ int dh2rfa_(integer *, doublereal *, doublereal *,
+        //                doublereal *, doublereal *, doublereal *);
+        //        extern doublereal dh2rfg_(doublereal *, doublereal *, doublereal *,
+        //                doublereal *, doublereal *);
+        //        extern /* Subroutine */ int dv7cpy_(integer *, doublereal *, doublereal *)
+        //                ;
+
+
+        /*  ***  PERMUTE COLUMN K OF R TO COLUMN P, MODIFY QTR ACCORDINGLY  *** */
+
+        /*     DIMSNSION R(P*(P+1)/2) */
+
+
+        /*  ***  LOCAL VARIABLES  *** */
+
+
+        /* Parameter adjustments */
+        --w;
+        --qtr;
+        --r__;
+
+        /* Function Body */
+
+        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
+
+        if (*k >= *p) {
+            goto L999;
+        }
+        km1 = *k - 1;
+        k1 = *k * km1 / 2;
+        dv7cpy_(k, &w[1], &r__[k1 + 1]);
+        wj = w[*k];
+        pm1 = *p - 1;
+        j1 = k1 + km1;
+        i__1 = pm1;
+        for (j = *k; j <= i__1; ++j) {
+            jm1 = j - 1;
+            jp1 = j + 1;
+            if (jm1 > 0) {
+                dv7cpy_(&jm1, &r__[k1 + 1], &r__[j1 + 2]);
+            }
+            j1 += jp1;
+            k1 += j;
+            a = r__[j1];
+            b = r__[j1 + 1];
+            if (b != zero) {
+                goto L10;
+            }
+            r__[k1] = a;
+            x = zero;
+            z__ = zero;
+            goto L40;
+L10:
+            r__[k1] = dh2rfg_(&a, &b, &x, &y, &z__);
+            if (j == pm1) {
+                goto L30;
+            }
+            i1 = j1;
+            i__2 = pm1;
+            for (i__ = jp1; i__ <= i__2; ++i__) {
+                i1 += i__;
+                dh2rfa_(&c__1, &r__[i1], &r__[i1 + 1], &x, &y, &z__);
+                /* L20: */
+            }
+L30:
+            if (*havqtr) {
+                dh2rfa_(&c__1, &qtr[j], &qtr[jp1], &x, &y, &z__);
+            }
+L40:
+            t = x * wj;
+            w[j] = wj + t;
+            wj = t * z__;
+            /* L50: */
+        }
+        w[*p] = wj;
+        dv7cpy_(p, &r__[k1 + 1], &w[1]);
+L999:
+        return 0;
+    } /* dq7rsh_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int dv7ipr_(integer *n, integer *ip, doublereal *x) {
+        /* System generated locals */
+        integer i__1;
+
+        /* Local variables */
+        static integer i__, j, k;
+        static doublereal t;
+
+
+        /*     PERMUTE X SO THAT X.OUTPUT(I) = X.INPUT(IP(I)). */
+        /*     IP IS UNCHANGED ON OUTPUT. */
+
+
+        /* Parameter adjustments */
+        --x;
+        --ip;
+
+        /* Function Body */
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = ip[i__];
+            if (j == i__) {
+                goto L30;
+            }
+            if (j > 0) {
+                goto L10;
+            }
+            ip[i__] = -j;
+            goto L30;
+L10:
+            t = x[i__];
+            k = i__;
+L20:
+            x[k] = x[j];
+            k = j;
+            j = ip[k];
+            ip[k] = -j;
+            if (j > i__) {
+                goto L20;
+            }
+            x[k] = t;
+L30:
+            ;
+        }
+        /* L999: */
+        return 0;
+        /*  ***  LAST LINE OF DV7IPR FOLLOWS  *** */
+    } /* dv7ipr_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int dv7shf_(integer *n, integer *k, doublereal *x) {
+        /* System generated locals */
+        integer i__1;
+
+        /* Local variables */
+        static integer i__;
+        static doublereal t;
+        static integer nm1;
+
+
+        /*  ***  SHIFT X(K),...,X(N) LEFT CIRCULARLY ONE POSITION  *** */
+
+
+
+        /* Parameter adjustments */
+        --x;
+
+        /* Function Body */
+        if (*k >= *n) {
+            goto L999;
+        }
+        nm1 = *n - 1;
+        t = x[*k];
+        i__1 = nm1;
+        for (i__ = *k; i__ <= i__1; ++i__) {
+            /* L10: */
+            x[i__] = x[i__ + 1];
+        }
+        x[*n] = t;
+L999:
+        return 0;
+    } /* dv7shf_ */
+
+    int i7shft_(integer *n, integer *k, integer *x) {
+        /* System generated locals */
+        integer i__1;
+
+        /* Local variables */
+        static integer i__, t, k1, ii, nm1;
+
+
+        /*  ***  SHIFT X(K),...,X(N) LEFT CIRCULARLY ONE POSITION IF K .GT. 0. */
+        /*  ***  SHIFT X(-K),...,X(N) RIGHT CIRCULARLY ONE POSITION IF K .LT. 0. */
+
+
+
+        /* Parameter adjustments */
+        --x;
+
+        /* Function Body */
+        if (*k < 0) {
+            goto L20;
+        }
+        if (*k >= *n) {
+            goto L999;
+        }
+        nm1 = *n - 1;
+        t = x[*k];
+        i__1 = nm1;
+        for (i__ = *k; i__ <= i__1; ++i__) {
+            /* L10: */
+            x[i__] = x[i__ + 1];
+        }
+        x[*n] = t;
+        goto L999;
+
+L20:
+        k1 = -(*k);
+        if (k1 >= *n) {
+            goto L999;
+        }
+        t = x[*n];
+        nm1 = *n - k1;
+        i__1 = nm1;
+        for (ii = 1; ii <= i__1; ++ii) {
+            i__ = *n - ii;
+            x[i__ + 1] = x[i__];
+            /* L30: */
+        }
+        x[k1] = t;
+L999:
+        return 0;
+        /*  ***  LAST LINE OF I7SHFT FOLLOWS  *** */
+    } /* i7shft_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int dd7dgb_(doublereal *b, doublereal *d__, doublereal *dig,
+            doublereal *dst, doublereal *g, integer *ipiv, integer *ka,
+            doublereal *l, integer *lv, integer *p, integer *pc, doublereal *
+            nwtst, doublereal *step, doublereal *td, doublereal *tg, doublereal *
+            v, doublereal *w, doublereal *x0) {
+        /* Initialized data */
+
+        static doublereal meps2 = 0.;
+
+        /* System generated locals */
+        integer i__1, i__2;
+        doublereal d__1, d__2, d__3, d__4;
+
+        /* Local variables */
+        static integer i__, j, k;
+        static doublereal t;
+        static integer p1;
+        static doublereal t1, t2, ti, xi, x0i, rad;
+        static integer p1m1;
+        static doublereal nred, pred, gnorm;
+        //    extern /* Subroutine */ int dd7dog_(doublereal *, integer *, integer *, 
+        //	    doublereal *, doublereal *, doublereal *);
+        //    extern doublereal dr7mdc_(integer *);
+        //    extern /* Subroutine */ int dv7shf_(integer *, integer *, doublereal *), 
+        //	    dl7ivm_(integer *, doublereal *, doublereal *, doublereal *);
+        static doublereal gnorm0;
+        //    extern doublereal dd7tpr_(integer *, doublereal *, doublereal *);
+        //    extern /* Subroutine */ int i7shft_(integer *, integer *, integer *), 
+        //	    dl7vml_(integer *, doublereal *, doublereal *, doublereal *), 
+        //	    dv7scp_(integer *, doublereal *, doublereal *);
+        //    extern doublereal dv2nrm_(integer *, doublereal *);
+        //    extern /* Subroutine */ int dl7itv_(integer *, doublereal *, doublereal *,
+        //	     doublereal *), dq7rsh_(integer *, integer *, logical *, 
+        //	    doublereal *, doublereal *, doublereal *), dv7ipr_(integer *, 
+        //	    integer *, doublereal *), dv7cpy_(integer *, doublereal *, 
+        //	    doublereal *), dl7tvm_(integer *, doublereal *, doublereal *, 
+        //	    doublereal *), dv2axy_(integer *, doublereal *, doublereal *, 
+        //	    doublereal *, doublereal *), dv7vmp_(integer *, doublereal *, 
+        //	    doublereal *, doublereal *, integer *);
+        static doublereal ghinvg, dnwtst;
+
+
+        /*  ***  COMPUTE DOUBLE-DOGLEG STEP, SUBJECT TO SIMPLE BOUNDS ON X  *** */
+
+
+        /*     DIMENSION L(P*(P+1)/2) */
+
+
+        /*  ***  LOCAL VARIABLES  *** */
+
+
+        /*  ***  V SUBSCRIPTS  *** */
+
+
+        /* /6 */
+        /*     DATA DGNORM/1/, DST0/3/, DSTNRM/2/, GRDFAC/45/, GTHG/44/, */
+        /*    1     GTSTEP/4/, NREDUC/6/, NWTFAC/46/, PREDUC/7/, RADIUS/8/, */
+        /*    2     STPPAR/5/ */
+        /* /7 */
+        /* / */
+        /* /6 */
+        /*     DATA HALF/0.5D+0/, ONE/1.D+0/, TWO/2.D+0/, ZERO/0.D+0/ */
+        /* /7 */
+        /* / */
+        /* Parameter adjustments */
+        --l;
+        --v;
+        --x0;
+        --w;
+        --tg;
+        --td;
+        --step;
+        --nwtst;
+        --ipiv;
+        --g;
+        --dst;
+        --dig;
+        --d__;
+        b -= 3;
+
+        /* Function Body */
+
+        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
+
+        if (meps2 <= 0.) {
+            meps2 = 2. * dr7mdc_<doublereal>(&c__3);
+        }
+        gnorm0 = v[1];
+        v[2] = 0.;
+        if (*ka < 0) {
+            goto L10;
+        }
+        dnwtst = v[3];
+        nred = v[6];
+L10:
+        pred = 0.;
+        v[5] = 0.;
+        rad = v[8];
+        if (*pc > 0) {
+            goto L20;
+        }
+        dnwtst = 0.;
+        dv7scp_(p, &step[1], &c_b5);
+        goto L140;
+
+L20:
+        p1 = *pc;
+        dv7cpy_(p, &td[1], &d__[1]);
+        dv7ipr_(p, &ipiv[1], &td[1]);
+        dv7scp_(pc, &dst[1], &c_b5);
+        dv7cpy_(p, &tg[1], &g[1]);
+        dv7ipr_(p, &ipiv[1], &tg[1]);
+
+L30:
+        dl7ivm_(&p1, &nwtst[1], &l[1], &tg[1]);
+        ghinvg = dd7tpr_(&p1, &nwtst[1], &nwtst[1]);
+        v[6] = ghinvg * .5;
+        dl7itv_(&p1, &nwtst[1], &l[1], &nwtst[1]);
+        dv7vmp_(&p1, &step[1], &nwtst[1], &td[1], &c__1);
+        v[3] = dv2nrm_(pc, &step[1]);
+        if (*ka >= 0) {
+            goto L40;
+        }
+        *ka = 0;
+        dnwtst = v[3];
+        nred = v[6];
+L40:
+        v[8] = rad - v[2];
+        if (v[8] <= 0.) {
+            goto L100;
+        }
+        dv7vmp_(&p1, &dig[1], &tg[1], &td[1], &c_n1);
+        gnorm = dv2nrm_(&p1, &dig[1]);
+        if (gnorm <= 0.) {
+            goto L100;
+        }
+        v[1] = gnorm;
+        dv7vmp_(&p1, &dig[1], &dig[1], &td[1], &c_n1);
+        dl7tvm_(&p1, &w[1], &l[1], &dig[1]);
+        v[44] = dv2nrm_(&p1, &w[1]);
+        ++(*ka);
+        dd7dog_(&dig[1], lv, &p1, &nwtst[1], &step[1], &v[1]);
+
+        /*     ***  FIND T SUCH THAT X - T*STEP IS STILL FEASIBLE. */
+
+        t = 1.;
+        k = 0;
+        i__1 = p1;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = ipiv[i__];
+            x0i = x0[j] + dst[i__] / td[i__];
+            xi = x0i + step[i__];
+            if (xi < b[(j << 1) + 1]) {
+                goto L50;
+            }
+            if (xi <= b[(j << 1) + 2]) {
+                goto L70;
+            }
+            ti = (b[(j << 1) + 2] - x0i) / step[i__];
+            j = i__;
+            goto L60;
+L50:
+            ti = (b[(j << 1) + 1] - x0i) / step[i__];
+            j = -i__;
+L60:
+            if (t <= ti) {
+                goto L70;
+            }
+            k = j;
+            t = ti;
+L70:
+            ;
+        }
+
+        /*  ***  UPDATE DST, TG, AND PRED  *** */
+
+        dv7vmp_(&p1, &step[1], &step[1], &td[1], &c__1);
+        dv2axy_(&p1, &dst[1], &t, &step[1], &dst[1]);
+        v[2] = dv2nrm_(pc, &dst[1]);
+        t1 = t * v[45];
+        t2 = t * v[46];
+        /* Computing 2nd power */
+        d__1 = v[44] * t1;
+        pred = pred - t1 * gnorm * ((t2 + 1.) * gnorm) - t2 * (t2 * .5 + 1.) *
+                ghinvg - d__1 * d__1 * .5;
+        if (k == 0) {
+            goto L100;
+        }
+        dl7vml_(&p1, &w[1], &l[1], &w[1]);
+        t2 = 1. - t2;
+        i__1 = p1;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            /* L80: */
+            tg[i__] = t2 * tg[i__] - t1 * w[i__];
+        }
+
+        /*     ***  PERMUTE L, ETC. IF NECESSARY  *** */
+
+        p1m1 = p1 - 1;
+        j = std::fabs(k);
+        if (j == p1) {
+            goto L90;
+        }
+        dq7rsh_<doublereal>(&j, &p1, &c_false, &tg[1], &l[1], &w[1]);
+        i7shft_(&p1, &j, &ipiv[1]);
+        dv7shf_(&p1, &j, &tg[1]);
+        dv7shf_(&p1, &j, &td[1]);
+        dv7shf_(&p1, &j, &dst[1]);
+L90:
+        if (k < 0) {
+            ipiv[p1] = -ipiv[p1];
+        }
+        p1 = p1m1;
+        if (p1 > 0) {
+            goto L30;
+        }
+
+        /*     ***  UNSCALE STEP, UPDATE X AND DIHDI  *** */
+
+L100:
+        dv7scp_(p, &step[1], &c_b5);
+        i__1 = *pc;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = (i__2 = ipiv[i__], std::fabs(i__2));
+            step[j] = dst[i__] / td[i__];
+            /* L110: */
+        }
+
+        /*  ***  FUDGE STEP TO ENSURE THAT IT FORCES APPROPRIATE COMPONENTS */
+        /*  ***  TO THEIR BOUNDS  *** */
+
+        if (p1 >= *pc) {
+            goto L140;
+        }
+        dv2axy_(p, &td[1], &c_b23, &step[1], &x0[1]);
+        k = p1 + 1;
+        i__1 = *pc;
+        for (i__ = k; i__ <= i__1; ++i__) {
+            j = ipiv[i__];
+            t = meps2;
+            if (j > 0) {
+                goto L120;
+            }
+            t = -t;
+            j = -j;
+            ipiv[i__] = j;
+L120:
+            /* Computing MAX */
+            d__3 = (d__1 = td[j], std::fabs(d__1)), d__4 = (d__2 = x0[j], std::fabs(d__2));
+            t *= std::max(d__3, d__4);
+            step[j] += t;
+            /* L130: */
+        }
+
+L140:
+        v[1] = gnorm0;
+        v[6] = nred;
+        v[7] = pred;
+        v[8] = rad;
+        v[3] = dnwtst;
+        v[4] = dd7tpr_(p, &step[1], &g[1]);
+
+        /* L999: */
+        return 0;
+        /*  ***  LAST LINE OF DD7DGB FOLLOWS  *** */
+    } /* dd7dgb_ */
+
+    template<typename doublereal>
     int drmng_(doublereal *d__, doublereal *fx, doublereal *g,
             integer *iv, integer *liv, integer *lv, integer *n, doublereal *v,
             doublereal *x) {
@@ -3276,7 +3872,7 @@ L999:
             iv[4] += *n * (*n + 13) / 2;
         }
         //std::cout<<__LINE__<<" "<<iv[1]<<"\n";
-        dparck_(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
+        dparck_<doublereal>(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
         //std::cout<<__LINE__<<" "<<iv[1]<<"\n";
         i__ = iv[1] - 2;
         if (i__ > 12) {
@@ -3700,686 +4296,2102 @@ L350:
         /*  ***  LAST LINE OF DRMNG FOLLOWS  *** */
     } /* drmng_ */
 
-    int i7shft_(integer *n, integer *k, integer *x) {
+    template<typename doublereal>
+    int drmnh_(doublereal *d__, doublereal *fx, doublereal *g,
+            doublereal *h__, integer *iv, integer *lh, integer *liv, integer *lv,
+            integer *n, doublereal *v, doublereal *x) {
+        /* System generated locals */
+        integer i__1, i__2;
+
+        /* Local variables */
+        static integer i__, j, k, l;
+        static doublereal t;
+        static integer w1, x01, dg1, nn1o2, temp1, step1, dummy;
+        //        extern logical stopx_(integer *);
+        extern /* Subroutine */ int dd7dup_(doublereal *, doublereal *, integer *,
+                integer *, integer *, integer *, doublereal *);
+        extern doublereal dd7tpr_(integer *, doublereal *, doublereal *);
+        extern /* Subroutine */ int da7sst_(integer *, integer *, integer *,
+                doublereal *), dv7scp_(integer *, doublereal *, doublereal *);
+        extern doublereal dv2nrm_(integer *, doublereal *);
+        extern /* Subroutine */ int dg7qts_(doublereal *, doublereal *,
+                doublereal *, integer *, doublereal *, integer *, doublereal *,
+                doublereal *, doublereal *), ds7lvm_(integer *, doublereal *,
+                doublereal *, doublereal *), dv2axy_(integer *, doublereal *,
+                doublereal *, doublereal *, doublereal *), dv7cpy_(integer *,
+                doublereal *, doublereal *), dparck_(integer *, doublereal *,
+                integer *, integer *, integer *, integer *, doublereal *);
+        extern doublereal drldst_(integer *, doublereal *, doublereal *,
+                doublereal *);
+        extern /* Subroutine */ int divset_(integer *, integer *, integer *,
+                integer *, doublereal *), ditsum_(doublereal *, doublereal *,
+                integer *, integer *, integer *, integer *, doublereal *,
+                doublereal *);
+        static integer lstgst, rstrst;
+
+
+        /*  ***  CARRY OUT  DMNH (UNCONSTRAINED MINIMIZATION) ITERATIONS, USING */
+        /*  ***  HESSIAN MATRIX PROVIDED BY THE CALLER. */
+
+        /*  ***  PARAMETER DECLARATIONS  *** */
+
+
+        /* --------------------------  PARAMETER USAGE  -------------------------- */
+
+        /* D.... SCALE VECTOR. */
+        /* FX... FUNCTION VALUE. */
+        /* G.... GRADIENT VECTOR. */
+        /* H.... LOWER TRIANGLE OF THE HESSIAN, STORED ROWWISE. */
+        /* IV... INTEGER VALUE ARRAY. */
+        /* LH... LENGTH OF H = P*(P+1)/2. */
+        /* LIV.. LENGTH OF IV (AT LEAST 60). */
+        /* LV... LENGTH OF V (AT LEAST 78 + N*(N+21)/2). */
+        /* N.... NUMBER OF VARIABLES (COMPONENTS IN X AND G). */
+        /* V.... FLOATING-POINT VALUE ARRAY. */
+        /* X.... PARAMETER VECTOR. */
+
+        /*  ***  DISCUSSION  *** */
+
+        /*        PARAMETERS IV, N, V, AND X ARE THE SAME AS THE CORRESPONDING */
+        /*     ONES TO  DMNH (WHICH SEE), EXCEPT THAT V CAN BE SHORTER (SINCE */
+        /*     THE PART OF V THAT  DMNH USES FOR STORING G AND H IS NOT NEEDED). */
+        /*     MOREOVER, COMPARED WITH  DMNH, IV(1) MAY HAVE THE TWO ADDITIONAL */
+        /*     OUTPUT VALUES 1 AND 2, WHICH ARE EXPLAINED BELOW, AS IS THE USE */
+        /*     OF IV(TOOBIG) AND IV(NFGCAL).  THE VALUE IV(G), WHICH IS AN */
+        /*     OUTPUT VALUE FROM  DMNH, IS NOT REFERENCED BY DRMNH OR THE */
+        /*     SUBROUTINES IT CALLS. */
+
+        /* IV(1) = 1 MEANS THE CALLER SHOULD SET FX TO F(X), THE FUNCTION VALUE */
+        /*             AT X, AND CALL DRMNH AGAIN, HAVING CHANGED NONE OF THE */
+        /*             OTHER PARAMETERS.  AN EXCEPTION OCCURS IF F(X) CANNOT BE */
+        /*             COMPUTED (E.G. IF OVERFLOW WOULD OCCUR), WHICH MAY HAPPEN */
+        /*             BECAUSE OF AN OVERSIZED STEP.  IN THIS CASE THE CALLER */
+        /*             SHOULD SET IV(TOOBIG) = IV(2) TO 1, WHICH WILL CAUSE */
+        /*             DRMNH TO IGNORE FX AND TRY A SMALLER STEP.  THE PARA- */
+        /*             METER NF THAT  DMNH PASSES TO CALCF (FOR POSSIBLE USE BY */
+        /*             CALCGH) IS A COPY OF IV(NFCALL) = IV(6). */
+        /* IV(1) = 2 MEANS THE CALLER SHOULD SET G TO G(X), THE GRADIENT OF F AT */
+        /*             X, AND H TO THE LOWER TRIANGLE OF H(X), THE HESSIAN OF F */
+        /*             AT X, AND CALL DRMNH AGAIN, HAVING CHANGED NONE OF THE */
+        /*             OTHER PARAMETERS EXCEPT PERHAPS THE SCALE VECTOR D. */
+        /*                  THE PARAMETER NF THAT  DMNH PASSES TO CALCG IS */
+        /*             IV(NFGCAL) = IV(7).  IF G(X) AND H(X) CANNOT BE EVALUATED, */
+        /*             THEN THE CALLER MAY SET IV(TOOBIG) TO 0, IN WHICH CASE */
+        /*             DRMNH WILL RETURN WITH IV(1) = 65. */
+        /*                  NOTE -- DRMNH OVERWRITES H WITH THE LOWER TRIANGLE */
+        /*             OF  DIAG(D)**-1 * H(X) * DIAG(D)**-1. */
+        /* . */
+        /*  ***  GENERAL  *** */
+
+        /*     CODED BY DAVID M. GAY (WINTER 1980).  REVISED SEPT. 1982. */
+        /*     THIS SUBROUTINE WAS WRITTEN IN CONNECTION WITH RESEARCH SUPPORTED */
+        /*     IN PART BY THE NATIONAL SCIENCE FOUNDATION UNDER GRANTS */
+        /*     MCS-7600324 AND MCS-7906671. */
+
+        /*        (SEE  DMNG AND  DMNH FOR REFERENCES.) */
+
+        /* +++++++++++++++++++++++++++  DECLARATIONS  ++++++++++++++++++++++++++++ */
+
+        /*  ***  LOCAL VARIABLES  *** */
+
+
+        /*     ***  CONSTANTS  *** */
+
+
+        /*  ***  NO INTRINSIC FUNCTIONS  *** */
+
+        /*  ***  EXTERNAL FUNCTIONS AND SUBROUTINES  *** */
+
+
+        /* DA7SST.... ASSESSES CANDIDATE STEP. */
+        /* DIVSET.... PROVIDES DEFAULT IV AND V INPUT VALUES. */
+        /* DD7TPR... RETURNS INNER PRODUCT OF TWO VECTORS. */
+        /* DD7DUP.... UPDATES SCALE VECTOR D. */
+        /* DG7QTS.... COMPUTES OPTIMALLY LOCALLY CONSTRAINED STEP. */
+        /* DITSUM.... PRINTS ITERATION SUMMARY AND INFO ON INITIAL AND FINAL X. */
+        /* DPARCK.... CHECKS VALIDITY OF INPUT IV AND V VALUES. */
+        /* DRLDST... COMPUTES V(RELDX) = RELATIVE STEP SIZE. */
+        /* DS7LVM... MULTIPLIES SYMMETRIC MATRIX TIMES VECTOR, GIVEN THE LOWER */
+        /*             TRIANGLE OF THE MATRIX. */
+        /* STOPX.... RETURNS .TRUE. IF THE BREAK KEY HAS BEEN PRESSED. */
+        /* DV2AXY.... COMPUTES SCALAR TIMES ONE VECTOR PLUS ANOTHER. */
+        /* DV7CPY.... COPIES ONE VECTOR TO ANOTHER. */
+        /* DV7SCP... SETS ALL ELEMENTS OF A VECTOR TO A SCALAR. */
+        /* DV2NRM... RETURNS THE 2-NORM OF A VECTOR. */
+
+        /*  ***  SUBSCRIPTS FOR IV AND V  *** */
+
+
+        /*  ***  IV SUBSCRIPT VALUES  *** */
+
+        /* /6 */
+        /*     DATA CNVCOD/55/, DG/37/, DTOL/59/, DTYPE/16/, IRC/29/, KAGQT/33/, */
+        /*    1     LMAT/42/, MODE/35/, MODEL/5/, MXFCAL/17/, MXITER/18/, */
+        /*    2     NEXTV/47/, NFCALL/6/, NFGCAL/7/, NGCALL/30/, NITER/31/, */
+        /*    3     RADINC/8/, RESTOR/9/, STEP/40/, STGLIM/11/, STLSTG/41/, */
+        /*    4     TOOBIG/2/, VNEED/4/, W/34/, XIRC/13/, X0/43/ */
+        /* /7 */
+        /* / */
+
+        /*  ***  V SUBSCRIPT VALUES  *** */
+
+        /* /6 */
+        /*     DATA DGNORM/1/, DINIT/38/, DSTNRM/2/, DTINIT/39/, D0INIT/40/, */
+        /*    1     F/10/, F0/13/, FDIF/11/, GTSTEP/4/, INCFAC/23/, LMAX0/35/, */
+        /*    2     LMAXS/36/, PHMXFC/21/, PREDUC/7/, RADFAC/16/, RADIUS/8/, */
+        /*    3     RAD0/9/, RELDX/17/, STPPAR/5/, TUNER4/29/, TUNER5/30/ */
+        /* /7 */
+        /* / */
+
+        /* /6 */
+        /*     DATA ONE/1.D+0/, ONEP2/1.2D+0/, ZERO/0.D+0/ */
+        /* /7 */
+        /* / */
+
+        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
+
+        /* Parameter adjustments */
+        --h__;
+        --iv;
+        --v;
+        --x;
+        --g;
+        --d__;
+
+        /* Function Body */
+        i__ = iv[1];
+        if (i__ == 1) {
+            goto L30;
+        }
+        if (i__ == 2) {
+            goto L40;
+        }
+
+        /*  ***  CHECK VALIDITY OF IV AND V INPUT VALUES  *** */
+
+        if (iv[1] == 0) {
+            divset_(&c__2, &iv[1], liv, lv, &v[1]);
+        }
+        if (iv[1] == 12 || iv[1] == 13) {
+            iv[4] = iv[4] + *n * (*n + 21) / 2 + 7;
+        }
+        dparck_(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
+        i__ = iv[1] - 2;
+        if (i__ > 12) {
+            goto L999;
+        }
+        nn1o2 = *n * (*n + 1) / 2;
+        if (*lh >= nn1o2) {
+            switch (i__) {
+                case 1: goto L220;
+                case 2: goto L220;
+                case 3: goto L220;
+                case 4: goto L220;
+                case 5: goto L220;
+                case 6: goto L220;
+                case 7: goto L160;
+                case 8: goto L120;
+                case 9: goto L160;
+                case 10: goto L10;
+                case 11: goto L10;
+                case 12: goto L20;
+            }
+        }
+        iv[1] = 66;
+        goto L400;
+
+        /*  ***  STORAGE ALLOCATION  *** */
+
+L10:
+        iv[59] = iv[42] + nn1o2;
+        iv[43] = iv[59] + (*n << 1);
+        iv[40] = iv[43] + *n;
+        iv[41] = iv[40] + *n;
+        iv[37] = iv[41] + *n;
+        iv[34] = iv[37] + *n;
+        iv[47] = iv[34] + (*n << 2) + 7;
+        if (iv[1] != 13) {
+            goto L20;
+        }
+        iv[1] = 14;
+        goto L999;
+
+        /*  ***  INITIALIZATION  *** */
+
+L20:
+        iv[31] = 0;
+        iv[6] = 1;
+        iv[30] = 1;
+        iv[7] = 1;
+        iv[35] = -1;
+        iv[5] = 1;
+        iv[11] = 1;
+        iv[2] = 0;
+        iv[55] = 0;
+        iv[8] = 0;
+        v[9] = 0.;
+        v[5] = 0.;
+        if (v[38] >= 0.) {
+            dv7scp_(n, &d__[1], &v[38]);
+        }
+        k = iv[59];
+        if (v[39] > 0.) {
+            dv7scp_(n, &v[k], &v[39]);
+        }
+        k += *n;
+        if (v[40] > 0.) {
+            dv7scp_(n, &v[k], &v[40]);
+        }
+        iv[1] = 1;
+        goto L999;
+
+L30:
+        v[10] = *fx;
+        if (iv[35] >= 0) {
+            goto L220;
+        }
+        v[13] = *fx;
+        iv[1] = 2;
+        if (iv[2] == 0) {
+            goto L999;
+        }
+        iv[1] = 63;
+        goto L400;
+
+        /*  ***  MAKE SURE GRADIENT COULD BE COMPUTED  *** */
+
+L40:
+        if (iv[2] == 0) {
+            goto L50;
+        }
+        iv[1] = 65;
+        goto L400;
+
+        /*  ***  UPDATE THE SCALE VECTOR D  *** */
+
+L50:
+        dg1 = iv[37];
+        if (iv[16] <= 0) {
+            goto L70;
+        }
+        k = dg1;
+        j = 0;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j += i__;
+            v[k] = h__[j];
+            ++k;
+            /* L60: */
+        }
+        dd7dup_(&d__[1], &v[dg1], &iv[1], liv, lv, n, &v[1]);
+
+        /*  ***  COMPUTE SCALED GRADIENT AND ITS NORM  *** */
+
+L70:
+        dg1 = iv[37];
+        k = dg1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = g[i__] / d__[i__];
+            ++k;
+            /* L80: */
+        }
+        v[1] = dv2nrm_(n, &v[dg1]);
+
+        /*  ***  COMPUTE SCALED HESSIAN  *** */
+
+        k = 1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            t = 1. / d__[i__];
+            i__2 = i__;
+            for (j = 1; j <= i__2; ++j) {
+                h__[k] = t * h__[k] / d__[j];
+                ++k;
+                /* L90: */
+            }
+            /* L100: */
+        }
+
+        if (iv[55] != 0) {
+            goto L390;
+        }
+        if (iv[35] == 0) {
+            goto L350;
+        }
+
+        /*  ***  ALLOW FIRST STEP TO HAVE SCALED 2-NORM AT MOST V(LMAX0)  *** */
+
+        v[8] = v[35] / (v[21] + 1.);
+
+        iv[35] = 0;
+
+
+        /* -----------------------------  MAIN LOOP  ----------------------------- */
+
+
+        /*  ***  PRINT ITERATION SUMMARY, CHECK ITERATION LIMIT  *** */
+
+L110:
+        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+L120:
+        k = iv[31];
+        if (k < iv[18]) {
+            goto L130;
+        }
+        iv[1] = 10;
+        goto L400;
+
+L130:
+        iv[31] = k + 1;
+
+        /*  ***  INITIALIZE FOR START OF NEXT ITERATION  *** */
+
+        dg1 = iv[37];
+        x01 = iv[43];
+        v[13] = v[10];
+        iv[29] = 4;
+        iv[33] = -1;
+
+        /*     ***  COPY X TO X0  *** */
+
+        dv7cpy_(n, &v[x01], &x[1]);
+
+        /*  ***  UPDATE RADIUS  *** */
+
+        if (k == 0) {
+            goto L150;
+        }
+        step1 = iv[40];
+        k = step1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = d__[i__] * v[k];
+            ++k;
+            /* L140: */
+        }
+        v[8] = v[16] * dv2nrm_(n, &v[step1]);
+
+        /*  ***  CHECK STOPX AND FUNCTION EVALUATION LIMIT  *** */
+
+L150:
+        if (!stopx_(&dummy)) {
+            goto L170;
+        }
+        iv[1] = 11;
+        goto L180;
+
+        /*     ***  COME HERE WHEN RESTARTING AFTER FUNC. EVAL. LIMIT OR STOPX. */
+
+L160:
+        if (v[10] >= v[13]) {
+            goto L170;
+        }
+        v[16] = 1.;
+        k = iv[31];
+        goto L130;
+
+L170:
+        if (iv[6] < iv[17]) {
+            goto L190;
+        }
+        iv[1] = 9;
+L180:
+        if (v[10] >= v[13]) {
+            goto L400;
+        }
+
+        /*        ***  IN CASE OF STOPX OR FUNCTION EVALUATION LIMIT WITH */
+        /*        ***  IMPROVED V(F), EVALUATE THE GRADIENT AT X. */
+
+        iv[55] = iv[1];
+        goto L340;
+
+        /* . . . . . . . . . . . . .  COMPUTE CANDIDATE STEP  . . . . . . . . . . */
+
+L190:
+        step1 = iv[40];
+        dg1 = iv[37];
+        l = iv[42];
+        w1 = iv[34];
+        dg7qts_(&d__[1], &v[dg1], &h__[1], &iv[33], &v[l], n, &v[step1], &v[1], &
+                v[w1]);
+        if (iv[29] != 6) {
+            goto L200;
+        }
+        if (iv[9] != 2) {
+            goto L220;
+        }
+        rstrst = 2;
+        goto L230;
+
+        /*  ***  CHECK WHETHER EVALUATING F(X0 + STEP) LOOKS WORTHWHILE  *** */
+
+L200:
+        iv[2] = 0;
+        if (v[2] <= 0.) {
+            goto L220;
+        }
+        if (iv[29] != 5) {
+            goto L210;
+        }
+        if (v[16] <= 1.) {
+            goto L210;
+        }
+        if (v[7] > v[11] * 1.2) {
+            goto L210;
+        }
+        if (iv[9] != 2) {
+            goto L220;
+        }
+        rstrst = 0;
+        goto L230;
+
+        /*  ***  COMPUTE F(X0 + STEP)  *** */
+
+L210:
+        x01 = iv[43];
+        step1 = iv[40];
+        dv2axy_(n, &x[1], &c_b32, &v[step1], &v[x01]);
+        ++iv[6];
+        iv[1] = 1;
+        goto L999;
+
+        /* . . . . . . . . . . . . .  ASSESS CANDIDATE STEP  . . . . . . . . . . . */
+
+L220:
+        rstrst = 3;
+L230:
+        x01 = iv[43];
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        da7sst_(&iv[1], liv, lv, &v[1]);
+        step1 = iv[40];
+        lstgst = iv[41];
+        i__ = iv[9] + 1;
+        switch (i__) {
+            case 1: goto L270;
+            case 2: goto L240;
+            case 3: goto L250;
+            case 4: goto L260;
+        }
+L240:
+        dv7cpy_(n, &x[1], &v[x01]);
+        goto L270;
+L250:
+        dv7cpy_(n, &v[lstgst], &v[step1]);
+        goto L270;
+L260:
+        dv7cpy_(n, &v[step1], &v[lstgst]);
+        dv2axy_(n, &x[1], &c_b32, &v[step1], &v[x01]);
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        iv[9] = rstrst;
+
+L270:
+        k = iv[29];
+        switch (k) {
+            case 1: goto L280;
+            case 2: goto L310;
+            case 3: goto L310;
+            case 4: goto L310;
+            case 5: goto L280;
+            case 6: goto L290;
+            case 7: goto L300;
+            case 8: goto L300;
+            case 9: goto L300;
+            case 10: goto L300;
+            case 11: goto L300;
+            case 12: goto L300;
+            case 13: goto L380;
+            case 14: goto L350;
+        }
+
+        /*     ***  RECOMPUTE STEP WITH NEW RADIUS  *** */
+
+L280:
+        v[8] = v[16] * v[2];
+        goto L150;
+
+        /*  ***  COMPUTE STEP OF LENGTH V(LMAXS) FOR SINGULAR CONVERGENCE TEST. */
+
+L290:
+        v[8] = v[36];
+        goto L190;
+
+        /*  ***  CONVERGENCE OR FALSE CONVERGENCE  *** */
+
+L300:
+        iv[55] = k - 4;
+        if (v[10] >= v[13]) {
+            goto L390;
+        }
+        if (iv[13] == 14) {
+            goto L390;
+        }
+        iv[13] = 14;
+
+        /* . . . . . . . . . . . .  PROCESS ACCEPTABLE STEP  . . . . . . . . . . . */
+
+L310:
+        if (iv[29] != 3) {
+            goto L340;
+        }
+        temp1 = lstgst;
+
+        /*     ***  PREPARE FOR GRADIENT TESTS  *** */
+        /*     ***  SET  TEMP1 = HESSIAN * STEP + G(X0) */
+        /*     ***             = DIAG(D) * (H * STEP + G(X0)) */
+
+        /*        USE X0 VECTOR AS TEMPORARY. */
+        k = x01;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = d__[i__] * v[step1];
+            ++k;
+            ++step1;
+            /* L320: */
+        }
+        ds7lvm_(n, &v[temp1], &h__[1], &v[x01]);
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[temp1] = d__[i__] * v[temp1] + g[i__];
+            ++temp1;
+            /* L330: */
+        }
+
+        /*  ***  COMPUTE GRADIENT AND HESSIAN  *** */
+
+L340:
+        ++iv[30];
+        iv[2] = 0;
+        iv[1] = 2;
+        goto L999;
+
+L350:
+        iv[1] = 2;
+        if (iv[29] != 3) {
+            goto L110;
+        }
+
+        /*  ***  SET V(RADFAC) BY GRADIENT TESTS  *** */
+
+        temp1 = iv[41];
+        step1 = iv[40];
+
+        /*     ***  SET  TEMP1 = DIAG(D)**-1 * (HESSIAN*STEP + (G(X0)-G(X)))  *** */
+
+        k = temp1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = (v[k] - g[i__]) / d__[i__];
+            ++k;
+            /* L360: */
+        }
+
+        /*     ***  DO GRADIENT TESTS  *** */
+
+        if (dv2nrm_(n, &v[temp1]) <= v[1] * v[29]) {
+            goto L370;
+        }
+        if (dd7tpr_(n, &g[1], &v[step1]) >= v[4] * v[30]) {
+            goto L110;
+        }
+L370:
+        v[16] = v[23];
+        goto L110;
+
+        /* . . . . . . . . . . . . . .  MISC. DETAILS  . . . . . . . . . . . . . . */
+
+        /*  ***  BAD PARAMETERS TO ASSESS  *** */
+
+L380:
+        iv[1] = 64;
+        goto L400;
+
+        /*  ***  PRINT SUMMARY OF FINAL ITERATION AND OTHER REQUESTED ITEMS  *** */
+
+L390:
+        iv[1] = iv[55];
+        iv[55] = 0;
+L400:
+        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+
+L999:
+        return 0;
+
+        /*  ***  LAST CARD OF DRMNH FOLLOWS  *** */
+    }
+
+    template<typename doublereal>
+    /* Subroutine */ int drmngb_(doublereal *b, doublereal *d__, doublereal *fx,
+            doublereal *g, integer *iv, integer *liv, integer *lv, integer *n,
+            doublereal *v, doublereal *x) {
         /* System generated locals */
         integer i__1;
 
         /* Local variables */
-        static integer i__, t, k1, ii, nm1;
+        static integer i__, j, k, l;
+        static doublereal t;
+        static integer z__, i1, n1, w1, g01;
+        static doublereal gi;
+        static integer x01;
+        static doublereal xi;
+        static integer dg1, td1, tg1, np1, ipi, ipn, temp0, temp1, step1, dummy;
+        //        extern /* Subroutine */ int dd7dgb_(doublereal *, doublereal *,
+        //                doublereal *, doublereal *, doublereal *, integer *, integer *,
+        //                doublereal *, integer *, integer *, integer *, doublereal *,
+        //                doublereal *, doublereal *, doublereal *, doublereal *,
+        //                doublereal *, doublereal *);
+        //        //        extern logical stopx_(integer *);
+        //        extern /* Subroutine */ int dl7upd_(doublereal *, doublereal *,
+        //                doublereal *, doublereal *, doublereal *, integer *, doublereal *,
+        //                doublereal *);
+        static integer dstep1;
+        //        extern /* Subroutine */ int dw7zbf_(doublereal *, integer *, doublereal *,
+        //                doublereal *, doublereal *, doublereal *);
+        //        extern doublereal dd7tpr_(integer *, doublereal *, doublereal *);
+        //        extern /* Subroutine */ int da7sst_(integer *, integer *, integer *,
+        //                doublereal *), i7shft_(integer *, integer *, integer *), dl7vml_(
+        //                integer *, doublereal *, doublereal *, doublereal *);
+        //        extern doublereal dv2nrm_(integer *, doublereal *);
+        //        extern /* Subroutine */ int dq7rsh_(integer *, integer *, logical *,
+        //                doublereal *, doublereal *, doublereal *), dv7scp_(integer *,
+        //                doublereal *, doublereal *), dv7ipr_(integer *, integer *,
+        //                doublereal *), dv7cpy_(integer *, doublereal *, doublereal *),
+        //                dl7tvm_(integer *, doublereal *, doublereal *, doublereal *),
+        //                dv2axy_(integer *, doublereal *, doublereal *, doublereal *,
+        //                doublereal *), dv7vmp_(integer *, doublereal *, doublereal *,
+        //                doublereal *, integer *);
+        static integer nwtst1;
+        //        extern /* Subroutine */ int dparck_(integer *, doublereal *, integer *,
+        //                integer *, integer *, integer *, doublereal *);
+        //        extern doublereal drldst_(integer *, doublereal *, doublereal *,
+        //                doublereal *);
+        //        extern /* Subroutine */ int divset_(integer *, integer *, integer *,
+        //                integer *, doublereal *), ditsum_(doublereal *, doublereal *,
+        //                integer *, integer *, integer *, integer *, doublereal *,
+        //                doublereal *);
+        static integer lstgst, rstrst;
 
 
-        /*  ***  SHIFT X(K),...,X(N) LEFT CIRCULARLY ONE POSITION IF K .GT. 0. */
-        /*  ***  SHIFT X(-K),...,X(N) RIGHT CIRCULARLY ONE POSITION IF K .LT. 0. */
+        /*  ***  CARRY OUT  DMNGB (SIMPLY BOUNDED MINIMIZATION) ITERATIONS, */
+        /*  ***  USING DOUBLE-DOGLEG/BFGS STEPS. */
+
+        /*  ***  PARAMETER DECLARATIONS  *** */
 
 
+        /* --------------------------  PARAMETER USAGE  -------------------------- */
+
+        /* B.... VECTOR OF LOWER AND UPPER BOUNDS ON X. */
+        /* D.... SCALE VECTOR. */
+        /* FX... FUNCTION VALUE. */
+        /* G.... GRADIENT VECTOR. */
+        /* IV... INTEGER VALUE ARRAY. */
+        /* LIV.. LENGTH OF IV (AT LEAST 59) + N. */
+        /* LV... LENGTH OF V (AT LEAST 71 + N*(N+19)/2). */
+        /* N.... NUMBER OF VARIABLES (COMPONENTS IN X AND G). */
+        /* V.... FLOATING-POINT VALUE ARRAY. */
+        /* X.... VECTOR OF PARAMETERS TO BE OPTIMIZED. */
+
+        /*  ***  DISCUSSION  *** */
+
+        /*        PARAMETERS IV, N, V, AND X ARE THE SAME AS THE CORRESPONDING */
+        /*     ONES TO  DMNGB (WHICH SEE), EXCEPT THAT V CAN BE SHORTER (SINCE */
+        /*     THE PART OF V THAT  DMNGB USES FOR STORING G IS NOT NEEDED). */
+        /*     MOREOVER, COMPARED WITH  DMNGB, IV(1) MAY HAVE THE TWO ADDITIONAL */
+        /*     OUTPUT VALUES 1 AND 2, WHICH ARE EXPLAINED BELOW, AS IS THE USE */
+        /*     OF IV(TOOBIG) AND IV(NFGCAL).  THE VALUE IV(G), WHICH IS AN */
+        /*     OUTPUT VALUE FROM  DMNGB (AND SMSNOB), IS NOT REFERENCED BY */
+        /*     DRMNGB OR THE SUBROUTINES IT CALLS. */
+        /*        FX AND G NEED NOT HAVE BEEN INITIALIZED WHEN DRMNGB IS CALLED */
+        /*     WITH IV(1) = 12, 13, OR 14. */
+
+        /* IV(1) = 1 MEANS THE CALLER SHOULD SET FX TO F(X), THE FUNCTION VALUE */
+        /*             AT X, AND CALL DRMNGB AGAIN, HAVING CHANGED NONE OF THE */
+        /*             OTHER PARAMETERS.  AN EXCEPTION OCCURS IF F(X) CANNOT BE */
+        /*             (E.G. IF OVERFLOW WOULD OCCUR), WHICH MAY HAPPEN BECAUSE */
+        /*             OF AN OVERSIZED STEP.  IN THIS CASE THE CALLER SHOULD SET */
+        /*             IV(TOOBIG) = IV(2) TO 1, WHICH WILL CAUSE DRMNGB TO IG- */
+        /*             NORE FX AND TRY A SMALLER STEP.  THE PARAMETER NF THAT */
+        /*              DMNGB PASSES TO CALCF (FOR POSSIBLE USE BY CALCG) IS A */
+        /*             COPY OF IV(NFCALL) = IV(6). */
+        /* IV(1) = 2 MEANS THE CALLER SHOULD SET G TO G(X), THE GRADIENT VECTOR */
+        /*             OF F AT X, AND CALL DRMNGB AGAIN, HAVING CHANGED NONE OF */
+        /*             THE OTHER PARAMETERS EXCEPT POSSIBLY THE SCALE VECTOR D */
+        /*             WHEN IV(DTYPE) = 0.  THE PARAMETER NF THAT  DMNGB PASSES */
+        /*             TO CALCG IS IV(NFGCAL) = IV(7).  IF G(X) CANNOT BE */
+        /*             EVALUATED, THEN THE CALLER MAY SET IV(NFGCAL) TO 0, IN */
+        /*             WHICH CASE DRMNGB WILL RETURN WITH IV(1) = 65. */
+        /* . */
+        /*  ***  GENERAL  *** */
+
+        /*     CODED BY DAVID M. GAY (DECEMBER 1979).  REVISED SEPT. 1982. */
+        /*     THIS SUBROUTINE WAS WRITTEN IN CONNECTION WITH RESEARCH SUPPORTED */
+        /*     IN PART BY THE NATIONAL SCIENCE FOUNDATION UNDER GRANTS */
+        /*     MCS-7600324 AND MCS-7906671. */
+
+        /*        (SEE  DMNG FOR REFERENCES.) */
+
+        /* +++++++++++++++++++++++++++  DECLARATIONS  ++++++++++++++++++++++++++++ */
+
+        /*  ***  LOCAL VARIABLES  *** */
+
+
+        /*     ***  CONSTANTS  *** */
+
+
+        /*  ***  NO INTRINSIC FUNCTIONS  *** */
+
+        /*  ***  EXTERNAL FUNCTIONS AND SUBROUTINES  *** */
+
+
+        /* DA7SST.... ASSESSES CANDIDATE STEP. */
+        /* DD7DGB... COMPUTES SIMPLY BOUNDED DOUBLE-DOGLEG (CANDIDATE) STEP. */
+        /* DIVSET.... SUPPLIES DEFAULT IV AND V INPUT COMPONENTS. */
+        /* DD7TPR... RETURNS INNER PRODUCT OF TWO VECTORS. */
+        /* I7SHFT... CYCLICALLLY SHIFTS AN ARRAY OF INTEGERS. */
+        /* DITSUM.... PRINTS ITERATION SUMMARY AND INFO ON INITIAL AND FINAL X. */
+        /* DL7TVM... MULTIPLIES TRANSPOSE OF LOWER TRIANGLE TIMES VECTOR. */
+        /* LUPDT.... UPDATES CHOLESKY FACTOR OF HESSIAN APPROXIMATION. */
+        /* DL7VML.... MULTIPLIES LOWER TRIANGLE TIMES VECTOR. */
+        /* DPARCK.... CHECKS VALIDITY OF INPUT IV AND V VALUES. */
+        /* DQ7RSH... CYCLICALLY SHIFTS CHOLESKY FACTOR. */
+        /* DRLDST... COMPUTES V(RELDX) = RELATIVE STEP SIZE. */
+        /* STOPX.... RETURNS .TRUE. IF THE BREAK KEY HAS BEEN PRESSED. */
+        /* DV2NRM... RETURNS THE 2-NORM OF A VECTOR. */
+        /* DV2AXY.... COMPUTES SCALAR TIMES ONE VECTOR PLUS ANOTHER. */
+        /* DV7CPY.... COPIES ONE VECTOR TO ANOTHER. */
+        /* DV7IPR... CYCLICALLY SHIFTS A FLOATING-POINT ARRAY. */
+        /* DV7SCP... SETS ALL ELEMENTS OF A VECTOR TO A SCALAR. */
+        /* DV7VMP... MULTIPLIES VECTOR BY VECTOR RAISED TO POWER (COMPONENTWISE). */
+        /* DW7ZBF... COMPUTES W AND Z FOR DL7UPD CORRESPONDING TO BFGS UPDATE. */
+
+        /*  ***  SUBSCRIPTS FOR IV AND V  *** */
+
+
+        /*  ***  IV SUBSCRIPT VALUES  *** */
+
+        /*  ***  (NOTE THAT NC IS STORED IN IV(G0)) *** */
+
+        /* /6 */
+        /*     DATA CNVCOD/55/, DG/37/, INITH/25/, IRC/29/, IVNEED/3/, KAGQT/33/, */
+        /*    1     MODE/35/, MODEL/5/, MXFCAL/17/, MXITER/18/, NC/48/, */
+        /*    2     NEXTIV/46/, NEXTV/47/, NFCALL/6/, NFGCAL/7/, NGCALL/30/, */
+        /*    3     NITER/31/, NWTSTP/34/, PERM/58/, RADINC/8/, RESTOR/9/, */
+        /*    4     STEP/40/, STGLIM/11/, STLSTG/41/, TOOBIG/2/, XIRC/13/, X0/43/ */
+        /* /7 */
+        /* / */
+
+        /*  ***  V SUBSCRIPT VALUES  *** */
+
+        /* /6 */
+        /*     DATA DGNORM/1/, DINIT/38/, DSTNRM/2/, F/10/, F0/13/, FDIF/11/, */
+        /*    1     GTSTEP/4/, INCFAC/23/, LMAT/42/, LMAX0/35/, LMAXS/36/, */
+        /*    2     PREDUC/7/, RADFAC/16/, RADIUS/8/, RAD0/9/, RELDX/17/, */
+        /*    3     TUNER4/29/, TUNER5/30/, VNEED/4/ */
+        /* /7 */
+        /* / */
+
+        /* /6 */
+        /*     DATA NEGONE/-1.D+0/, ONE/1.D+0/, ONEP2/1.2D+0/, ZERO/0.D+0/ */
+        /* /7 */
+        /* / */
+
+        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
 
         /* Parameter adjustments */
+        --iv;
+        --v;
         --x;
+        --g;
+        --d__;
+        b -= 3;
 
         /* Function Body */
-        if (*k < 0) {
-            goto L20;
+        i__ = iv[1];
+        if (i__ == 1) {
+            goto L70;
         }
-        if (*k >= *n) {
+        if (i__ == 2) {
+            goto L80;
+        }
+
+        /*  ***  CHECK VALIDITY OF IV AND V INPUT VALUES  *** */
+
+        if (iv[1] == 0) {
+            divset_(&c__2, &iv[1], liv, lv, &v[1]);
+        }
+        if (iv[1] < 12) {
+            goto L10;
+        }
+        if (iv[1] > 13) {
+            goto L10;
+        }
+        iv[4] += *n * (*n + 19) / 2;
+        iv[3] += *n;
+L10:
+        dparck_(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
+        i__ = iv[1] - 2;
+        if (i__ > 12) {
             goto L999;
         }
-        nm1 = *n - 1;
-        t = x[*k];
-        i__1 = nm1;
-        for (i__ = *k; i__ <= i__1; ++i__) {
-            /* L10: */
-            x[i__] = x[i__ + 1];
+        switch (i__) {
+            case 1: goto L250;
+            case 2: goto L250;
+            case 3: goto L250;
+            case 4: goto L250;
+            case 5: goto L250;
+            case 6: goto L250;
+            case 7: goto L190;
+            case 8: goto L150;
+            case 9: goto L190;
+            case 10: goto L20;
+            case 11: goto L20;
+            case 12: goto L30;
         }
-        x[*n] = t;
-        goto L999;
+
+        /*  ***  STORAGE ALLOCATION  *** */
 
 L20:
-        k1 = -(*k);
-        if (k1 >= *n) {
+        l = iv[42];
+        iv[43] = l + *n * (*n + 1) / 2;
+        iv[40] = iv[43] + (*n << 1);
+        iv[41] = iv[40] + (*n << 1);
+        iv[34] = iv[41] + *n;
+        iv[37] = iv[34] + (*n << 1);
+        iv[47] = iv[37] + (*n << 1);
+        iv[46] = iv[58] + *n;
+        if (iv[1] != 13) {
+            goto L30;
+        }
+        iv[1] = 14;
+        goto L999;
+
+        /*  ***  INITIALIZATION  *** */
+
+L30:
+        iv[31] = 0;
+        iv[6] = 1;
+        iv[30] = 1;
+        iv[7] = 1;
+        iv[35] = -1;
+        iv[5] = 1;
+        iv[11] = 1;
+        iv[2] = 0;
+        iv[55] = 0;
+        iv[8] = 0;
+        iv[48] = *n;
+        v[9] = 0.;
+
+        /*  ***  CHECK CONSISTENCY OF B AND INITIALIZE IP ARRAY  *** */
+
+        ipi = iv[58];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            iv[ipi] = i__;
+            ++ipi;
+            if (b[(i__ << 1) + 1] > b[(i__ << 1) + 2]) {
+                goto L410;
+            }
+            /* L40: */
+        }
+
+        if (v[38] >= 0.) {
+            dv7scp_(n, &d__[1], &v[38]);
+        }
+        if (iv[25] != 1) {
+            goto L60;
+        }
+
+        /*     ***  SET THE INITIAL HESSIAN APPROXIMATION TO DIAG(D)**-2  *** */
+
+        l = iv[42];
+        i__1 = *n * (*n + 1) / 2;
+        dv7scp_(&i__1, &v[l], &c_b16);
+        k = l - 1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            k += i__;
+            t = d__[i__];
+            if (t <= 0.) {
+                t = 1.;
+            }
+            v[k] = t;
+            /* L50: */
+        }
+
+        /*  ***  GET INITIAL FUNCTION VALUE  *** */
+
+L60:
+        iv[1] = 1;
+        goto L440;
+
+L70:
+        v[10] = *fx;
+        if (iv[35] >= 0) {
+            goto L250;
+        }
+        v[13] = *fx;
+        iv[1] = 2;
+        if (iv[2] == 0) {
             goto L999;
         }
-        t = x[*n];
-        nm1 = *n - k1;
-        i__1 = nm1;
-        for (ii = 1; ii <= i__1; ++ii) {
-            i__ = *n - ii;
-            x[i__ + 1] = x[i__];
-            /* L30: */
+        iv[1] = 63;
+        goto L430;
+
+        /*  ***  MAKE SURE GRADIENT COULD BE COMPUTED  *** */
+
+L80:
+        if (iv[2] == 0) {
+            goto L90;
         }
-        x[k1] = t;
+        iv[1] = 65;
+        goto L430;
+
+        /*  ***  CHOOSE INITIAL PERMUTATION  *** */
+
+L90:
+        ipi = iv[58];
+        ipn = ipi + *n;
+        n1 = *n;
+        np1 = *n + 1;
+        l = iv[42];
+        w1 = iv[34] + *n;
+        k = *n - iv[48];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            --ipn;
+            j = iv[ipn];
+            if (b[(j << 1) + 1] >= b[(j << 1) + 2]) {
+                goto L100;
+            }
+            xi = x[j];
+            gi = g[j];
+            if (xi <= b[(j << 1) + 1] && gi > 0.) {
+                goto L100;
+            }
+            if (xi >= b[(j << 1) + 2] && gi < 0.) {
+                goto L100;
+            }
+            /*           *** DISALLOW CONVERGENCE IF X(J) HAS JUST BEEN FREED *** */
+            if (i__ <= k) {
+                iv[55] = 0;
+            }
+            goto L120;
+L100:
+            i1 = np1 - i__;
+            if (i1 >= n1) {
+                goto L110;
+            }
+            i7shft_(&n1, &i1, &iv[ipi]);
+            dq7rsh_(&i1, &n1, &c_false, &g[1], &v[l], &v[w1]);
+L110:
+            --n1;
+L120:
+            ;
+        }
+
+        iv[48] = n1;
+        v[1] = 0.;
+        if (n1 <= 0) {
+            goto L130;
+        }
+        dg1 = iv[37];
+        dv7vmp_(n, &v[dg1], &g[1], &d__[1], &c_n1);
+        dv7ipr_(n, &iv[ipi], &v[dg1]);
+        v[1] = dv2nrm_(&n1, &v[dg1]);
+L130:
+        if (iv[55] != 0) {
+            goto L420;
+        }
+        if (iv[35] == 0) {
+            goto L370;
+        }
+
+        /*  ***  ALLOW FIRST STEP TO HAVE SCALED 2-NORM AT MOST V(LMAX0)  *** */
+
+        v[8] = v[35];
+
+        iv[35] = 0;
+
+
+        /* -----------------------------  MAIN LOOP  ----------------------------- */
+
+
+        /*  ***  PRINT ITERATION SUMMARY, CHECK ITERATION LIMIT  *** */
+
+L140:
+        //        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+        L150 :
+                k = iv[31];
+        if (k < iv[18]) {
+            goto L160;
+        }
+        iv[1] = 10;
+        goto L430;
+
+        /*  ***  UPDATE RADIUS  *** */
+
+L160:
+        iv[31] = k + 1;
+        if (k == 0) {
+            goto L170;
+        }
+        t = v[16] * v[2];
+        if (v[16] < 1. || t > v[8]) {
+            v[8] = t;
+        }
+
+        /*  ***  INITIALIZE FOR START OF NEXT ITERATION  *** */
+
+L170:
+        x01 = iv[43];
+        v[13] = v[10];
+        iv[29] = 4;
+        iv[33] = -1;
+
+        /*     ***  COPY X TO X0  *** */
+
+        dv7cpy_(n, &v[x01], &x[1]);
+
+        /*  ***  CHECK STOPX AND FUNCTION EVALUATION LIMIT  *** */
+
+L180:
+        if (!stopx_(&dummy)) {
+            goto L200;
+        }
+        iv[1] = 11;
+        goto L210;
+
+        /*     ***  COME HERE WHEN RESTARTING AFTER FUNC. EVAL. LIMIT OR STOPX. */
+
+L190:
+        if (v[10] >= v[13]) {
+            goto L200;
+        }
+        v[16] = 1.;
+        k = iv[31];
+        goto L160;
+
+L200:
+        if (iv[6] < iv[17]) {
+            goto L220;
+        }
+        iv[1] = 9;
+L210:
+        if (v[10] >= v[13]) {
+            goto L430;
+        }
+
+        /*        ***  IN CASE OF STOPX OR FUNCTION EVALUATION LIMIT WITH */
+        /*        ***  IMPROVED V(F), EVALUATE THE GRADIENT AT X. */
+
+        iv[55] = iv[1];
+        goto L360;
+
+        /* . . . . . . . . . . . . .  COMPUTE CANDIDATE STEP  . . . . . . . . . . */
+
+L220:
+        step1 = iv[40];
+        dg1 = iv[37];
+        nwtst1 = iv[34];
+        w1 = nwtst1 + *n;
+        dstep1 = step1 + *n;
+        ipi = iv[58];
+        l = iv[42];
+        tg1 = dg1 + *n;
+        x01 = iv[43];
+        td1 = x01 + *n;
+        dd7dgb_(&b[3], &d__[1], &v[dg1], &v[dstep1], &g[1], &iv[ipi], &iv[33], &v[
+                l], lv, n, &iv[48], &v[nwtst1], &v[step1], &v[td1], &v[tg1], &v[1]
+                , &v[w1], &v[x01]);
+        if (iv[29] != 6) {
+            goto L230;
+        }
+        if (iv[9] != 2) {
+            goto L250;
+        }
+        rstrst = 2;
+        goto L260;
+
+        /*  ***  CHECK WHETHER EVALUATING F(X0 + STEP) LOOKS WORTHWHILE  *** */
+
+L230:
+        iv[2] = 0;
+        if (v[2] <= 0.) {
+            goto L250;
+        }
+        if (iv[29] != 5) {
+            goto L240;
+        }
+        if (v[16] <= 1.) {
+            goto L240;
+        }
+        if (v[7] > v[11] * 1.2) {
+            goto L240;
+        }
+        if (iv[9] != 2) {
+            goto L250;
+        }
+        rstrst = 0;
+        goto L260;
+
+        /*  ***  COMPUTE F(X0 + STEP)  *** */
+
+L240:
+        dv2axy_(n, &x[1], &c_b40, &v[step1], &v[x01]);
+        ++iv[6];
+        iv[1] = 1;
+        goto L440;
+
+        /* . . . . . . . . . . . . .  ASSESS CANDIDATE STEP  . . . . . . . . . . . */
+
+L250:
+        rstrst = 3;
+L260:
+        x01 = iv[43];
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        da7sst_(&iv[1], liv, lv, &v[1]);
+        step1 = iv[40];
+        lstgst = iv[41];
+        i__ = iv[9] + 1;
+        switch (i__) {
+            case 1: goto L300;
+            case 2: goto L270;
+            case 3: goto L280;
+            case 4: goto L290;
+        }
+L270:
+        dv7cpy_(n, &x[1], &v[x01]);
+        goto L300;
+L280:
+        dv7cpy_(n, &v[lstgst], &x[1]);
+        goto L300;
+L290:
+        dv7cpy_(n, &x[1], &v[lstgst]);
+        dv2axy_(n, &v[step1], &c_b45, &v[x01], &x[1]);
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        iv[9] = rstrst;
+
+L300:
+        k = iv[29];
+        switch (k) {
+            case 1: goto L310;
+            case 2: goto L340;
+            case 3: goto L340;
+            case 4: goto L340;
+            case 5: goto L310;
+            case 6: goto L320;
+            case 7: goto L330;
+            case 8: goto L330;
+            case 9: goto L330;
+            case 10: goto L330;
+            case 11: goto L330;
+            case 12: goto L330;
+            case 13: goto L400;
+            case 14: goto L370;
+        }
+
+        /*     ***  RECOMPUTE STEP WITH CHANGED RADIUS  *** */
+
+L310:
+        v[8] = v[16] * v[2];
+        goto L180;
+
+        /*  ***  COMPUTE STEP OF LENGTH V(LMAXS) FOR SINGULAR CONVERGENCE TEST. */
+
+L320:
+        v[8] = v[36];
+        goto L220;
+
+        /*  ***  CONVERGENCE OR FALSE CONVERGENCE  *** */
+
+L330:
+        iv[55] = k - 4;
+        if (v[10] >= v[13]) {
+            goto L420;
+        }
+        if (iv[13] == 14) {
+            goto L420;
+        }
+        iv[13] = 14;
+
+        /* . . . . . . . . . . . .  PROCESS ACCEPTABLE STEP  . . . . . . . . . . . */
+
+L340:
+        x01 = iv[43];
+        step1 = iv[40];
+        dv2axy_(n, &v[step1], &c_b45, &v[x01], &x[1]);
+        if (iv[29] != 3) {
+            goto L360;
+        }
+
+        /*     ***  SET  TEMP1 = HESSIAN * STEP  FOR USE IN GRADIENT TESTS  *** */
+
+        /*     ***  USE X0 AS TEMPORARY... */
+
+        ipi = iv[58];
+        dv7cpy_(n, &v[x01], &v[step1]);
+        dv7ipr_(n, &iv[ipi], &v[x01]);
+        l = iv[42];
+        dl7tvm_(n, &v[x01], &v[l], &v[x01]);
+        dl7vml_(n, &v[x01], &v[l], &v[x01]);
+
+        /*        *** UNPERMUTE X0 INTO TEMP1 *** */
+
+        temp1 = iv[41];
+        temp0 = temp1 - 1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = iv[ipi];
+            ++ipi;
+            k = temp0 + j;
+            v[k] = v[x01];
+            ++x01;
+            /* L350: */
+        }
+
+        /*  ***  SAVE OLD GRADIENT, COMPUTE NEW ONE  *** */
+
+L360:
+        g01 = iv[34] + *n;
+        dv7cpy_(n, &v[g01], &g[1]);
+        ++iv[30];
+        iv[2] = 0;
+        iv[1] = 2;
+        goto L999;
+
+        /*  ***  INITIALIZATIONS -- G0 = G - G0, ETC.  *** */
+
+L370:
+        g01 = iv[34] + *n;
+        dv2axy_(n, &v[g01], &c_b45, &v[g01], &g[1]);
+        step1 = iv[40];
+        temp1 = iv[41];
+        if (iv[29] != 3) {
+            goto L390;
+        }
+
+        /*  ***  SET V(RADFAC) BY GRADIENT TESTS  *** */
+
+        /*     ***  SET  TEMP1 = DIAG(D)**-1 * (HESSIAN*STEP + (G(X0)-G(X)))  *** */
+
+        dv2axy_(n, &v[temp1], &c_b45, &v[g01], &v[temp1]);
+        dv7vmp_(n, &v[temp1], &v[temp1], &d__[1], &c_n1);
+
+        /*        ***  DO GRADIENT TESTS  *** */
+
+        if (dv2nrm_(n, &v[temp1]) <= v[1] * v[29]) {
+            goto L380;
+        }
+        if (dd7tpr_(n, &g[1], &v[step1]) >= v[4] * v[30]) {
+            goto L390;
+        }
+L380:
+        v[16] = v[23];
+
+        /*  ***  UPDATE H, LOOP  *** */
+
+L390:
+        w1 = iv[34];
+        z__ = iv[43];
+        l = iv[42];
+        ipi = iv[58];
+        dv7ipr_(n, &iv[ipi], &v[step1]);
+        dv7ipr_(n, &iv[ipi], &v[g01]);
+        dw7zbf_(&v[l], n, &v[step1], &v[w1], &v[g01], &v[z__]);
+
+        /*     ** USE THE N-VECTORS STARTING AT V(STEP1) AND V(G01) FOR SCRATCH.. */
+        dl7upd_(&v[temp1], &v[step1], &v[l], &v[g01], &v[l], n, &v[w1], &v[z__]);
+        iv[1] = 2;
+        goto L140;
+
+        /* . . . . . . . . . . . . . .  MISC. DETAILS  . . . . . . . . . . . . . . */
+
+        /*  ***  BAD PARAMETERS TO ASSESS  *** */
+
+L400:
+        iv[1] = 64;
+        goto L430;
+
+        /*  ***  INCONSISTENT B  *** */
+
+L410:
+        iv[1] = 82;
+        goto L430;
+
+        /*  ***  PRINT SUMMARY OF FINAL ITERATION AND OTHER REQUESTED ITEMS  *** */
+
+L420:
+        iv[1] = iv[55];
+        iv[55] = 0;
+L430:
+        //        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+        goto L999;
+
+        /*  ***  PROJECT X INTO FEASIBLE REGION (PRIOR TO COMPUTING F OR G)  *** */
+
+L440:
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            if (x[i__] < b[(i__ << 1) + 1]) {
+                x[i__] = b[(i__ << 1) + 1];
+            }
+            if (x[i__] > b[(i__ << 1) + 2]) {
+                x[i__] = b[(i__ << 1) + 2];
+            }
+            /* L450: */
+        }
+
 L999:
         return 0;
-        /*  ***  LAST LINE OF I7SHFT FOLLOWS  *** */
-    } /* i7shft_ */
 
-    
-//   template<typename doublereal>
-//    int drmnh_(doublereal *d__, doublereal *fx, doublereal *g,
-//               doublereal *h__, integer *iv, integer *lh, integer *liv, integer *lv,
-//               integer *n, doublereal *v, doublereal *x)
-//    {
-//        /* System generated locals */
-//        integer i__1, i__2;
-//        
-//        /* Local variables */
-//        static integer i__, j, k, l;
-//        static doublereal t;
-//        static integer w1, x01, dg1, nn1o2, temp1, step1, dummy;
-//        extern logical stopx_(integer *);
-//        extern /* Subroutine */ int dd7dup_(doublereal *, doublereal *, integer *,
-//                                            integer *, integer *, integer *, doublereal *);
-//        extern doublereal dd7tpr_(integer *, doublereal *, doublereal *);
-//        extern /* Subroutine */ int da7sst_(integer *, integer *, integer *,
-//                                            doublereal *), dv7scp_(integer *, doublereal *, doublereal *);
-//        extern doublereal dv2nrm_(integer *, doublereal *);
-//        extern /* Subroutine */ int dg7qts_(doublereal *, doublereal *,
-//                                            doublereal *, integer *, doublereal *, integer *, doublereal *,
-//                                            doublereal *, doublereal *), ds7lvm_(integer *, doublereal *,
-//                                                                                 doublereal *, doublereal *), dv2axy_(integer *, doublereal *,
-//                                                                                                                      doublereal *, doublereal *, doublereal *), dv7cpy_(integer *,
-//                                                                                                                                                                         doublereal *, doublereal *), dparck_(integer *, doublereal *,
-//                                                                                                                                                                                                              integer *, integer *, integer *, integer *, doublereal *);
-//        extern doublereal drldst_(integer *, doublereal *, doublereal *,
-//                                  doublereal *);
-//        extern /* Subroutine */ int divset_(integer *, integer *, integer *,
-//                                            integer *, doublereal *), ditsum_(doublereal *, doublereal *,
-//                                                                              integer *, integer *, integer *, integer *, doublereal *,
-//                                                                              doublereal *);
-//        static integer lstgst, rstrst;
-//        
-//        
-//        /*  ***  CARRY OUT  DMNH (UNCONSTRAINED MINIMIZATION) ITERATIONS, USING */
-//        /*  ***  HESSIAN MATRIX PROVIDED BY THE CALLER. */
-//        
-//        /*  ***  PARAMETER DECLARATIONS  *** */
-//        
-//        
-//        /* --------------------------  PARAMETER USAGE  -------------------------- */
-//        
-//        /* D.... SCALE VECTOR. */
-//        /* FX... FUNCTION VALUE. */
-//        /* G.... GRADIENT VECTOR. */
-//        /* H.... LOWER TRIANGLE OF THE HESSIAN, STORED ROWWISE. */
-//        /* IV... INTEGER VALUE ARRAY. */
-//        /* LH... LENGTH OF H = P*(P+1)/2. */
-//        /* LIV.. LENGTH OF IV (AT LEAST 60). */
-//        /* LV... LENGTH OF V (AT LEAST 78 + N*(N+21)/2). */
-//        /* N.... NUMBER OF VARIABLES (COMPONENTS IN X AND G). */
-//        /* V.... FLOATING-POINT VALUE ARRAY. */
-//        /* X.... PARAMETER VECTOR. */
-//        
-//        /*  ***  DISCUSSION  *** */
-//        
-//        /*        PARAMETERS IV, N, V, AND X ARE THE SAME AS THE CORRESPONDING */
-//        /*     ONES TO  DMNH (WHICH SEE), EXCEPT THAT V CAN BE SHORTER (SINCE */
-//        /*     THE PART OF V THAT  DMNH USES FOR STORING G AND H IS NOT NEEDED). */
-//        /*     MOREOVER, COMPARED WITH  DMNH, IV(1) MAY HAVE THE TWO ADDITIONAL */
-//        /*     OUTPUT VALUES 1 AND 2, WHICH ARE EXPLAINED BELOW, AS IS THE USE */
-//        /*     OF IV(TOOBIG) AND IV(NFGCAL).  THE VALUE IV(G), WHICH IS AN */
-//        /*     OUTPUT VALUE FROM  DMNH, IS NOT REFERENCED BY DRMNH OR THE */
-//        /*     SUBROUTINES IT CALLS. */
-//        
-//        /* IV(1) = 1 MEANS THE CALLER SHOULD SET FX TO F(X), THE FUNCTION VALUE */
-//        /*             AT X, AND CALL DRMNH AGAIN, HAVING CHANGED NONE OF THE */
-//        /*             OTHER PARAMETERS.  AN EXCEPTION OCCURS IF F(X) CANNOT BE */
-//        /*             COMPUTED (E.G. IF OVERFLOW WOULD OCCUR), WHICH MAY HAPPEN */
-//        /*             BECAUSE OF AN OVERSIZED STEP.  IN THIS CASE THE CALLER */
-//        /*             SHOULD SET IV(TOOBIG) = IV(2) TO 1, WHICH WILL CAUSE */
-//        /*             DRMNH TO IGNORE FX AND TRY A SMALLER STEP.  THE PARA- */
-//        /*             METER NF THAT  DMNH PASSES TO CALCF (FOR POSSIBLE USE BY */
-//        /*             CALCGH) IS A COPY OF IV(NFCALL) = IV(6). */
-//        /* IV(1) = 2 MEANS THE CALLER SHOULD SET G TO G(X), THE GRADIENT OF F AT */
-//        /*             X, AND H TO THE LOWER TRIANGLE OF H(X), THE HESSIAN OF F */
-//        /*             AT X, AND CALL DRMNH AGAIN, HAVING CHANGED NONE OF THE */
-//        /*             OTHER PARAMETERS EXCEPT PERHAPS THE SCALE VECTOR D. */
-//        /*                  THE PARAMETER NF THAT  DMNH PASSES TO CALCG IS */
-//        /*             IV(NFGCAL) = IV(7).  IF G(X) AND H(X) CANNOT BE EVALUATED, */
-//        /*             THEN THE CALLER MAY SET IV(TOOBIG) TO 0, IN WHICH CASE */
-//        /*             DRMNH WILL RETURN WITH IV(1) = 65. */
-//        /*                  NOTE -- DRMNH OVERWRITES H WITH THE LOWER TRIANGLE */
-//        /*             OF  DIAG(D)**-1 * H(X) * DIAG(D)**-1. */
-//        /* . */
-//        /*  ***  GENERAL  *** */
-//        
-//        /*     CODED BY DAVID M. GAY (WINTER 1980).  REVISED SEPT. 1982. */
-//        /*     THIS SUBROUTINE WAS WRITTEN IN CONNECTION WITH RESEARCH SUPPORTED */
-//        /*     IN PART BY THE NATIONAL SCIENCE FOUNDATION UNDER GRANTS */
-//        /*     MCS-7600324 AND MCS-7906671. */
-//        
-//        /*        (SEE  DMNG AND  DMNH FOR REFERENCES.) */
-//        
-//        /* +++++++++++++++++++++++++++  DECLARATIONS  ++++++++++++++++++++++++++++ */
-//        
-//        /*  ***  LOCAL VARIABLES  *** */
-//        
-//        
-//        /*     ***  CONSTANTS  *** */
-//        
-//        
-//        /*  ***  NO INTRINSIC FUNCTIONS  *** */
-//        
-//        /*  ***  EXTERNAL FUNCTIONS AND SUBROUTINES  *** */
-//        
-//        
-//        /* DA7SST.... ASSESSES CANDIDATE STEP. */
-//        /* DIVSET.... PROVIDES DEFAULT IV AND V INPUT VALUES. */
-//        /* DD7TPR... RETURNS INNER PRODUCT OF TWO VECTORS. */
-//        /* DD7DUP.... UPDATES SCALE VECTOR D. */
-//        /* DG7QTS.... COMPUTES OPTIMALLY LOCALLY CONSTRAINED STEP. */
-//        /* DITSUM.... PRINTS ITERATION SUMMARY AND INFO ON INITIAL AND FINAL X. */
-//        /* DPARCK.... CHECKS VALIDITY OF INPUT IV AND V VALUES. */
-//        /* DRLDST... COMPUTES V(RELDX) = RELATIVE STEP SIZE. */
-//        /* DS7LVM... MULTIPLIES SYMMETRIC MATRIX TIMES VECTOR, GIVEN THE LOWER */
-//        /*             TRIANGLE OF THE MATRIX. */
-//        /* STOPX.... RETURNS .TRUE. IF THE BREAK KEY HAS BEEN PRESSED. */
-//        /* DV2AXY.... COMPUTES SCALAR TIMES ONE VECTOR PLUS ANOTHER. */
-//        /* DV7CPY.... COPIES ONE VECTOR TO ANOTHER. */
-//        /* DV7SCP... SETS ALL ELEMENTS OF A VECTOR TO A SCALAR. */
-//        /* DV2NRM... RETURNS THE 2-NORM OF A VECTOR. */
-//        
-//        /*  ***  SUBSCRIPTS FOR IV AND V  *** */
-//        
-//        
-//        /*  ***  IV SUBSCRIPT VALUES  *** */
-//        
-//        /* /6 */
-//        /*     DATA CNVCOD/55/, DG/37/, DTOL/59/, DTYPE/16/, IRC/29/, KAGQT/33/, */
-//        /*    1     LMAT/42/, MODE/35/, MODEL/5/, MXFCAL/17/, MXITER/18/, */
-//        /*    2     NEXTV/47/, NFCALL/6/, NFGCAL/7/, NGCALL/30/, NITER/31/, */
-//        /*    3     RADINC/8/, RESTOR/9/, STEP/40/, STGLIM/11/, STLSTG/41/, */
-//        /*    4     TOOBIG/2/, VNEED/4/, W/34/, XIRC/13/, X0/43/ */
-//        /* /7 */
-//        /* / */
-//        
-//        /*  ***  V SUBSCRIPT VALUES  *** */
-//        
-//        /* /6 */
-//        /*     DATA DGNORM/1/, DINIT/38/, DSTNRM/2/, DTINIT/39/, D0INIT/40/, */
-//        /*    1     F/10/, F0/13/, FDIF/11/, GTSTEP/4/, INCFAC/23/, LMAX0/35/, */
-//        /*    2     LMAXS/36/, PHMXFC/21/, PREDUC/7/, RADFAC/16/, RADIUS/8/, */
-//        /*    3     RAD0/9/, RELDX/17/, STPPAR/5/, TUNER4/29/, TUNER5/30/ */
-//        /* /7 */
-//        /* / */
-//        
-//        /* /6 */
-//        /*     DATA ONE/1.D+0/, ONEP2/1.2D+0/, ZERO/0.D+0/ */
-//        /* /7 */
-//        /* / */
-//        
-//        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
-//        
-//        /* Parameter adjustments */
-//        --h__;
-//        --iv;
-//        --v;
-//        --x;
-//        --g;
-//        --d__;
-//        
-//        /* Function Body */
-//        i__ = iv[1];
-//        if (i__ == 1) {
-//            goto L30;
-//        }
-//        if (i__ == 2) {
-//            goto L40;
-//        }
-//        
-//        /*  ***  CHECK VALIDITY OF IV AND V INPUT VALUES  *** */
-//        
-//        if (iv[1] == 0) {
-//            divset_(&c__2, &iv[1], liv, lv, &v[1]);
-//        }
-//        if (iv[1] == 12 || iv[1] == 13) {
-//            iv[4] = iv[4] + *n * (*n + 21) / 2 + 7;
-//        }
-//        dparck_(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
-//        i__ = iv[1] - 2;
-//        if (i__ > 12) {
-//            goto L999;
-//        }
-//        nn1o2 = *n * (*n + 1) / 2;
-//        if (*lh >= nn1o2) {
-//            switch (i__) {
-//                case 1:  goto L220;
-//                case 2:  goto L220;
-//                case 3:  goto L220;
-//                case 4:  goto L220;
-//                case 5:  goto L220;
-//                case 6:  goto L220;
-//                case 7:  goto L160;
-//                case 8:  goto L120;
-//                case 9:  goto L160;
-//                case 10:  goto L10;
-//                case 11:  goto L10;
-//                case 12:  goto L20;
-//            }
-//        }
-//        iv[1] = 66;
-//        goto L400;
-//        
-//        /*  ***  STORAGE ALLOCATION  *** */
-//        
-//    L10:
-//        iv[59] = iv[42] + nn1o2;
-//        iv[43] = iv[59] + (*n << 1);
-//        iv[40] = iv[43] + *n;
-//        iv[41] = iv[40] + *n;
-//        iv[37] = iv[41] + *n;
-//        iv[34] = iv[37] + *n;
-//        iv[47] = iv[34] + (*n << 2) + 7;
-//        if (iv[1] != 13) {
-//            goto L20;
-//        }
-//        iv[1] = 14;
-//        goto L999;
-//        
-//        /*  ***  INITIALIZATION  *** */
-//        
-//    L20:
-//        iv[31] = 0;
-//        iv[6] = 1;
-//        iv[30] = 1;
-//        iv[7] = 1;
-//        iv[35] = -1;
-//        iv[5] = 1;
-//        iv[11] = 1;
-//        iv[2] = 0;
-//        iv[55] = 0;
-//        iv[8] = 0;
-//        v[9] = 0.;
-//        v[5] = 0.;
-//        if (v[38] >= 0.) {
-//            dv7scp_(n, &d__[1], &v[38]);
-//        }
-//        k = iv[59];
-//        if (v[39] > 0.) {
-//            dv7scp_(n, &v[k], &v[39]);
-//        }
-//        k += *n;
-//        if (v[40] > 0.) {
-//            dv7scp_(n, &v[k], &v[40]);
-//        }
-//        iv[1] = 1;
-//        goto L999;
-//        
-//    L30:
-//        v[10] = *fx;
-//        if (iv[35] >= 0) {
-//            goto L220;
-//        }
-//        v[13] = *fx;
-//        iv[1] = 2;
-//        if (iv[2] == 0) {
-//            goto L999;
-//        }
-//        iv[1] = 63;
-//        goto L400;
-//        
-//        /*  ***  MAKE SURE GRADIENT COULD BE COMPUTED  *** */
-//        
-//    L40:
-//        if (iv[2] == 0) {
-//            goto L50;
-//        }
-//        iv[1] = 65;
-//        goto L400;
-//        
-//        /*  ***  UPDATE THE SCALE VECTOR D  *** */
-//        
-//    L50:
-//        dg1 = iv[37];
-//        if (iv[16] <= 0) {
-//            goto L70;
-//        }
-//        k = dg1;
-//        j = 0;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            j += i__;
-//            v[k] = h__[j];
-//            ++k;
-//            /* L60: */
-//        }
-//        dd7dup_(&d__[1], &v[dg1], &iv[1], liv, lv, n, &v[1]);
-//        
-//        /*  ***  COMPUTE SCALED GRADIENT AND ITS NORM  *** */
-//        
-//    L70:
-//        dg1 = iv[37];
-//        k = dg1;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            v[k] = g[i__] / d__[i__];
-//            ++k;
-//            /* L80: */
-//        }
-//        v[1] = dv2nrm_(n, &v[dg1]);
-//        
-//        /*  ***  COMPUTE SCALED HESSIAN  *** */
-//        
-//        k = 1;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            t = 1. / d__[i__];
-//            i__2 = i__;
-//            for (j = 1; j <= i__2; ++j) {
-//                h__[k] = t * h__[k] / d__[j];
-//                ++k;
-//                /* L90: */
-//            }
-//            /* L100: */
-//        }
-//        
-//        if (iv[55] != 0) {
-//            goto L390;
-//        }
-//        if (iv[35] == 0) {
-//            goto L350;
-//        }
-//        
-//        /*  ***  ALLOW FIRST STEP TO HAVE SCALED 2-NORM AT MOST V(LMAX0)  *** */
-//        
-//        v[8] = v[35] / (v[21] + 1.);
-//        
-//        iv[35] = 0;
-//        
-//        
-//        /* -----------------------------  MAIN LOOP  ----------------------------- */
-//        
-//        
-//        /*  ***  PRINT ITERATION SUMMARY, CHECK ITERATION LIMIT  *** */
-//        
-//    L110:
-//        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
-//    L120:
-//        k = iv[31];
-//        if (k < iv[18]) {
-//            goto L130;
-//        }
-//        iv[1] = 10;
-//        goto L400;
-//        
-//    L130:
-//        iv[31] = k + 1;
-//        
-//        /*  ***  INITIALIZE FOR START OF NEXT ITERATION  *** */
-//        
-//        dg1 = iv[37];
-//        x01 = iv[43];
-//        v[13] = v[10];
-//        iv[29] = 4;
-//        iv[33] = -1;
-//        
-//        /*     ***  COPY X TO X0  *** */
-//        
-//        dv7cpy_(n, &v[x01], &x[1]);
-//        
-//        /*  ***  UPDATE RADIUS  *** */
-//        
-//        if (k == 0) {
-//            goto L150;
-//        }
-//        step1 = iv[40];
-//        k = step1;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            v[k] = d__[i__] * v[k];
-//            ++k;
-//            /* L140: */
-//        }
-//        v[8] = v[16] * dv2nrm_(n, &v[step1]);
-//        
-//        /*  ***  CHECK STOPX AND FUNCTION EVALUATION LIMIT  *** */
-//        
-//    L150:
-//        if (! stopx_(&dummy)) {
-//            goto L170;
-//        }
-//        iv[1] = 11;
-//        goto L180;
-//        
-//        /*     ***  COME HERE WHEN RESTARTING AFTER FUNC. EVAL. LIMIT OR STOPX. */
-//        
-//    L160:
-//        if (v[10] >= v[13]) {
-//            goto L170;
-//        }
-//        v[16] = 1.;
-//        k = iv[31];
-//        goto L130;
-//        
-//    L170:
-//        if (iv[6] < iv[17]) {
-//            goto L190;
-//        }
-//        iv[1] = 9;
-//    L180:
-//        if (v[10] >= v[13]) {
-//            goto L400;
-//        }
-//        
-//        /*        ***  IN CASE OF STOPX OR FUNCTION EVALUATION LIMIT WITH */
-//        /*        ***  IMPROVED V(F), EVALUATE THE GRADIENT AT X. */
-//        
-//        iv[55] = iv[1];
-//        goto L340;
-//        
-//        /* . . . . . . . . . . . . .  COMPUTE CANDIDATE STEP  . . . . . . . . . . */
-//        
-//    L190:
-//        step1 = iv[40];
-//        dg1 = iv[37];
-//        l = iv[42];
-//        w1 = iv[34];
-//        dg7qts_(&d__[1], &v[dg1], &h__[1], &iv[33], &v[l], n, &v[step1], &v[1], &
-//                v[w1]);
-//        if (iv[29] != 6) {
-//            goto L200;
-//        }
-//        if (iv[9] != 2) {
-//            goto L220;
-//        }
-//        rstrst = 2;
-//        goto L230;
-//        
-//        /*  ***  CHECK WHETHER EVALUATING F(X0 + STEP) LOOKS WORTHWHILE  *** */
-//        
-//    L200:
-//        iv[2] = 0;
-//        if (v[2] <= 0.) {
-//            goto L220;
-//        }
-//        if (iv[29] != 5) {
-//            goto L210;
-//        }
-//        if (v[16] <= 1.) {
-//            goto L210;
-//        }
-//        if (v[7] > v[11] * 1.2) {
-//            goto L210;
-//        }
-//        if (iv[9] != 2) {
-//            goto L220;
-//        }
-//        rstrst = 0;
-//        goto L230;
-//        
-//        /*  ***  COMPUTE F(X0 + STEP)  *** */
-//        
-//    L210:
-//        x01 = iv[43];
-//        step1 = iv[40];
-//        dv2axy_(n, &x[1], &c_b32, &v[step1], &v[x01]);
-//        ++iv[6];
-//        iv[1] = 1;
-//        goto L999;
-//        
-//        /* . . . . . . . . . . . . .  ASSESS CANDIDATE STEP  . . . . . . . . . . . */
-//        
-//    L220:
-//        rstrst = 3;
-//    L230:
-//        x01 = iv[43];
-//        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
-//        da7sst_(&iv[1], liv, lv, &v[1]);
-//        step1 = iv[40];
-//        lstgst = iv[41];
-//        i__ = iv[9] + 1;
-//        switch (i__) {
-//            case 1:  goto L270;
-//            case 2:  goto L240;
-//            case 3:  goto L250;
-//            case 4:  goto L260;
-//        }
-//    L240:
-//        dv7cpy_(n, &x[1], &v[x01]);
-//        goto L270;
-//    L250:
-//        dv7cpy_(n, &v[lstgst], &v[step1]);
-//        goto L270;
-//    L260:
-//        dv7cpy_(n, &v[step1], &v[lstgst]);
-//        dv2axy_(n, &x[1], &c_b32, &v[step1], &v[x01]);
-//        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
-//        iv[9] = rstrst;
-//        
-//    L270:
-//        k = iv[29];
-//        switch (k) {
-//            case 1:  goto L280;
-//            case 2:  goto L310;
-//            case 3:  goto L310;
-//            case 4:  goto L310;
-//            case 5:  goto L280;
-//            case 6:  goto L290;
-//            case 7:  goto L300;
-//            case 8:  goto L300;
-//            case 9:  goto L300;
-//            case 10:  goto L300;
-//            case 11:  goto L300;
-//            case 12:  goto L300;
-//            case 13:  goto L380;
-//            case 14:  goto L350;
-//        }
-//        
-//        /*     ***  RECOMPUTE STEP WITH NEW RADIUS  *** */
-//        
-//    L280:
-//        v[8] = v[16] * v[2];
-//        goto L150;
-//        
-//        /*  ***  COMPUTE STEP OF LENGTH V(LMAXS) FOR SINGULAR CONVERGENCE TEST. */
-//        
-//    L290:
-//        v[8] = v[36];
-//        goto L190;
-//        
-//        /*  ***  CONVERGENCE OR FALSE CONVERGENCE  *** */
-//        
-//    L300:
-//        iv[55] = k - 4;
-//        if (v[10] >= v[13]) {
-//            goto L390;
-//        }
-//        if (iv[13] == 14) {
-//            goto L390;
-//        }
-//        iv[13] = 14;
-//        
-//        /* . . . . . . . . . . . .  PROCESS ACCEPTABLE STEP  . . . . . . . . . . . */
-//        
-//    L310:
-//        if (iv[29] != 3) {
-//            goto L340;
-//        }
-//        temp1 = lstgst;
-//        
-//        /*     ***  PREPARE FOR GRADIENT TESTS  *** */
-//        /*     ***  SET  TEMP1 = HESSIAN * STEP + G(X0) */
-//        /*     ***             = DIAG(D) * (H * STEP + G(X0)) */
-//        
-//        /*        USE X0 VECTOR AS TEMPORARY. */
-//        k = x01;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            v[k] = d__[i__] * v[step1];
-//            ++k;
-//            ++step1;
-//            /* L320: */
-//        }
-//        ds7lvm_(n, &v[temp1], &h__[1], &v[x01]);
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            v[temp1] = d__[i__] * v[temp1] + g[i__];
-//            ++temp1;
-//            /* L330: */
-//        }
-//        
-//        /*  ***  COMPUTE GRADIENT AND HESSIAN  *** */
-//        
-//    L340:
-//        ++iv[30];
-//        iv[2] = 0;
-//        iv[1] = 2;
-//        goto L999;
-//        
-//    L350:
-//        iv[1] = 2;
-//        if (iv[29] != 3) {
-//            goto L110;
-//        }
-//        
-//        /*  ***  SET V(RADFAC) BY GRADIENT TESTS  *** */
-//        
-//        temp1 = iv[41];
-//        step1 = iv[40];
-//        
-//        /*     ***  SET  TEMP1 = DIAG(D)**-1 * (HESSIAN*STEP + (G(X0)-G(X)))  *** */
-//        
-//        k = temp1;
-//        i__1 = *n;
-//        for (i__ = 1; i__ <= i__1; ++i__) {
-//            v[k] = (v[k] - g[i__]) / d__[i__];
-//            ++k;
-//            /* L360: */
-//        }
-//        
-//        /*     ***  DO GRADIENT TESTS  *** */
-//        
-//        if (dv2nrm_(n, &v[temp1]) <= v[1] * v[29]) {
-//            goto L370;
-//        }
-//        if (dd7tpr_(n, &g[1], &v[step1]) >= v[4] * v[30]) {
-//            goto L110;
-//        }
-//    L370:
-//        v[16] = v[23];
-//        goto L110;
-//        
-//        /* . . . . . . . . . . . . . .  MISC. DETAILS  . . . . . . . . . . . . . . */
-//        
-//        /*  ***  BAD PARAMETERS TO ASSESS  *** */
-//        
-//    L380:
-//        iv[1] = 64;
-//        goto L400;
-//        
-//        /*  ***  PRINT SUMMARY OF FINAL ITERATION AND OTHER REQUESTED ITEMS  *** */
-//        
-//    L390:
-//        iv[1] = iv[55];
-//        iv[55] = 0;
-//    L400:
-//        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
-//        
-//    L999:
-//        return 0;
-//        
-//        /*  ***  LAST CARD OF DRMNH FOLLOWS  *** */
-//    }
-    
-    
+        /*  ***  LAST CARD OF DRMNGB FOLLOWS  *** */
+    } /* drmngb_ */
+
+    template<typename doublereal>
+    /* Subroutine */ int drmnhb_(doublereal *b, doublereal *d__, doublereal *fx,
+            doublereal *g, doublereal *h__, integer *iv, integer *lh, integer *
+            liv, integer *lv, integer *n, doublereal *v, doublereal *x) {
+        /* System generated locals */
+        integer i__1, i__2;
+
+        /* Local variables */
+        static integer i__, j, k, l;
+        static doublereal t;
+        static integer w1;
+        static doublereal gi;
+        static integer x01, x11;
+        static doublereal xi;
+        static integer dg1, td1, tg1, ipi, ipn, nn1o2, temp0, temp1, ipiv2, step0,
+                step1, dummy;
+        //    extern logical stopx_(integer *);
+        extern /* Subroutine */ int dd7dup_(doublereal *, doublereal *, integer *,
+                integer *, integer *, integer *, doublereal *), dg7qsb_(
+                doublereal *, doublereal *, doublereal *, doublereal *, integer *,
+                integer *, integer *, integer *, doublereal *, integer *,
+                integer *, integer *, integer *, doublereal *, doublereal *,
+                doublereal *, doublereal *, doublereal *, doublereal *,
+                doublereal *);
+        extern doublereal dd7tpr_(integer *, doublereal *, doublereal *);
+        extern /* Subroutine */ int da7sst_(integer *, integer *, integer *,
+                doublereal *), dv7scp_(integer *, doublereal *, doublereal *);
+        extern doublereal dv2nrm_(integer *, doublereal *);
+        extern /* Subroutine */ int ds7ipr_(integer *, integer *, doublereal *),
+                dv7ipr_(integer *, integer *, doublereal *), ds7lvm_(integer *,
+                doublereal *, doublereal *, doublereal *), dv2axy_(integer *,
+                doublereal *, doublereal *, doublereal *, doublereal *), dv7cpy_(
+                integer *, doublereal *, doublereal *), dv7vmp_(integer *,
+                doublereal *, doublereal *, doublereal *, integer *), i7pnvr_(
+                integer *, integer *, integer *), dparck_(integer *, doublereal *,
+                integer *, integer *, integer *, integer *, doublereal *);
+        extern doublereal drldst_(integer *, doublereal *, doublereal *,
+                doublereal *);
+        extern /* Subroutine */ int divset_(integer *, integer *, integer *,
+                integer *, doublereal *), ditsum_(doublereal *, doublereal *,
+                integer *, integer *, integer *, integer *, doublereal *,
+                doublereal *);
+        static integer lstgst, rstrst;
+
+
+        /*  ***  CARRY OUT  DMNHB (SIMPLY BOUNDED MINIMIZATION) ITERATIONS, */
+        /*  ***  USING HESSIAN MATRIX PROVIDED BY THE CALLER. */
+
+        /*  ***  PARAMETER DECLARATIONS  *** */
+
+
+        /* --------------------------  PARAMETER USAGE  -------------------------- */
+
+        /* D.... SCALE VECTOR. */
+        /* FX... FUNCTION VALUE. */
+        /* G.... GRADIENT VECTOR. */
+        /* H.... LOWER TRIANGLE OF THE HESSIAN, STORED ROWWISE. */
+        /* IV... INTEGER VALUE ARRAY. */
+        /* LH... LENGTH OF H = P*(P+1)/2. */
+        /* LIV.. LENGTH OF IV (AT LEAST 59 + 3*N). */
+        /* LV... LENGTH OF V (AT LEAST 78 + N*(N+27)/2). */
+        /* N.... NUMBER OF VARIABLES (COMPONENTS IN X AND G). */
+        /* V.... FLOATING-POINT VALUE ARRAY. */
+        /* X.... PARAMETER VECTOR. */
+
+        /*  ***  DISCUSSION  *** */
+
+        /*        PARAMETERS IV, N, V, AND X ARE THE SAME AS THE CORRESPONDING */
+        /*     ONES TO  DMNHB (WHICH SEE), EXCEPT THAT V CAN BE SHORTER (SINCE */
+        /*     THE PART OF V THAT  DMNHB USES FOR STORING G AND H IS NOT NEEDED). */
+        /*     MOREOVER, COMPARED WITH  DMNHB, IV(1) MAY HAVE THE TWO ADDITIONAL */
+        /*     OUTPUT VALUES 1 AND 2, WHICH ARE EXPLAINED BELOW, AS IS THE USE */
+        /*     OF IV(TOOBIG) AND IV(NFGCAL).  THE VALUE IV(G), WHICH IS AN */
+        /*     OUTPUT VALUE FROM  DMNHB, IS NOT REFERENCED BY DRMNHB OR THE */
+        /*     SUBROUTINES IT CALLS. */
+
+        /* IV(1) = 1 MEANS THE CALLER SHOULD SET FX TO F(X), THE FUNCTION VALUE */
+        /*             AT X, AND CALL DRMNHB AGAIN, HAVING CHANGED NONE OF THE */
+        /*             OTHER PARAMETERS.  AN EXCEPTION OCCURS IF F(X) CANNOT BE */
+        /*             COMPUTED (E.G. IF OVERFLOW WOULD OCCUR), WHICH MAY HAPPEN */
+        /*             BECAUSE OF AN OVERSIZED STEP.  IN THIS CASE THE CALLER */
+        /*             SHOULD SET IV(TOOBIG) = IV(2) TO 1, WHICH WILL CAUSE */
+        /*             DRMNHB TO IGNORE FX AND TRY A SMALLER STEP.  THE PARA- */
+        /*             METER NF THAT  DMNH PASSES TO CALCF (FOR POSSIBLE USE BY */
+        /*             CALCGH) IS A COPY OF IV(NFCALL) = IV(6). */
+        /* IV(1) = 2 MEANS THE CALLER SHOULD SET G TO G(X), THE GRADIENT OF F AT */
+        /*             X, AND H TO THE LOWER TRIANGLE OF H(X), THE HESSIAN OF F */
+        /*             AT X, AND CALL DRMNHB AGAIN, HAVING CHANGED NONE OF THE */
+        /*             OTHER PARAMETERS EXCEPT PERHAPS THE SCALE VECTOR D. */
+        /*                  THE PARAMETER NF THAT  DMNHB PASSES TO CALCG IS */
+        /*             IV(NFGCAL) = IV(7).  IF G(X) AND H(X) CANNOT BE EVALUATED, */
+        /*             THEN THE CALLER MAY SET IV(NFGCAL) TO 0, IN WHICH CASE */
+        /*             DRMNHB WILL RETURN WITH IV(1) = 65. */
+        /*                  NOTE -- DRMNHB OVERWRITES H WITH THE LOWER TRIANGLE */
+        /*             OF  DIAG(D)**-1 * H(X) * DIAG(D)**-1. */
+        /* . */
+        /*  ***  GENERAL  *** */
+
+        /*     CODED BY DAVID M. GAY (WINTER, SPRING 1983). */
+
+        /*        (SEE  DMNG AND  DMNH FOR REFERENCES.) */
+
+        /* +++++++++++++++++++++++++++  DECLARATIONS  ++++++++++++++++++++++++++++ */
+
+        /*  ***  LOCAL VARIABLES  *** */
+
+
+        /*     ***  CONSTANTS  *** */
+
+
+        /*  ***  NO INTRINSIC FUNCTIONS  *** */
+
+        /*  ***  EXTERNAL FUNCTIONS AND SUBROUTINES  *** */
+
+
+        /* DA7SST.... ASSESSES CANDIDATE STEP. */
+        /* DIVSET.... PROVIDES DEFAULT IV AND V INPUT VALUES. */
+        /* DD7TPR... RETURNS INNER PRODUCT OF TWO VECTORS. */
+        /* DD7DUP.... UPDATES SCALE VECTOR D. */
+        /* DG7QSB... COMPUTES APPROXIMATE OPTIMAL BOUNDED STEP. */
+        /* I7PNVR... INVERTS PERMUTATION ARRAY. */
+        /* DITSUM.... PRINTS ITERATION SUMMARY AND INFO ON INITIAL AND FINAL X. */
+        /* DPARCK.... CHECKS VALIDITY OF INPUT IV AND V VALUES. */
+        /* DRLDST... COMPUTES V(RELDX) = RELATIVE STEP SIZE. */
+        /* DS7IPR... APPLIES PERMUTATION TO LOWER TRIANG. OF SYM. MATRIX. */
+        /* DS7LVM... MULTIPLIES SYMMETRIC MATRIX TIMES VECTOR, GIVEN THE LOWER */
+        /*             TRIANGLE OF THE MATRIX. */
+        /* STOPX.... RETURNS .TRUE. IF THE BREAK KEY HAS BEEN PRESSED. */
+        /* DV2NRM... RETURNS THE 2-NORM OF A VECTOR. */
+        /* DV2AXY.... COMPUTES SCALAR TIMES ONE VECTOR PLUS ANOTHER. */
+        /* DV7CPY.... COPIES ONE VECTOR TO ANOTHER. */
+        /* DV7IPR... APPLIES PERMUTATION TO VECTOR. */
+        /* DV7SCP... SETS ALL ELEMENTS OF A VECTOR TO A SCALAR. */
+        /* DV7VMP... MULTIPLIES (OR DIVIDES) TWO VECTORS COMPONENTWISE. */
+
+        /*  ***  SUBSCRIPTS FOR IV AND V  *** */
+
+
+        /*  ***  IV SUBSCRIPT VALUES  *** */
+
+        /*  ***  (NOTE THAT NC AND N0 ARE STORED IN IV(G0) AND IV(STLSTG) RESP.) */
+
+        /* /6 */
+        /*     DATA CNVCOD/55/, DG/37/, DTOL/59/, DTYPE/16/, IRC/29/, IVNEED/3/, */
+        /*    1     KAGQT/33/, LMAT/42/, MODE/35/, MODEL/5/, MXFCAL/17/, */
+        /*    2     MXITER/18/, N0/41/, NC/48/, NEXTIV/46/, NEXTV/47/, NFCALL/6/, */
+        /*    3     NFGCAL/7/, NGCALL/30/, NITER/31/, PERM/58/, RADINC/8/, */
+        /*    4     RESTOR/9/, STEP/40/, STGLIM/11/, TOOBIG/2/, VNEED/4/, W/34/, */
+        /*    5     XIRC/13/, X0/43/ */
+        /* /7 */
+        /* / */
+
+        /*  ***  V SUBSCRIPT VALUES  *** */
+
+        /* /6 */
+        /*     DATA DGNORM/1/, DINIT/38/, DSTNRM/2/, DTINIT/39/, D0INIT/40/, */
+        /*    1     F/10/, F0/13/, FDIF/11/, GTSTEP/4/, INCFAC/23/, LMAX0/35/, */
+        /*    2     LMAXS/36/, PHMXFC/21/, PREDUC/7/, RADFAC/16/, RADIUS/8/, */
+        /*    3     RAD0/9/, RELDX/17/, STPPAR/5/, TUNER4/29/, TUNER5/30/ */
+        /* /7 */
+        /* / */
+
+        /* /6 */
+        /*     DATA NEGONE/-1.D+0/, ONE/1.D+0/, ONEP2/1.2D+0/, ZERO/0.D+0/ */
+        /* /7 */
+        /* / */
+
+        /* +++++++++++++++++++++++++++++++  BODY  ++++++++++++++++++++++++++++++++ */
+
+        /* Parameter adjustments */
+        --h__;
+        --iv;
+        --v;
+        --x;
+        --g;
+        --d__;
+        b -= 3;
+
+        /* Function Body */
+        i__ = iv[1];
+        if (i__ == 1) {
+            goto L50;
+        }
+        if (i__ == 2) {
+            goto L60;
+        }
+
+        /*  ***  CHECK VALIDITY OF IV AND V INPUT VALUES  *** */
+
+        if (iv[1] == 0) {
+            divset_(&c__2, &iv[1], liv, lv, &v[1]);
+        }
+        if (iv[1] < 12) {
+            goto L10;
+        }
+        if (iv[1] > 13) {
+            goto L10;
+        }
+        iv[4] = iv[4] + *n * (*n + 27) / 2 + 7;
+        iv[3] += *n * 3;
+L10:
+        dparck_(&c__2, &d__[1], &iv[1], liv, lv, n, &v[1]);
+        i__ = iv[1] - 2;
+        if (i__ > 12) {
+            goto L999;
+        }
+        nn1o2 = *n * (*n + 1) / 2;
+        if (*lh >= nn1o2) {
+            switch (i__) {
+                case 1: goto L250;
+                case 2: goto L250;
+                case 3: goto L250;
+                case 4: goto L250;
+                case 5: goto L250;
+                case 6: goto L250;
+                case 7: goto L190;
+                case 8: goto L150;
+                case 9: goto L190;
+                case 10: goto L20;
+                case 11: goto L20;
+                case 12: goto L30;
+            }
+        }
+        iv[1] = 81;
+        goto L440;
+
+        /*  ***  STORAGE ALLOCATION  *** */
+
+L20:
+        iv[59] = iv[42] + nn1o2;
+        iv[43] = iv[59] + (*n << 1);
+        iv[40] = iv[43] + (*n << 1);
+        iv[37] = iv[40] + *n * 3;
+        iv[34] = iv[37] + (*n << 1);
+        iv[47] = iv[34] + (*n << 2) + 7;
+        iv[46] = iv[58] + *n * 3;
+        if (iv[1] != 13) {
+            goto L30;
+        }
+        iv[1] = 14;
+        goto L999;
+
+        /*  ***  INITIALIZATION  *** */
+
+L30:
+        iv[31] = 0;
+        iv[6] = 1;
+        iv[30] = 1;
+        iv[7] = 1;
+        iv[35] = -1;
+        iv[5] = 1;
+        iv[11] = 1;
+        iv[2] = 0;
+        iv[55] = 0;
+        iv[8] = 0;
+        iv[48] = *n;
+        v[9] = 0.;
+        v[5] = 0.;
+        if (v[38] >= 0.) {
+            dv7scp_(n, &d__[1], &v[38]);
+        }
+        k = iv[59];
+        if (v[39] > 0.) {
+            dv7scp_(n, &v[k], &v[39]);
+        }
+        k += *n;
+        if (v[40] > 0.) {
+            dv7scp_(n, &v[k], &v[40]);
+        }
+
+        /*  ***  CHECK CONSISTENCY OF B AND INITIALIZE IP ARRAY  *** */
+
+        ipi = iv[58];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            iv[ipi] = i__;
+            ++ipi;
+            if (b[(i__ << 1) + 1] > b[(i__ << 1) + 2]) {
+                goto L420;
+            }
+            /* L40: */
+        }
+
+        /*  ***  GET INITIAL FUNCTION VALUE  *** */
+
+        iv[1] = 1;
+        goto L450;
+
+L50:
+        v[10] = *fx;
+        if (iv[35] >= 0) {
+            goto L250;
+        }
+        v[13] = *fx;
+        iv[1] = 2;
+        if (iv[2] == 0) {
+            goto L999;
+        }
+        iv[1] = 63;
+        goto L440;
+
+        /*  ***  MAKE SURE GRADIENT COULD BE COMPUTED  *** */
+
+L60:
+        if (iv[2] == 0) {
+            goto L70;
+        }
+        iv[1] = 65;
+        goto L440;
+
+        /*  ***  UPDATE THE SCALE VECTOR D  *** */
+
+L70:
+        dg1 = iv[37];
+        if (iv[16] <= 0) {
+            goto L90;
+        }
+        k = dg1;
+        j = 0;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j += i__;
+            v[k] = h__[j];
+            ++k;
+            /* L80: */
+        }
+        dd7dup_(&d__[1], &v[dg1], &iv[1], liv, lv, n, &v[1]);
+
+        /*  ***  COMPUTE SCALED GRADIENT AND ITS NORM  *** */
+
+L90:
+        dg1 = iv[37];
+        dv7vmp_(n, &v[dg1], &g[1], &d__[1], &c_n1);
+
+        /*  ***  COMPUTE SCALED HESSIAN  *** */
+
+        k = 1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            t = 1. / d__[i__];
+            i__2 = i__;
+            for (j = 1; j <= i__2; ++j) {
+                h__[k] = t * h__[k] / d__[j];
+                ++k;
+                /* L100: */
+            }
+            /* L110: */
+        }
+
+        /*  ***  CHOOSE INITIAL PERMUTATION  *** */
+
+        ipi = iv[58];
+        ipn = ipi + *n;
+        ipiv2 = ipn - 1;
+        /*     *** INVERT OLD PERMUTATION ARRAY *** */
+        i7pnvr_(n, &iv[ipn], &iv[ipi]);
+        k = iv[48];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            if (b[(i__ << 1) + 1] >= b[(i__ << 1) + 2]) {
+                goto L120;
+            }
+            xi = x[i__];
+            gi = g[i__];
+            if (xi <= b[(i__ << 1) + 1] && gi > 0.) {
+                goto L120;
+            }
+            if (xi >= b[(i__ << 1) + 2] && gi < 0.) {
+                goto L120;
+            }
+            iv[ipi] = i__;
+            ++ipi;
+            j = ipiv2 + i__;
+            /*           *** DISALLOW CONVERGENCE IF X(I) HAS JUST BEEN FREED *** */
+            if (iv[j] > k) {
+                iv[55] = 0;
+            }
+            goto L130;
+L120:
+            --ipn;
+            iv[ipn] = i__;
+L130:
+            ;
+        }
+        iv[48] = ipn - iv[58];
+
+        /*  ***  PERMUTE SCALED GRADIENT AND HESSIAN ACCORDINGLY  *** */
+
+        ipi = iv[58];
+        ds7ipr_(n, &iv[ipi], &h__[1]);
+        dv7ipr_(n, &iv[ipi], &v[dg1]);
+        v[1] = 0.;
+        if (iv[48] > 0) {
+            v[1] = dv2nrm_(&iv[48], &v[dg1]);
+        }
+
+        if (iv[55] != 0) {
+            goto L430;
+        }
+        if (iv[35] == 0) {
+            goto L380;
+        }
+
+        /*  ***  ALLOW FIRST STEP TO HAVE SCALED 2-NORM AT MOST V(LMAX0)  *** */
+
+        v[8] = v[35] / (v[21] + 1.);
+
+        iv[35] = 0;
+
+
+        /* -----------------------------  MAIN LOOP  ----------------------------- */
+
+
+        /*  ***  PRINT ITERATION SUMMARY, CHECK ITERATION LIMIT  *** */
+
+L140:
+        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+L150:
+        k = iv[31];
+        if (k < iv[18]) {
+            goto L160;
+        }
+        iv[1] = 10;
+        goto L440;
+
+L160:
+        iv[31] = k + 1;
+
+        /*  ***  INITIALIZE FOR START OF NEXT ITERATION  *** */
+
+        x01 = iv[43];
+        v[13] = v[10];
+        iv[29] = 4;
+        iv[33] = -1;
+
+        /*     ***  COPY X TO X0  *** */
+
+        dv7cpy_(n, &v[x01], &x[1]);
+
+        /*  ***  UPDATE RADIUS  *** */
+
+        if (k == 0) {
+            goto L180;
+        }
+        step1 = iv[40];
+        k = step1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = d__[i__] * v[k];
+            ++k;
+            /* L170: */
+        }
+        t = v[16] * dv2nrm_(n, &v[step1]);
+        if (v[16] < 1. || t > v[8]) {
+            v[8] = t;
+        }
+
+        /*  ***  CHECK STOPX AND FUNCTION EVALUATION LIMIT  *** */
+
+L180:
+        if (!stopx_(&dummy)) {
+            goto L200;
+        }
+        iv[1] = 11;
+        goto L210;
+
+        /*     ***  COME HERE WHEN RESTARTING AFTER FUNC. EVAL. LIMIT OR STOPX. */
+
+L190:
+        if (v[10] >= v[13]) {
+            goto L200;
+        }
+        v[16] = 1.;
+        k = iv[31];
+        goto L160;
+
+L200:
+        if (iv[6] < iv[17]) {
+            goto L220;
+        }
+        iv[1] = 9;
+L210:
+        if (v[10] >= v[13]) {
+            goto L440;
+        }
+
+        /*        ***  IN CASE OF STOPX OR FUNCTION EVALUATION LIMIT WITH */
+        /*        ***  IMPROVED V(F), EVALUATE THE GRADIENT AT X. */
+
+        iv[55] = iv[1];
+        goto L370;
+
+        /* . . . . . . . . . . . . .  COMPUTE CANDIDATE STEP  . . . . . . . . . . */
+
+L220:
+        step1 = iv[40];
+        l = iv[42];
+        w1 = iv[34];
+        ipi = iv[58];
+        ipn = ipi + *n;
+        ipiv2 = ipn + *n;
+        tg1 = iv[37];
+        td1 = tg1 + *n;
+        x01 = iv[43];
+        x11 = x01 + *n;
+        dg7qsb_(&b[3], &d__[1], &h__[1], &g[1], &iv[ipi], &iv[ipn], &iv[ipiv2], &
+                iv[33], &v[l], lv, n, &iv[41], &iv[48], &v[step1], &v[td1], &v[
+                tg1], &v[1], &v[w1], &v[x11], &v[x01]);
+        if (iv[29] != 6) {
+            goto L230;
+        }
+        if (iv[9] != 2) {
+            goto L250;
+        }
+        rstrst = 2;
+        goto L260;
+
+        /*  ***  CHECK WHETHER EVALUATING F(X0 + STEP) LOOKS WORTHWHILE  *** */
+
+L230:
+        iv[2] = 0;
+        if (v[2] <= 0.) {
+            goto L250;
+        }
+        if (iv[29] != 5) {
+            goto L240;
+        }
+        if (v[16] <= 1.) {
+            goto L240;
+        }
+        if (v[7] > v[11] * 1.2) {
+            goto L240;
+        }
+        if (iv[9] != 2) {
+            goto L250;
+        }
+        rstrst = 0;
+        goto L260;
+
+        /*  ***  COMPUTE F(X0 + STEP)  *** */
+
+L240:
+        dv2axy_(n, &x[1], &c_b38, &v[step1], &v[x01]);
+        ++iv[6];
+        iv[1] = 1;
+        goto L450;
+
+        /* . . . . . . . . . . . . .  ASSESS CANDIDATE STEP  . . . . . . . . . . . */
+
+L250:
+        rstrst = 3;
+L260:
+        x01 = iv[43];
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        da7sst_(&iv[1], liv, lv, &v[1]);
+        step1 = iv[40];
+        lstgst = step1 + (*n << 1);
+        i__ = iv[9] + 1;
+        switch (i__) {
+            case 1: goto L300;
+            case 2: goto L270;
+            case 3: goto L280;
+            case 4: goto L290;
+        }
+L270:
+        dv7cpy_(n, &x[1], &v[x01]);
+        goto L300;
+L280:
+        dv7cpy_(n, &v[lstgst], &x[1]);
+        goto L300;
+L290:
+        dv7cpy_(n, &x[1], &v[lstgst]);
+        dv2axy_(n, &v[step1], &c_b43, &v[x01], &x[1]);
+        v[17] = drldst_(n, &d__[1], &x[1], &v[x01]);
+        iv[9] = rstrst;
+
+L300:
+        k = iv[29];
+        switch (k) {
+            case 1: goto L310;
+            case 2: goto L340;
+            case 3: goto L340;
+            case 4: goto L340;
+            case 5: goto L310;
+            case 6: goto L320;
+            case 7: goto L330;
+            case 8: goto L330;
+            case 9: goto L330;
+            case 10: goto L330;
+            case 11: goto L330;
+            case 12: goto L330;
+            case 13: goto L410;
+            case 14: goto L380;
+        }
+
+        /*     ***  RECOMPUTE STEP WITH NEW RADIUS  *** */
+
+L310:
+        v[8] = v[16] * v[2];
+        goto L180;
+
+        /*  ***  COMPUTE STEP OF LENGTH V(LMAXS) FOR SINGULAR CONVERGENCE TEST. */
+
+L320:
+        v[8] = v[36];
+        goto L220;
+
+        /*  ***  CONVERGENCE OR FALSE CONVERGENCE  *** */
+
+L330:
+        iv[55] = k - 4;
+        if (v[10] >= v[13]) {
+            goto L430;
+        }
+        if (iv[13] == 14) {
+            goto L430;
+        }
+        iv[13] = 14;
+
+        /* . . . . . . . . . . . .  PROCESS ACCEPTABLE STEP  . . . . . . . . . . . */
+
+L340:
+        if (iv[29] != 3) {
+            goto L370;
+        }
+        temp1 = lstgst;
+
+        /*     ***  PREPARE FOR GRADIENT TESTS  *** */
+        /*     ***  SET  TEMP1 = HESSIAN * STEP + G(X0) */
+        /*     ***             = DIAG(D) * (H * STEP + G(X0)) */
+
+        k = temp1;
+        step0 = step1 - 1;
+        ipi = iv[58];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = iv[ipi];
+            ++ipi;
+            step1 = step0 + j;
+            v[k] = d__[j] * v[step1];
+            ++k;
+            /* L350: */
+        }
+        /*        USE X0 VECTOR AS TEMPORARY. */
+        ds7lvm_(n, &v[x01], &h__[1], &v[temp1]);
+        temp0 = temp1 - 1;
+        ipi = iv[58];
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            j = iv[ipi];
+            ++ipi;
+            temp1 = temp0 + j;
+            v[temp1] = d__[j] * v[x01] + g[j];
+            ++x01;
+            /* L360: */
+        }
+
+        /*  ***  COMPUTE GRADIENT AND HESSIAN  *** */
+
+L370:
+        ++iv[30];
+        iv[2] = 0;
+        iv[1] = 2;
+        goto L450;
+
+L380:
+        iv[1] = 2;
+        if (iv[29] != 3) {
+            goto L140;
+        }
+
+        /*  ***  SET V(RADFAC) BY GRADIENT TESTS  *** */
+
+        step1 = iv[40];
+        /*     *** TEMP1 = STLSTG *** */
+        temp1 = step1 + (*n << 1);
+
+        /*     ***  SET  TEMP1 = DIAG(D)**-1 * (HESSIAN*STEP + (G(X0)-G(X)))  *** */
+
+        k = temp1;
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            v[k] = (v[k] - g[i__]) / d__[i__];
+            ++k;
+            /* L390: */
+        }
+
+        /*     ***  DO GRADIENT TESTS  *** */
+
+        if (dv2nrm_(n, &v[temp1]) <= v[1] * v[29]) {
+            goto L400;
+        }
+        if (dd7tpr_(n, &g[1], &v[step1]) >= v[4] * v[30]) {
+            goto L140;
+        }
+L400:
+        v[16] = v[23];
+        goto L140;
+
+        /* . . . . . . . . . . . . . .  MISC. DETAILS  . . . . . . . . . . . . . . */
+
+        /*  ***  BAD PARAMETERS TO ASSESS  *** */
+
+L410:
+        iv[1] = 64;
+        goto L440;
+
+        /*  ***  INCONSISTENT B  *** */
+
+L420:
+        iv[1] = 82;
+        goto L440;
+
+        /*  ***  PRINT SUMMARY OF FINAL ITERATION AND OTHER REQUESTED ITEMS  *** */
+
+L430:
+        iv[1] = iv[55];
+        iv[55] = 0;
+L440:
+        ditsum_(&d__[1], &g[1], &iv[1], liv, lv, n, &v[1], &x[1]);
+        goto L999;
+
+        /*  ***  PROJECT X INTO FEASIBLE REGION (PRIOR TO COMPUTING F OR G)  *** */
+
+L450:
+        i__1 = *n;
+        for (i__ = 1; i__ <= i__1; ++i__) {
+            if (x[i__] < b[(i__ << 1) + 1]) {
+                x[i__] = b[(i__ << 1) + 1];
+            }
+            if (x[i__] > b[(i__ << 1) + 2]) {
+                x[i__] = b[(i__ << 1) + 2];
+            }
+            /* L460: */
+        }
+
+L999:
+        return 0;
+
+        /*  ***  LAST CARD OF DRMNHB FOLLOWS  *** */
+    } /* drmnhb_ */
+
+
+
 
 }//end namespace port
 #endif
