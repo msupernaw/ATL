@@ -14,335 +14,25 @@
 #ifndef OPTIMIZATION_HPP
 #define OPTIMIZATION_HPP
 
-//#include "../../AutoDiff/AutoDiff.hpp"
 #include "Utilities/StringUtil.hpp"
-//#include "../ATL/Containers/Containers.hpp"
 #include <vector>
 #include <map>
 #include "DerivativeChecker.hpp"
 #include <iomanip>
 #include "support/port.hpp"
+#include "support/cs_sparse.hpp"
 #include "Tape.hpp"
+#include "ThreadPool.hpp"
 
 
 namespace atl {
 
+   
     template<class T>
     class OptimizationRoutine;
 
     template<class T>
     class MCMC;
-
-    template<typename T>
-    class Cholesky {
-        typedef std::vector<std::vector<T> > CMatrix;
-        typedef std::vector<T> CVector;
-        typedef std::vector<std::vector<unsigned> > CPattern;
-
-
-
-    public:
-        size_t n = 0;
-        CMatrix el;
-        CPattern pattern;
-        CPattern upper_pattern;
-        CPattern lower_pattern;
-
-        bool pd = false;
-        bool has_pattern = false;
-
-        Cholesky() {
-
-        }
-
-        Cholesky(const CMatrix& a, bool store_pattern = true) {
-            el = a;
-            pd = true;
-            n = a.size();
-            has_pattern = store_pattern;
-
-            if (has_pattern) {
-
-                this->pattern.resize(this->n * this->n);
-                this->lower_pattern.resize(n);
-                this->upper_pattern.resize(n);
-                for (int i = 0; i < n; i++) {
-                    for (int j = i; j < n; j++) {
-                        T sum = 0;
-                        int k;
-                        for (sum = el[i][j], k = i - 1; k >= 0; k--) {
-                            sum -= el[i][k] * el[j][k];
-                            if (el[i][k] != 0.0 && el[j][k] != 0.0) {
-                                pattern[i * n + j].push_back(k);
-
-                            }
-                        }
-                        if (i == j) {
-                            if (sum <= 0.0) {
-                                pd = false;
-                                std::cout << "matrix is not positive definite.\n";
-                            }
-                            el[i][i] = std::sqrt(sum);
-                        } else {
-                            el[j][i] = sum / el[i][i];
-                        }
-                    }
-                }
-                for (int i = 0; i < n; i++)
-                    for (int j = 0; j < i; j++)
-                        el[j][i] = 0.0;
-
-                for (int i = 0; i < n; i++) {
-                    int k;
-                    for (k = i - 1; k >= 0; k--) {
-                        if (el[i][ k] != 0.0) {
-                            this->lower_pattern[i].push_back(k);
-                        }
-                    }
-                }
-
-                for (int i = n - 1; i >= 0; i--) {
-                    int k;
-                    for (k = i + 1; k < n; k++) {
-                        if (el[k][i] != 0.0) {
-                            this->upper_pattern[i].push_back(k);
-                        }
-                    }
-                }
-
-            } else {
-
-
-                for (int i = 0; i < n; i++) {
-                    for (int j = i; j < n; j++) {
-                        T sum = 0;
-                        int k;
-                        for (sum = el[i][j], k = i - 1; k >= 0; k--) {
-                            sum -= el[i][k] * el[j][k];
-                        }
-                        if (i == j) {
-                            if (sum <= 0.0) {
-                                pd = false;
-                                std::cout << "matrix is not positive definite.\n";
-                            }
-                            el[i][i] = std::sqrt(sum);
-                        } else {
-                            el[j][i] = sum / el[i][i];
-                        }
-                    }
-                }
-                for (int i = 0; i < n; i++)
-                    for (int j = 0; j < i; j++)
-                        el[j][i] = 0.0;
-
-
-            }
-
-
-
-
-        }
-
-        void recompute(const CMatrix& a) {
-            el = a;
-            pd = true;
-            n = a.size();
-            this->pattern.resize(0);
-            this->pattern.resize(this->n * this->n);
-            this->lower_pattern.resize(0);
-            this->lower_pattern.resize(n);
-            this->upper_pattern.resize(0);
-            this->upper_pattern.resize(n);
-
-            for (int i = 0; i < n; i++) {
-                for (int j = i; j < n; j++) {
-                    T sum = 0;
-                    int k;
-                    for (sum = el[i][j], k = i - 1; k >= 0; k--) {
-                        sum -= el[i][k] * el[j][k];
-                        if (el[i][k] != 0.0 && el[j][k] != 0.0) {
-                            pattern[i * n + j].push_back(k);
-                        }
-                    }
-                    if (i == j) {
-                        if (sum <= 0.0) {
-                            pd = false;
-                            std::cout << "matrix is not positive definite.\n";
-                        }
-                        el[i][i] = std::sqrt(sum);
-                    } else {
-                        el[j][i] = sum / el[i][i];
-                    }
-                }
-            }
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < i; j++)
-                    el[j][i] = 0.0;
-
-            for (int i = 0; i < n; i++) {
-                int k;
-                for (k = i - 1; k >= 0; k--) {
-                    if (el[i][ k] != 0.0) {
-                        this->lower_pattern[i].push_back(k);
-                    }
-                }
-            }
-
-            for (int i = n - 1; i >= 0; i--) {
-                int k;
-                for (k = i + 1; k < n; k++) {
-                    if (el[k][i] != 0.0) {
-                        this->upper_pattern[i].push_back(k);
-                    }
-                }
-            }
-        }
-
-        void compute(const CMatrix& a) {
-            el = a;
-            pd = true;
-            for (int i = 0; i < n; i++) {
-                for (int j = i; j < n; j++) {
-                    T sum = 0;
-                    int k;
-                    //                sum = el[i][j];
-#pragma unroll
-                    for (sum = el[i][j], k = pattern[i * n + j].size() - 1; k >= 0; k--) {
-                        sum -= el[i][pattern[i * n + j][k]] * el[j][pattern[i * n + j][k]];
-                    }
-                    if (i == j) {
-                        if (sum <= 0.0) {
-                            pd = false;
-                            std::cout << "matrix is not positive definite.\n";
-                        }
-                        el[i][i] = std::sqrt(sum);
-                    } else {
-                        el[j][i] = sum / el[i][i];
-                    }
-                }
-            }
-#pragma unroll
-            for (int i = 0; i < n; i++)
-#pragma unroll
-                for (int j = 0; j < i; j++)
-                    el[j][i] = 0.0;
-
-        }
-
-        const CVector solve(const CMatrix& a, const CVector& b, bool recompute = false) {
-
-            if (b.size() != this->n) {
-                std::cout << "error!!!!\n";
-            }
-
-            CVector x(this->n);
-            if (!this->has_pattern) {
-                std::cout << "no pattern.\n";
-                return x;
-            }
-
-            recompute ? this->recompute(a) : this->compute(a);
-            // solve L y = b, storing y in x
-            for (int i = 0; i < n; i++) {
-                T sum;
-                int k;
-                for (sum = b[i], k = i - 1; k >= 0; k--)
-                    sum -= el[i][k] * x[k];
-                x[i] = (sum / el[i][i]);
-            }
-            // solve L^T x = y
-            for (int i = n - 1; i >= 0; i--) {
-                double sum;
-                int k;
-                for (sum = x[i], k = i + 1; k < n; k++)
-                    sum -= el(k, i) * x[k];
-                x[i] = (sum / el[i][i]);
-            }
-            return x;
-
-        }
-
-        void solve(const CVector& b, CVector& x) {
-            if (b.size() != this->n) {
-                std::cout << "error!!!!\n";
-            }
-
-
-            // solve L y = b, storing y in x
-#pragma unroll
-            for (int i = 0; i < n; i++) {
-                T sum;
-                int k;
-#pragma unroll
-                for (sum = b[i], k = 0; k < this->lower_pattern[i].size(); k++)
-                    sum -= el[i][this->lower_pattern[i][k]] * x[this->lower_pattern[i][k]];
-                x[i] = (sum / el[i][i]);
-            }
-            // solve L^T x = y
-#pragma unroll
-            for (int i = n - 1; i >= 0; i--) {
-                T sum;
-                int k;
-#pragma unroll
-                for (sum = x[i], k = 0; k < this->upper_pattern[i].size(); k++)
-                    sum -= el[this->upper_pattern[i][k]][i] * x[this->upper_pattern[i][k]];
-                x[i] = (sum / el[i][i]);
-            }
-
-        }
-
-        void solve(CMatrix &b, CMatrix &x) {
-            int i, j, m = b.size();
-            if (b.size() != n || x.size() != n || b[0].size() != x[0].size())
-                throw ("Cholesky::solve bad sizes");
-            CVector xx(n);
-            for (j = 0; j < m; j++) {
-                for (i = 0; i < n; i++) xx[i] = b[i][j];
-                solve(xx, xx);
-                for (i = 0; i < n; i++) x[i][j] = xx[i];
-            }
-        }
-
-        void inverse(CMatrix& ainv) {
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j <= i; j++) {
-                    T sum = i == j ? 1.0 : 0.0;
-                    for (int k = i - 1; k >= j; k--)
-                        sum -= el[i][k] * ainv[j][k];
-                    ainv[j][i] = sum / el[i][i];
-                }
-            for (int i = n - 1; i >= 0; i--)
-                for (int j = 0; j <= i; j++) {
-                    T sum = i < j ? 0.0 : ainv[j][i];
-                    for (int k = i + 1; k < n; k++)
-                        sum -= el[k][i] * ainv[j][k];
-                    T temp = sum / el[i][i];
-                    ainv[i][j] = temp;
-                    ainv[j][i] = temp;
-                }
-        }
-
-        const T logdet() {
-            T sum = 0.0;
-            for (int i = 0; i < n; i++)
-                sum += std::log(std::fabs(el[i][i]));
-            return static_cast<T> (2.0) * sum;
-        }
-
-        const T det() {
-            return std::exp(logdet());
-        }
-
-
-
-    private:
-
-        inline int index(int i, int j) {
-            return i * n + j;
-        }
-
-
-    };
 
     template<class T>
     class MinimizerResults {
@@ -456,44 +146,6 @@ namespace atl {
 
             ObjectiveFunctionStatistics<T> stats;
 
-            atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
-
-            atl::Variable<T> f = this->Evaluate();
-            stats.function_value = f.GetValue();
-
-            atl::Variable<T>::tape.Accumulate();
-            stats.parameter_values.resize(this->parameters_m.size());
-            stats.parameter_names.resize(this->parameters_m.size());
-            stats.gradient.resize(this->parameters_m.size());
-            stats.hessian.resize(this->parameters_m.size(), std::vector<T>(this->parameters_m.size()));
-
-            for (int i = 0; i < this->parameters_m.size(); i++) {
-                stats.gradient[i] = this->parameters_m[i]->info->dvalue;
-                stats.parameter_values[i] = this->parameters_m[i]->info->vvalue;
-                stats.parameter_names[i] = this->parameters_m[i]->GetName();
-
-                if (i == 0) {
-                    stats.max_gradient_component = std::fabs(this->parameters_m[i]->info->dvalue);
-                } else {
-                    if (std::fabs(this->parameters_m[i]->info->dvalue) > stats.max_gradient_component) {
-                        stats.max_gradient_component = std::fabs(this->parameters_m[i]->info->dvalue);
-                    }
-                }
-
-                for (int j = 0; j < this->parameters_m.size(); j++) {
-                    atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id, this->parameters_m[j]->info->id);
-                }
-            }
-
-            Cholesky<T> chol(stats.hessian);
-            stats.log_determinant_of_hessian = chol.logdet();
-
-            if (this->random_variable_phases_m.size()) {
-                stats.random_variable_names.resize(this->random_variables_m.size());
-                stats.random_variable_names.resize(this->random_variables_m.size());
-            }
-
-
             return stats;
         }
 
@@ -536,29 +188,23 @@ namespace atl {
         std::valarray<T> x;
         std::valarray<T> best;
         std::valarray<T> gradient;
-        std::valarray<std::valarray<T> > hessian;
 
         std::valarray<T> inner_x;
         std::valarray<T> inner_best;
         std::valarray<T> inner_gradient;
         std::valarray<T> inner_wg;
-        std::valarray<std::valarray<T> > inner_hessian;
+
         atl::Tape<T> inner_gs;
         atl::Variable<T> log_det;
 
+        std::unordered_map<int, std::vector<int> > hessian_patern_map;
         //
-        std::vector<std::vector<T> > rand_hessian; //(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-        std::vector<std::vector<T> > rand_hessian_inv; //(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-        std::vector<std::vector<T> > rand_hessian_dx; //(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-        std::vector<std::vector<T> > ret;
-        //        atl::Matrix<T > atl_rand_hessian;
-        //        std::vector<T> sse_rand_hessian_inv;
-        //        std::vector<T> sse_rand_hessian_dx;
-        std::vector<T> results;
         long outer_iteration;
 
-        Cholesky<T> cholesky_outer;
-        Cholesky<T> cholesky_inner;
+
+        struct cs_symbolic<T> *S_outer = NULL;
+        struct cs_symbolic<T>* S_inner = NULL;
+        bool pattern_known = false;
     public:
 
         OptimizationRoutine(ObjectiveFunction<T>* objective_function = NULL) :
@@ -571,6 +217,14 @@ namespace atl {
 
         void SetObjectiveFunction(ObjectiveFunction<T>* objective_function) {
             this->objective_function_m = objective_function;
+        }
+
+        T GetTolerance() const {
+            return tolerance;
+        }
+
+        void SetTolerance(T tolerance) {
+            this->tolerance = tolerance;
         }
 
         bool Run() {
@@ -612,11 +266,7 @@ namespace atl {
                 }
             }
 
-            if (this->random_variables_m.size() > 0) {
-                rand_hessian.resize(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-                rand_hessian_dx.resize(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-                ret.resize(this->random_variables_m.size(), std::vector<T>(this->random_variables_m.size()));
-            }
+           
 
         }
 
@@ -673,11 +323,8 @@ namespace atl {
                     }
         }
 
-       
         void ClearReStructures() {
-            for (int i = 0; i < this->random_variables_m.size(); i++) {
-                std::fill(this->rand_hessian[i].begin(), this->rand_hessian[i].end(), static_cast<T> (0.0));
-            }
+
         }
 
     public:
@@ -687,23 +334,31 @@ namespace atl {
             bool recording = atl::Variable<T>::tape.recording;
             size_t PARAMETERS_SIZE = this->parameters_m.size();
             size_t RANDOM_SIZE = this->random_variables_m.size();
-
+            struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
             if (recording) {
                 for (int i = 0; i < RANDOM_SIZE; i++) {
                     this->random_variables_m[i]->SetValue(0.0);
                 }
+
+#ifdef USE_TIMER
+                auto inner_start = std::chrono::steady_clock::now();
+#endif
                 std::cout << "Inner Minimization:\n";
                 if (this->NewtonInner(10, 1e-4)) {
-                    std::cout << "Inner converged!\n";
+                    std::cout << "Inner converged.\n";
                     std::cout << "Inner f = " << this->inner_function_value << "\n";
                     std::cout << "Inner maxg = " << this->inner_maxgc << "\n";
 
                 } else {
-                    std::cout << "Inner failed!\n";
+                    std::cout << "Inner failed.\n";
                     std::cout << "Inner f = " << this->inner_function_value << "\n";
                     std::cout << "Inner maxg = " << this->inner_maxgc << "\n";
                 }
-
+#ifdef USE_TIMER
+                auto inner_end = std::chrono::steady_clock::now();
+                std::chrono::duration<double> inner_time = (inner_end - inner_start);
+                std::cout << "Inner fit time = " << inner_time.count() << " secs\n" << std::endl;
+#endif
                 std::unordered_map<std::shared_ptr<atl::VariableInfo<T> >, T> derivatives_logdet;
                 std::unordered_map<std::shared_ptr<atl::VariableInfo<T> >, T> derivatives_f;
 
@@ -719,56 +374,87 @@ namespace atl {
                 }
 
                 std::cout << "Accumulating third-order mixed derivatives..." << std::flush;
+#ifdef USE_TIMER
+                auto to_start = std::chrono::steady_clock::now();
+#endif
                 atl::Variable<T>::tape.AccumulateThirdOrder();
-                std::cout << "done.\n" << std::endl;
+                std::cout << "done." << std::endl;
+#ifdef USE_TIMER
+                auto to_end = std::chrono::steady_clock::now();
+                std::chrono::duration<double> to_time = (to_end - to_start);
+                std::cout << "Third-Order Accumulation time = " << to_time.count() << " secs\n" << std::endl;
+#endif
                 std::vector<T> g(PARAMETERS_SIZE);
                 for (int j = 0; j < PARAMETERS_SIZE; j++) {
-                    g[j] = atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id);;
+                    g[j] = atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id);
                 }
-                int ii = 0;
                 for (int i = 0; i < RANDOM_SIZE; i++) {
+                    std::vector<int>& hm = hessian_patern_map[i];
+                    hm.clear();
                     for (int j = 0; j < RANDOM_SIZE; j++) {
-                        rand_hessian[i][j] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
+                        T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
 
+                        if (dxx != 0.0) {
+                            cs_entry<T>(RHessian, i, j, dxx);
+                            hm.push_back(j);
+                        }
                     }
                 }
+                this->pattern_known = true;
+                struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
+                cs_spfree(RHessian);
+                //                
+                if (this->S_outer == NULL)
+                    this->S_outer = cs_schol<T>(0, hessian);
 
-                this->cholesky_outer.has_pattern ? cholesky_outer.compute(rand_hessian) : cholesky_outer.recompute(rand_hessian);
+                struct cs_numeric<T> *chol = cs_chol<T>(hessian, this->S_outer);
+
+
 
 
                 //compute logdetH
-                T ld = cholesky_outer.logdet();
+                T ld = cs_log_det(chol->L);
                 log_det = ld;
-                //                log_det.SetName("log_det");
+
 
                 for (int i = 0; i < PARAMETERS_SIZE; i++) {
-                    derivatives_f[this->parameters_m[i]->info] = g[i]; //hr(0, i);
+                    derivatives_f[this->parameters_m[i]->info] = g[i];
                 }
 
 
                 //compute derivatives of the logdetH using third-order mixed partials
+#ifdef USE_TIMER
+                std::cout << "Starting Trace(H)..." << std::flush;
+                auto trace_start = std::chrono::steady_clock::now();
+#endif
+                std::vector<T> re_dx(RANDOM_SIZE);
 
                 for (int p = 0; p < PARAMETERS_SIZE; p++) {
+                    T trace = 0;
 
                     for (int i = 0; i < RANDOM_SIZE; i++) {
-                        for (int j = 0; j < RANDOM_SIZE; j++) {
-                            this->rand_hessian_dx[i][j] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
-                                    this->random_variables_m[j]->info->id, this->parameters_m[p]->info->id);
-                            ret[i][j] = 0.0;
+                        std::fill(re_dx.begin(), re_dx.end(), 0.0);
+                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        for (int j = 0; j < hm.size(); j++) {
+                            re_dx[hm[j]] = atl::Variable<T>::tape.Value(
+                                    this->random_variables_m[i]->info->id,
+                                    this->random_variables_m[hm[j]]->info->id,
+                                    this->parameters_m[p]->info->id);
                         }
-                    }
-                    //                    }
-
-                    cholesky_outer.solve(rand_hessian_dx, ret);
-
-
-                    T tr = 0;
-                    for (int i = 0; i < RANDOM_SIZE; i++) {
-                        tr += ret[i][i];
+                        int error = cs_cholsol(0, hessian, re_dx.data(), chol, this->S_outer);
+                        trace += re_dx[i];
                     }
 
-                    derivatives_logdet[this->parameters_m[p]->info] = tr;
+                    derivatives_logdet[this->parameters_m[p]->info] = trace;
+
+
                 }
+
+#ifdef USE_TIMER
+                auto trace_end = std::chrono::steady_clock::now();
+                std::chrono::duration<double> trace_time = (trace_end - trace_start);
+                std::cout << "Derivative Logdet time = " << trace_time.count() << " secs\n" << std::endl;
+#endif
 
                 atl::Variable<T>::tape.Reset();
                 atl::Variable<T>::tape.recording = false;
@@ -813,8 +499,8 @@ namespace atl {
                 f += static_cast<T> (.5) * log_det;
                 f -= static_cast<T> (.5)*(static_cast<T> (RANDOM_SIZE) * std::log((static_cast<T> (2.0 * M_PI))));
 
-
-                //                return f;
+                cs_spfree(hessian);
+                cs_nfree(chol);
 
             } else {
 
@@ -824,29 +510,70 @@ namespace atl {
                 atl::Variable<T>::tape.Reset();
                 atl::Variable<T> innerf = this->objective_function_m->Evaluate();
                 atl::Variable<T>::tape.AccumulateSecondOrder();
-                int ii = 0;
-                for (int i = 0; i < RANDOM_SIZE; i++) {
-                    for (int j = 0; j < RANDOM_SIZE; j++) {
-                        rand_hessian[i][j] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
+                if (!this->pattern_known) {
 
+                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                        std::vector<int>& hm = hessian_patern_map[i];
+                        hm.clear();
+                        for (int j = 0; j < RANDOM_SIZE; j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
+                            if (dxx != 0.0) {
+                                hm.push_back(j);
+                                cs_entry<T>(RHessian, i, j, dxx);
+                            }
+                        }
+                    }
+                    this->pattern_known = true;
+                } else {
+                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        for (int j = 0; j < hm.size(); j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
+                            cs_entry(RHessian, i, hm[j], dxx);
+                        }
                     }
                 }
 
-                this->cholesky_outer.has_pattern ? cholesky_outer.compute(rand_hessian) : cholesky_outer.recompute(rand_hessian);
+                struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
+                cs_spfree(RHessian);
+                //                
+                if (this->S_outer == NULL)
+                    this->S_outer = cs_schol<T>(0, hessian);
+
+
+                if (this->S_outer == NULL) {
+                    std::cout << "S_OUTER is still NULL" << std::endl;
+                    exit(0);
+
+                }
+                struct cs_numeric<T> *chol = cs_chol<T>(hessian, this->S_outer);
+
+
 
 
                 //compute logdetH
-                T ld = cholesky_outer.logdet();
+                T ld;
+                if (chol == NULL) {
+                    ld = 1.0;
+                } else {
+                    ld = cs_log_det(chol->L); 
+                }
+
                 log_det = ld;
-                //                log_det.SetName("log_det");
                 atl::Variable<T>::tape.recording = false;
                 f = this->objective_function_m->Evaluate();
 
                 f += static_cast<T> (.5) * log_det;
                 f -= static_cast<T> (.5)*(static_cast<T> (RANDOM_SIZE) * std::log((static_cast<T> (2.0 * M_PI))));
+
+                cs_spfree(hessian);
+                cs_nfree(chol);
+
             }
         }
 
+
+        
         void ComputeGradient(std::vector<atl::Variable<T>* >&p,
                 std::valarray<T>&g, T & maxgc) {
             g.resize(p.size());
@@ -922,92 +649,85 @@ namespace atl {
 
         bool NewtonInner(int max_iter = 20, T tol = 1e-12) {
 
-            atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
-            atl::Variable<T>::SetRecording(true);
             atl::Variable<T> fx;
-            atl::Variable<T>::tape.Reset();
 
             int nops = this->random_variables_m.size();
 
             std::vector<T> gradient_(nops);
-            std::vector<T> p(nops);
-            std::vector<std::vector<T> > hessian_(nops, std::vector<T>(nops));
-            std::vector<std::vector<T> > hessian_inv_(nops, std::vector<T>(nops));
 
-            this->inner_x.resize(nops);
-            this->inner_best.resize(nops);
-            this->inner_gradient.resize(nops);
-            this->inner_wg.resize(nops);
-            std::valarray<T> z(nops);
-
-            for (int i = 0; i < nops; i++) {
-                if (this->random_variables_m[i]->IsBounded()) {
-                    this->inner_x[i] = this->random_variables_m[i]->GetInternalValue();
-                } else {
-                    this->inner_x[i] = this->random_variables_m[i]->GetValue();
-                }
-                this->inner_gradient[i] = 0;
-            }
-            Cholesky<T> lu;
-
-
+            struct cs_symbolic<T>* S = NULL;
 
             for (int iter = 0; iter < max_iter; iter++) {
 
 
-                //                std::cout << "Newton raphson " << iter << std::endl;
                 atl::Variable<T>::tape.Reset();
                 atl::Variable<T>::SetRecording(true);
                 atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
                 fx = this->objective_function_m->Evaluate();
                 this->inner_function_value = fx.GetValue();
 
-                atl::Variable<T>::ComputeGradientAndHessian(
-                        atl::Variable<T>::tape,
-                        this->random_variables_m, gradient_, hessian_);
+                atl::Variable<T>::tape.AccumulateSecondOrder();
+                struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
 
 
-                //                Cholesky lu(hessian_);
-                iter ? lu.compute(hessian_) : lu.recompute(hessian_);
+                if (!this->pattern_known) {
 
-                bool all_positive = true;
+                    for (int i = 0; i <this->random_variables_m.size(); i++) {
+                        gradient_[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
+
+                        int jj = 0;
+                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        for (int j = 0; j <this->random_variables_m.size(); j++) {
+
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
+
+                            if (std::fpclassify(dxx) != FP_ZERO) {
+                                hm.push_back(j);
+                                cs_entry(RHessian, i, j, dxx);
+                            }
+                        }
+                    }
+                    this->pattern_known = true;
+                } else {
+                   
+                    for (int i = 0; i <this->random_variables_m.size(); i++) {
+                        gradient_[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
+                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        for (int j = 0; j < hm.size(); j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
+                                cs_entry(RHessian, i, hm[j], dxx);
+                        }
+                    }
+                }
+                
+
+
+                struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
+                cs_spfree(RHessian);
+                if (this->S_outer == NULL) {
+                    this->S_outer = cs_schol<T>(0, hessian);
+                }
+
                 this->inner_maxgc = std::fabs(gradient_[0]);
-
-                std::fill(p.begin(), p.end(), 0.0);
-                lu.solve(gradient_, p);
-                //prepare lone search
                 for (int i = 0; i < gradient_.size(); i++) {
-                    //                    this->inner_gradient[i] = gradient_[i];
-                    //                    this->inner_wg[i] = gradient_[i];
-                    //                    this->inner_x[i] = this->random_variables_m[i]->GetValue();
-                    //                    z[i] = p[i];
                     if (std::fabs(gradient_[i]) > this->inner_maxgc) {
                         this->inner_maxgc = std::fabs(gradient_[i]);
                     }
 
                 }
-                //                std::cout << "Inner max g = " << this->inner_maxgc << "\n";
+                int error = cs_cholsol(0, hessian, gradient_.data(), this->S_outer);
+
+
+                cs_free(hessian);
                 std::cout << "  Newton raphson " << iter << ", inner maxgc = " << this->inner_maxgc << std::endl;
-                if (this->inner_maxgc <= tol /*&& all_positive*/) {
+                if (this->inner_maxgc <= tol ) {
                     return true;
                 }
-                //                
-                //                if(!line_search(random_variables_m,
-                //                        this->inner_function_value,
-                //                        inner_x,
-                //                        inner_best,
-                //                        z,
-                //                        inner_gradient,
-                //                        inner_wg,
-                //                        inner_maxgc, iter,
-                //                        true)){
-                //                    std::cout<<"Inner max line searches"<<std::endl;
-                //                    return false;
-                //                }
+                
 
 
                 for (int j = 0; j < random_variables_m.size(); j++) {
-                    random_variables_m[j]->SetValue(random_variables_m[j]->GetValue() - p[j]);
+                    random_variables_m[j]->SetValue(random_variables_m[j]->GetValue() - gradient_[j]);
                 }
             }
 
@@ -1015,6 +735,8 @@ namespace atl {
             return false;
 
         }
+
+       
 
         bool line_search(std::vector<atl::Variable<T>* >& parameters,
                 T& function_value,
@@ -1397,6 +1119,8 @@ namespace atl {
                 }
             }
 
+            atl::Variable<T>::tape.derivative_trace_level = atl::FIRST_ORDER_REVERSE;
+
             atl::Variable<T>::SetRecording(true);
             T fx = 0.0;
             atl::Variable<T> f;
@@ -1404,7 +1128,6 @@ namespace atl {
             fx = f.GetValue();
             this->function_value = f.GetValue();
             this->ComputeGradient(this->parameters_m, this->gradient, this->maxgc);
-            T u = static_cast<T>(0.0);
             for (int i = 0; i < n; i++) {
                 g[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
                 wg[i] = g[i];
@@ -1414,6 +1137,8 @@ namespace atl {
             int iter = 0;
             this->outer_iteration = iter;
             T maxgc;
+
+            port::ivset_(2, iv.data(), iv.size(), v.size(), v.data());
 
             T previous_function_value;
             do {
@@ -1455,24 +1180,24 @@ namespace atl {
                     }
                     this->maxgc = maxgc;
 
-                    if ((std::fabs(previous_function_value) - std::fabs(fx)) < 1e-5) {
-                        std::cout << "Line searching....\n";
-                        if (!this->line_search(this->parameters_m,
-                                this->function_value,
-                                this->x,
-                                this->best,
-                                z,
-                                this->gradient,
-                                wg,
-                                this->maxgc,
-                                iter, false)) {
-                            std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
-                            for (int i = 0; i < n; i++) {
-                                this->x[i] = this->best[i];
-                            }
-
-                        }
-                    }
+//                                        if ((std::fabs(previous_function_value) - std::fabs(fx)) < 1e-15) {
+//                                            std::cout << "Line searching....\n";
+//                                            if (!this->line_search(this->parameters_m,
+//                                                    this->function_value,
+//                                                    this->x,
+//                                                    this->best,
+//                                                    z,
+//                                                    this->gradient,
+//                                                    wg,
+//                                                    this->maxgc,
+//                                                    iter, false)) {
+//                                                std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
+//                                                for (int i = 0; i < n; i++) {
+//                                                    this->x[i] = this->best[i];
+//                                                }
+//                    
+//                                            }
+//                                        }
 
                     for (int i = 0; i < n; i++) {
                         if (std::fabs(g[i]) > maxgc) {
@@ -1488,7 +1213,6 @@ namespace atl {
                         g[i] = this->gradient[i];
                     }
 
-                    //                    atl::Variable<T>::tape.Reset();
                     if ((iter % 10) == 0) {
                         this->Print();
                     }
@@ -1502,7 +1226,6 @@ namespace atl {
 
 
                     atl::Variable<T>::SetRecording(false);
-                    //                    atl::Variable<T>::tape.Reset();
                     previous_function_value = f.GetValue();
                     this->CallObjectiveFunction(f);
                     fx = f.GetValue();
@@ -1520,7 +1243,6 @@ namespace atl {
 
 
             } while ((iv[0]) < 3);
-            //            atl::Variable<T>::tape.Reset();
             for (int i = 0; i < n; i++) {
                 this->parameters_m[i]->UpdateValue(x[i]);
                 this->x[i] = x[i];

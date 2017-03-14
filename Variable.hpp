@@ -80,8 +80,13 @@ namespace atl {
         max_boundary_m(std::numeric_limits<REAL_T>::max()),
         transformation(&default_transformation) {
             info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (0.0));
-            size_t index = atl::Variable<REAL_T>::tape.NextIndex();
-            this->Assign(Variable<REAL_T>::tape, exp, index);
+
+            if (Variable<REAL_T>::tape.recording) {
+                size_t index = atl::Variable<REAL_T>::tape.NextIndex();
+                this->Assign(Variable<REAL_T>::tape, exp, index);
+            } else {
+                this->SetValue(exp.GetValue());
+            }
         }
 
         ~Variable() {
@@ -94,8 +99,13 @@ namespace atl {
         }
 
         Variable& operator=(const Variable<REAL_T>& other) {
-            size_t index = atl::Variable<REAL_T>::tape.NextIndex();
-            this->Assign(Variable<REAL_T>::tape, other, index);
+            if (Variable<REAL_T>::tape.recording) {
+                size_t index = atl::Variable<REAL_T>::tape.NextIndex();
+                this->Assign(Variable<REAL_T>::tape, other, index);
+            } else {
+                this->SetValue(other.GetValue());
+            }
+            //            this->info = other.info;
             return *this;
         }
 
@@ -205,7 +215,7 @@ namespace atl {
 
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
-                entry.exp = exp.ToExpressionTemplateString();
+//                entry.exp = exp.ToExpressionTemplateString();
                 entry.w = this->info;
                 entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
                 typename atl::StackEntry<REAL_T>::vi_iterator it;

@@ -75,6 +75,55 @@ namespace port {
     static double c_b40 = 1.;
     static double c_b45 = -1.;
 
+
+#define AFCTOL  31
+#define ALGSAV  51
+#define COVPRT  14
+#define COVREQ  15
+#define DRADPR 101
+#define DTYPE   16
+#define F       10
+#define F0      13
+#define FDIF    11
+#define G       28
+#define HC      71
+#define IERR    75
+#define INITH   25
+#define INITS   25
+#define IPIVOT  76
+#define IVNEED   3
+#define LASTIV  44
+#define LASTV   45
+#define LMAT    42
+#define MXFCAL  17
+#define MXITER  18
+#define NEXTV   47
+#define NFCALL   6
+#define NFCOV   52
+#define NFGCAL   7
+#define NGCOV   53
+#define NITER   31
+#define NVDFLT  50
+#define NVSAVE   9
+#define OUTLEV  19
+#define PARPRT  20
+#define PARSAV  49
+#define PERM    58
+#define PRUNIT  21
+#define QRTYP   80
+#define RDREQ   57
+#define RMAT    78
+#define SOLPRT  22
+#define STATPR  23
+#define TOOBIG   2
+#define VNEED    4
+#define VSAVE   60
+#define X0PRT   24
+
+   
+
+    
+
     //
     //integer i1mach_(integer *i__)
     //{
@@ -403,9 +452,9 @@ namespace port {
         switch (*i) {
             case 1: return std::numeric_limits<T>::min();
             case 2: return std::numeric_limits<T>::max();
-            case 3: return std::numeric_limits<T>::epsilon() / std::numeric_limits<T>::radix;
+            case 3: return static_cast<T>(.5)*std::numeric_limits<T>::epsilon();// / std::numeric_limits<T>::radix;
             case 4: return std::numeric_limits<T>::epsilon();
-            case 5: return std::log10(std::numeric_limits<T>::radix);
+            case 5: return static_cast<T>(0.301029995663981195213738894724);//std::log10(std::numeric_limits<T>::radix);
         }
         std::cerr << "invalid argument: d1mach(%ld)\n" << *i;
         exit(1);
@@ -531,18 +580,17 @@ L999:
         /*  ***  LAST CARD OF DR7MDC FOLLOWS  *** */
     } /* dr7mdc_ */
 
-    //
-
+    
     template<typename doublereal>
     int dv7dfl_(integer *alg, integer *lv, doublereal *v) {
         /* System generated locals */
         doublereal d__1, d__2, d__3;
 
         /* Builtin functions */
-        //    double pow_dd(doublereal *, doublereal *);
+//        doublereal pow_dd(doublereal *, doublereal *);
 
         /* Local variables */
-        //extern doublereal dr7mdc_(integer *);
+        //        extern doublereal dr7mdc_(integer *);
         static doublereal machep, mepcrt, sqteps;
 
 
@@ -648,7 +696,207 @@ L999:
         return 0;
         /*  ***  LAST CARD OF DV7DFL FOLLOWS  *** */
     } /* dv7dfl_ */
+
+    template<typename doublereal>
+    void ivset_(integer alg, integer iv[], integer liv, integer lv, doublereal v[]) {
+        /*  ***  ALG = 1 MEANS REGRESSION CONSTANTS. */
+        /*  ***  ALG = 2 MEANS GENERAL UNCONSTRAINED OPTIMIZATION CONSTANTS. */
+
+
+        /* Initialized data */
+
+        // alg[orithm] :          1   2   3    4
+        static integer miniv[] = {0, 82, 59, 103, 103};
+        static integer minv [] = {0, 98, 71, 101, 85};
+
+        integer mv, miv, alg1;
+
+        /* Parameter adjustments - code will use 1-based indices*/
+        --iv;
+        --v;
+
+        /* Function Body */
+
+
+        if (PRUNIT <= liv) iv[PRUNIT] = 0; /* suppress all Fortran output */
+        if (ALGSAV <= liv) iv[ALGSAV] = alg;
+        if (alg < 1 || alg > 4)
+            std::cout << "ivset: alg = %d must be 1, 2, 3, or 4\n";
+
+        miv = miniv[alg];
+        if (liv < miv) {
+            iv[1] = 15;
+            return;
+        }
+        mv = minv[alg];
+        if (lv < mv) {
+            iv[1] = 16;
+            return;
+        }
+        alg1 = (alg - 1) % 2 + 1;
+        dv7dfl_(&alg1, &lv, &v[1]);
+        //       ------
+        iv[1] = 12;
+        if (alg > 2) std::cout << "port algorithms 3 or higher are not supported\n";
+        iv[IVNEED] = 0;
+        iv[LASTIV] = miv;
+        iv[LASTV] = mv;
+        iv[LMAT] = mv + 1;
+        iv[MXFCAL] = 200;
+        iv[MXITER] = 150;
+        iv[OUTLEV] = 0; /* default is no iteration output */
+        iv[PARPRT] = 1;
+        iv[PERM] = miv + 1;
+        iv[SOLPRT] = 0; /* was 1 but we suppress Fortran output */
+        iv[STATPR] = 0; /* was 1 but we suppress Fortran output */
+        iv[VNEED] = 0;
+        iv[X0PRT] = 1;
+
+        if (alg1 >= 2) { /*  GENERAL OPTIMIZATION values: nlminb() */
+            iv[DTYPE] = 0;
+            iv[INITS] = 1;
+            iv[NFCOV] = 0;
+            iv[NGCOV] = 0;
+            iv[NVDFLT] = 25;
+            iv[PARSAV] = (alg > 2) ? 61 : 47;
+
+            v[AFCTOL] = 0.0; /* since R 2.12.0:  Skip |f(x)| test */
+        } else { /* REGRESSION  values: nls() */
+            iv[COVPRT] = 3;
+            iv[COVREQ] = 1;
+            iv[DTYPE] = 1;
+            iv[HC] = 0;
+            iv[IERR] = 0;
+            iv[INITH] = 0;
+            iv[IPIVOT] = 0;
+            iv[NVDFLT] = 32;
+            iv[VSAVE] = (alg > 2) ? 61 : 58;
+            iv[PARSAV] = iv[60] + 9;
+            iv[QRTYP] = 1;
+            iv[RDREQ] = 3;
+            iv[RMAT] = 0;
+        }
+        return;
+    }
+    
     //
+
+//    template<typename doublereal>
+//    int dv7dfl_(integer *alg, integer *lv, doublereal *v) {
+//        /* System generated locals */
+//        doublereal d__1, d__2, d__3;
+//
+//        /* Builtin functions */
+//        //    double pow_dd(doublereal *, doublereal *);
+//
+//        /* Local variables */
+//        //extern doublereal dr7mdc_(integer *);
+//        static doublereal machep, mepcrt, sqteps;
+//
+//
+//        /*  ***  SUPPLY ***SOL (VERSION 2.3) DEFAULT VALUES TO V  *** */
+//
+//        /*  ***  ALG = 1 MEANS REGRESSION CONSTANTS. */
+//        /*  ***  ALG = 2 MEANS GENERAL UNCONSTRAINED OPTIMIZATION CONSTANTS. */
+//
+//
+//        /* DR7MDC... RETURNS MACHINE-DEPENDENT CONSTANTS */
+//
+//
+//        /*  ***  SUBSCRIPTS FOR V  *** */
+//
+//
+//        /* /6 */
+//        /*     DATA ONE/1.D+0/, THREE/3.D+0/ */
+//        /* /7 */
+//        /* / */
+//
+//        /*  ***  V SUBSCRIPT VALUES  *** */
+//
+//        /* /6 */
+//        /*     DATA AFCTOL/31/, BIAS/43/, COSMIN/47/, DECFAC/22/, DELTA0/44/, */
+//        /*    1     DFAC/41/, DINIT/38/, DLTFDC/42/, DLTFDJ/43/, DTINIT/39/, */
+//        /*    2     D0INIT/40/, EPSLON/19/, ETA0/42/, FUZZ/45/, HUBERC/48/, */
+//        /*    3     INCFAC/23/, LMAX0/35/, LMAXS/36/, PHMNFC/20/, PHMXFC/21/, */
+//        /*    4     RDFCMN/24/, RDFCMX/25/, RFCTOL/32/, RLIMIT/46/, RSPTOL/49/, */
+//        /*    5     SCTOL/37/, SIGMIN/50/, TUNER1/26/, TUNER2/27/, TUNER3/28/, */
+//        /*    6     TUNER4/29/, TUNER5/30/, XCTOL/33/, XFTOL/34/ */
+//        /* /7 */
+//        /* / */
+//
+//        /* -------------------------------  BODY  -------------------------------- */
+//
+//        /* Parameter adjustments */
+//        --v;
+//
+//        /* Function Body */
+//        machep = dr7mdc_<doublereal>(&c__3);
+//        v[31] = 1e-20;
+//        if (machep > 1e-10) {
+//            /* Computing 2nd power */
+//            d__1 = machep;
+//            v[31] = d__1 * d__1;
+//        }
+//        v[22] = .5;
+//        sqteps = dr7mdc_<doublereal>(&c__4);
+//        v[41] = .6;
+//        v[39] = 1e-6;
+//        mepcrt = std::pow(machep, c_b4);
+//        v[40] = 1.;
+//        v[19] = .1;
+//        v[23] = 2.;
+//        v[35] = 1.;
+//        v[36] = 1.;
+//        v[20] = -.1;
+//        v[21] = .1;
+//        v[24] = .1;
+//        v[25] = 4.;
+//        /* Computing MAX */
+//        /* Computing 2nd power */
+//        d__3 = mepcrt;
+//        d__1 = 1e-10, d__2 = d__3 * d__3;
+//        v[32] = std::max(d__1, d__2);
+//        v[37] = v[32];
+//        v[26] = .1;
+//        v[27] = 1e-4;
+//        v[28] = .75;
+//        v[29] = .5;
+//        v[30] = .75;
+//        v[33] = sqteps;
+//        v[34] = machep * 100.;
+//
+//        if (*alg >= 2) {
+//            goto L10;
+//        }
+//
+//        /*  ***  REGRESSION  VALUES */
+//
+//        /* Computing MAX */
+//        d__1 = 1e-6, d__2 = machep * 100.;
+//        v[47] = std::max(d__1, d__2);
+//        v[38] = 0.;
+//        v[44] = sqteps;
+//        v[42] = mepcrt;
+//        v[43] = sqteps;
+//        v[45] = 1.5;
+//        v[48] = .7;
+//        v[46] = dr7mdc_<doublereal>(&c__5);
+//        v[49] = .001;
+//        v[50] = 1e-4;
+//        goto L999;
+//
+//        /*  ***  GENERAL OPTIMIZATION VALUES */
+//
+//L10:
+//        v[43] = .8;
+//        v[38] = -1.;
+//        v[42] = machep * 1e3;
+//
+//L999:
+//        return 0;
+//        /*  ***  LAST CARD OF DV7DFL FOLLOWS  *** */
+//    } /* dv7dfl_ */
+//    //
 
     template<typename doublereal>
     inline int divset_(integer *alg, integer *iv, integer *liv, integer
@@ -3099,7 +3347,7 @@ L999:
         doublereal ret_val, d__1, d__2;
 
         /* Builtin functions */
-//        double sqrt(doublereal);
+        //        double sqrt(doublereal);
 
         /* Local variables */
         static doublereal c__, t, a1, b1;

@@ -572,7 +572,6 @@ namespace atl {
             this->rows = exp.GetRows();
             data_m.resize(columns * rows);
 
-            size_t k = 0;
             for (size_t i = 0; i < this->rows; i++) {
                 for (size_t j = 0; j < this->columns; j++) {
                     data_m[i * columns + j] = exp.GetValue(i, j);

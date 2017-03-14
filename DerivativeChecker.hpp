@@ -19,6 +19,7 @@
 #include <chrono>
 
 #include "Variable.hpp"
+#include <fstream>
 
 namespace atl {
 

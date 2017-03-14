@@ -52,7 +52,7 @@ namespace atl {
         typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         VariableInfoPtr w;
 
-        std::string exp;
+//        std::string exp;
         typedef std::set<VariableInfoPtr, atl::less_variable_info<REAL_T> > vi_storage;
         typedef typename vi_storage::iterator vi_iterator;
 
@@ -69,7 +69,7 @@ namespace atl {
         }
 
         StackEntry(const StackEntry<REAL_T>& other) :
-        w(other.w), exp(other.exp), is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third) {
+        w(other.w),/* exp(other.exp), */is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third) {
         }
 
         /**
@@ -106,7 +106,7 @@ namespace atl {
          * Reset this entry.
          */
         void Reset() {
-            exp = "";
+//            exp = "";
             w.reset(); // = NULL;
             is_nl = false;
             first.resize(0);
@@ -435,7 +435,7 @@ namespace atl {
                 typename atl::StackEntry< REAL_T>::vi_iterator vit;
                 size_t index;
                 for (int i = (stack_current - 1); i >= 0; i--) {
-
+                    
                     REAL_T& W = this->first_order_derivatives[this->stack[i].w->id];
                     if (W != static_cast<REAL_T> (0.0)) {
                         w = W;
@@ -599,7 +599,6 @@ namespace atl {
                     if (i > 0) {
                         if (current_entry.is_nl) {
                             for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
-                                bool p = false;
                                 for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
                                     if (std::fpclassify(vij[jj]) != gh[ii * ID_LIST_SIZE + jj]) {
                                         stack[i - 1].Push(current_entry.id_list[jj]);

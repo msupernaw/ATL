@@ -16,6 +16,8 @@
 #include <stack>
 #include <mutex>
 #include <vector>
+#include <iostream>
+
 namespace atl {
 
     /*!
@@ -122,13 +124,17 @@ namespace atl {
             }
         };
     
+        
+        
+        
+        
     /**
      * Holds unique info for \ref Variable objects.
      */
     template<typename REAL_T>
     struct VariableInfo {
 
-        
+        static std::vector<std::shared_ptr<VariableInfo<REAL_T> > > ptrs;
         static VISpinLock vinfo_mutex_g;
         static std::vector<VariableInfo<REAL_T>* > freed;
         std::atomic<int> count;
@@ -146,10 +152,16 @@ namespace atl {
         id(VariableIdGenerator::instance()->next()), count(1) , value(value){
         }
 
+        VariableInfo(const VariableInfo<REAL_T>& other) :
+        count(other.count), id(other.id), value(other.value), is_nl(other.is_nl), index(other.index) {
+        }
+
+        
         /**
          * Destructor. 
          */
         ~VariableInfo() {
+//            std::cout<<"delete "<<this->id<<std::endl;
 //            if(VariableIdGenerator::instance(). != 0)
 //            VariableIdGenerator::instance()->release(id);
         }
@@ -195,6 +207,9 @@ namespace atl {
 
     };
     
+     template<typename REAL_T>
+    std::vector<std::shared_ptr<VariableInfo<REAL_T> > > VariableInfo<REAL_T>::ptrs;
+     
      template<typename REAL_T>
     VISpinLock VariableInfo<REAL_T>::vinfo_mutex_g;
 
