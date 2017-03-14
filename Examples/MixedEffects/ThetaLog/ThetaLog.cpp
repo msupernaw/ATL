@@ -132,11 +132,7 @@ int main(int argc, char** argv) {
     
     //run the minimizer
     fm.Run();
-    //    
-    //    //dump the results
-    //    objective_function.Report();
-    //    
-    //    std::cout<<objective_function.GetObjectiveFunctionStatistics()<<"\n";
+  
     return 0;
 }
 
