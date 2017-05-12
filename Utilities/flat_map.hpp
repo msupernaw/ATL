@@ -72,7 +72,7 @@ public:
     typedef T mapped_type;
 
 private:
-    std::vector<value_type > data_m;
+    mutable std::vector<value_type > data_m;
 
     struct compare_elems {
 
@@ -118,6 +118,17 @@ public:
             return it->second;
         }
     }
+    
+      inline const T& operator[](const Key& key) const{
+        const_iterator it = eastl_lower_bound(data_m.begin(), data_m.end(), key, compare_elems());
+        if (it == data_m.end() || it->first != key) {
+            const_iterator it2 = data_m.insert(it, value_type(key, T()));
+            return it2->second;
+        } else {
+            return it->second;
+        }
+    }
+
 
     void swap(flat_map& m) {
         data_m.swap(m.data_m);

@@ -16,6 +16,7 @@
 
 //#include "Traits.hpp"
 #include "Real.hpp"
+#include "Expression.hpp"
 #include <cassert>
 
 
@@ -33,6 +34,10 @@ namespace atl {
     template <class REAL_T, class LHS, class RHS>
     struct Add : public ExpressionBase<REAL_T, Add<REAL_T, LHS, RHS> > {
         typedef REAL_T BASE_TYPE;
+
+        Add(const Add<REAL_T, LHS, RHS>& other) :
+        real_m(other.real_m), lhs_m(other.lhs_m), rhs_m(other.rhs_m), value_m(other.value_m) {
+        }
 
         /**
          * Constructor for two variable types.
@@ -119,11 +124,23 @@ namespace atl {
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
             lhs_m.PushNLIds(ids, nl);
-            rhs_m.PushNLIds(ids,nl);
+            rhs_m.PushNLIds(ids, nl);
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return lhs_m.ComplexEvaluate(x, h) + rhs_m.ComplexEvaluate(x, h);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            return lhs_m.Taylor(degree) + rhs_m.Taylor(degree);
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+#ifdef USE_DELEGATES
+            return atl::AddFunctions<REAL_T>::Create(lhs_m.ToDynamic(),rhs_m.ToDynamic());
+#else
+            return std::make_shared<atl::AddDynamic<REAL_T> >(lhs_m.ToDynamic(), rhs_m.ToDynamic());
+#endif
         }
 
         /**
@@ -303,7 +320,7 @@ namespace atl {
      * @param b
      * @return 
      */
-    template <class REAL_T,  class RHS>
+    template <class REAL_T, class RHS>
     inline const Add<REAL_T, Real<REAL_T>, RHS> operator+(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Add<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());

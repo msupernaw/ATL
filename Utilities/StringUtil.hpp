@@ -1,6 +1,9 @@
 #ifndef STRINGUTIL_HPP
 #define STRINGUTIL_HPP
 
+#include <string>
+#include <sstream>
+#include <vector>
 
 namespace util {
     

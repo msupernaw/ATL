@@ -1,45 +1,43 @@
-build/Debug/GNU-MacOSX/main.o: main.cpp ATL.hpp ThreadPool.hpp \
-  Expression.hpp Tape.hpp VariableInfo.hpp Matrix.hpp Variable.hpp \
-  CLFAllocator.hpp Platform.hpp clfmalloc.h Vector.hpp Add.hpp \
-  Traits.hpp Real.hpp Subtract.hpp Multiply.hpp Divide.hpp ACos.hpp \
-  ASin.hpp ATan.hpp Ceil.hpp Cos.hpp Exp.hpp Fabs.hpp Floor.hpp Log.hpp \
-  Log10.hpp Sin.hpp Sinh.hpp Sqrt.hpp Tan.hpp Cosh.hpp Tanh.hpp
+build/Debug/GNU-MacOSX/main.o: main.cpp ATL.hpp ThreadPool.hpp ACos.hpp \
+  Expression.hpp Tape.hpp Platform.hpp DynamicExpression.hpp \
+  VariableInfo.hpp Utilities/MemoryPool.hpp CLFAllocator.hpp clfmalloc.h \
+  ad_cmath.hpp Add.hpp Real.hpp ASin.hpp ATan.hpp Ceil.hpp Cos.hpp \
+  Cosh.hpp Divide.hpp Exp.hpp Fabs.hpp Pow.hpp Multiply.hpp Log.hpp \
+  Sqrt.hpp Variable.hpp Transformations.h Floor.hpp \
+  FunctionMinimizer.hpp Helpers.hpp Log10.hpp MinMax.hpp Subtract.hpp \
+  Matrix.hpp Serialize.hpp SIMD.hpp Sin.hpp Sinh.hpp Tan.hpp Tanh.hpp \
+  Vector.hpp Optimization.hpp Utilities/StringUtil.hpp \
+  DerivativeChecker.hpp support/port.hpp support/cs_sparse.hpp \
+  Utilities/IO/StreamedDataFile.hpp Tests/AutoDiffTests.hpp \
+  Tests/FunctionMinimizerTests.hpp
 
 ATL.hpp:
 
 ThreadPool.hpp:
 
+ACos.hpp:
+
 Expression.hpp:
 
 Tape.hpp:
 
+Platform.hpp:
+
+DynamicExpression.hpp:
+
 VariableInfo.hpp:
 
-Matrix.hpp:
-
-Variable.hpp:
+Utilities/MemoryPool.hpp:
 
 CLFAllocator.hpp:
 
-Platform.hpp:
-
 clfmalloc.h:
 
-Vector.hpp:
+ad_cmath.hpp:
 
 Add.hpp:
 
-Traits.hpp:
-
 Real.hpp:
-
-Subtract.hpp:
-
-Multiply.hpp:
-
-Divide.hpp:
-
-ACos.hpp:
 
 ASin.hpp:
 
@@ -49,24 +47,66 @@ Ceil.hpp:
 
 Cos.hpp:
 
+Cosh.hpp:
+
+Divide.hpp:
+
 Exp.hpp:
 
 Fabs.hpp:
 
-Floor.hpp:
+Pow.hpp:
+
+Multiply.hpp:
 
 Log.hpp:
 
+Sqrt.hpp:
+
+Variable.hpp:
+
+Transformations.h:
+
+Floor.hpp:
+
+FunctionMinimizer.hpp:
+
+Helpers.hpp:
+
 Log10.hpp:
+
+MinMax.hpp:
+
+Subtract.hpp:
+
+Matrix.hpp:
+
+Serialize.hpp:
+
+SIMD.hpp:
 
 Sin.hpp:
 
 Sinh.hpp:
 
-Sqrt.hpp:
-
 Tan.hpp:
 
-Cosh.hpp:
-
 Tanh.hpp:
+
+Vector.hpp:
+
+Optimization.hpp:
+
+Utilities/StringUtil.hpp:
+
+DerivativeChecker.hpp:
+
+support/port.hpp:
+
+support/cs_sparse.hpp:
+
+Utilities/IO/StreamedDataFile.hpp:
+
+Tests/AutoDiffTests.hpp:
+
+Tests/FunctionMinimizerTests.hpp:

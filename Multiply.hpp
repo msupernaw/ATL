@@ -23,6 +23,8 @@
 
 namespace atl {
 
+  
+
     /**
      * Expression template to handle multiplication.
      * 
@@ -36,6 +38,10 @@ namespace atl {
     template <class REAL_T, class LHS, class RHS>
     struct Multiply : public ExpressionBase<REAL_T, Multiply<REAL_T, LHS, RHS> > {
         bool mm_multiply = false;
+
+        Multiply(const Multiply<REAL_T, LHS, RHS>& other) :
+        mm_multiply(other.mm_multiply), real_m(other.real_m), lhs_m(other.lhs_m), rhs_m(other.rhs_m), value_m(other.value_m) {
+        }
 
         /**
          * Constructor for Variable types.
@@ -144,11 +150,28 @@ namespace atl {
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
             lhs_m.PushNLIds(ids, nl);
-            rhs_m.PushNLIds(ids,nl);
+            rhs_m.PushNLIds(ids, nl);
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return lhs_m.ComplexEvaluate(x, h) * rhs_m.ComplexEvaluate(x, h);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            REAL_T ret = static_cast<REAL_T> (0.0);
+            if (degree == 0) {
+                return lhs_m.Taylor(0) * rhs_m.Taylor(0);
+            }
+
+            for (int i = 0; i <= degree; i++) {
+                ret += lhs_m.Taylor(degree - i) * rhs_m.Taylor(i);
+            }
+
+            return ret;
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return (lhs_m.ToDynamic() * rhs_m.ToDynamic());
         }
 
         /**
@@ -210,7 +233,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-              return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
+            return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
                     (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))
                     +(lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))
                     +(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))
@@ -509,9 +532,6 @@ namespace atl {
             const ExpressionBase<REAL_T, RHS>& b) {
         return Multiply<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
     }
-
-
-
 
 
 }

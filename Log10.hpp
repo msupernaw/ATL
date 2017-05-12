@@ -37,12 +37,17 @@
 #define LOG10_HPP
 
 #include "Expression.hpp"
+#include <vector>
+#include "Divide.hpp"
+#include "Log.hpp"
 
-
-
+#ifndef AD_LOG10
 #define AD_LOG10 2.30258509299404590109361379290930926799774169921875
+#endif
 
 namespace atl {
+
+   
 
     /**
      * Expression template to handle log10 for variable or 
@@ -123,6 +128,36 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::log10(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+
+                val_[0] = std::log10(this->expr_m.Taylor(0));
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            val_.resize(degree + 1);
+
+            for (unsigned int i = l; i <= degree; ++i) {
+                val_[i] = expr_m.Taylor(i) / static_cast<REAL_T> (AD_LOG10);
+                for (unsigned int j = 1; j <= degree; ++j) {
+                    val_[i] -= (static_cast<REAL_T> (1.0) -
+                            static_cast<REAL_T> (j) / static_cast<REAL_T> (i)) *
+                            expr_m.Taylor(j) * val_[i - j];
+                }
+                val_[i] /= expr_m.Taylor(0);
+            }
+
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::log10(expr_m.ToDynamic());
         }
 
         /**
@@ -286,6 +321,7 @@ namespace atl {
 
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -298,6 +334,15 @@ namespace atl {
     inline const Log10<REAL_T, EXPR> log10(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Log10<REAL_T, EXPR>(exp.Cast());
     }
+
+    //    template<class REAL_T, class EXPR>
+    //    inline const atl::Divide<REAL_T, atl::Log<REAL_T, EXPR >, atl::Real<REAL_T> > log10(const ExpressionBase<REAL_T, EXPR>& exp) {
+    ////        const atl::Divide<REAL_T, atl::Log<REAL_T, EXPR >, atl::Real<REAL_T> > ret =
+    ////         atl::log(exp)/static_cast<REAL_T>(AD_LOG10);
+    //        return atl::Divide<REAL_T, atl::Log<REAL_T, EXPR >, atl::Real<REAL_T> >(atl::log(exp.Cast()),static_cast<REAL_T>(AD_LOG10));
+    //    }
+
+
 
 }//end namespace atl
 

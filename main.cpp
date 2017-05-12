@@ -151,7 +151,7 @@ struct ThreadFunction {
     void operator()() {
 
         for (int i = start; i < end; i++) {
-            this->maxv.Assign(atl::max(maxv, v[i]), estart + i);
+            this->maxv.Assign(atl::ad_max(maxv, v[i]), estart + i);
         }
     }
 };
@@ -202,7 +202,7 @@ inline const atl::Variable<double> ad_norm_and_sum_threaded(std::vector<atl::Var
 
     atl::Variable<double> maxv;
     for (int i = 0; i < threads.size(); i++) {
-        maxv = atl::max(maxv, threads[i]);
+        maxv = atl::ad_max(maxv, threads[i]);
         std::cout << maxv << "\n";
     }
 
@@ -245,7 +245,7 @@ inline const atl::Variable<double> ad_norm_and_sum_threaded(std::vector<atl::Var
 inline const atl::Variable<double> ad_norm_and_sum(std::vector<atl::Variable<double> >& v) {
     atl::Variable<double> maxv;
     for (int i = 0; i < v.size(); i++) {
-        maxv = atl::max(maxv, v[i]);
+        maxv = atl::ad_max(maxv, v[i]);
     }
     std::cout << "Max Value is " << maxv << "\n";
 
@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
 
 //    while(true)
     atl::tests::auto_diff::Run(std::cout);
-    atl::tests::fmin::Run();
+//    atl::tests::fmin::Run();
     exit(0);
     atl::Variable<double>::tape.Reset();
     atl::tests::auto_diff::LogTheta2<double> l;

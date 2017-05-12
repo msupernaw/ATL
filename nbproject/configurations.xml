@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="97">
+<configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -9,24 +9,32 @@
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp</itemPath>
+      <itemPath>DynamicExpression.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp</itemPath>
+      <itemPath>Tests/FunctionMinimizerTests.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp</itemPath>
+      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp</itemPath>
+      <itemPath>Sign.h</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp</itemPath>
@@ -36,6 +44,7 @@
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp</itemPath>
+      <itemPath>Transformations.h</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp</itemPath>
@@ -62,6 +71,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>Optimization.hpp</itemPath>
     <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt</itemPath>
   </logicalFolder>
   <sourceRootList>
@@ -78,8 +88,17 @@
       <compileType>
         <ccTool>
           <standard>8</standard>
-          <commandLine>-DNDEBUG</commandLine>
         </ccTool>
+        <linkerTool>
+          <linkerDynSerch>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </linkerDynSerch>
+        </linkerTool>
       </compileType>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
             ex="false"
@@ -156,6 +175,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
             ex="false"
             tool="3"
@@ -171,12 +195,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -231,6 +265,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
             ex="false"
             tool="3"
@@ -270,6 +309,21 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Sign.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Tests/FunctionMinimizerTests.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -295,6 +349,16 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <linkerDynSerch>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </linkerDynSerch>
+        </linkerTool>
       </compileType>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
             ex="false"
@@ -371,6 +435,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
             ex="false"
             tool="3"
@@ -386,12 +455,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -446,6 +525,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
             ex="false"
             tool="3"
@@ -485,6 +569,21 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Sign.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Tests/FunctionMinimizerTests.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

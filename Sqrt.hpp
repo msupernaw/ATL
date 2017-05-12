@@ -38,8 +38,11 @@
 
 #include "Expression.hpp"
 
+#include "Real.hpp"
+
 namespace atl {
 
+  
     /**
      * Expression template to handle square root of a variable or 
      * container expressions. 
@@ -54,6 +57,10 @@ namespace atl {
     template<class REAL_T, class EXPR>
     struct Sqrt : public ExpressionBase<REAL_T, Sqrt<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
+
+        Sqrt(const Sqrt<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m) {
+        }
 
         /**
          * Constructor 
@@ -117,6 +124,34 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::sqrt(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+                val_[0] = std::sqrt(this->expr_m.Taylor(0));
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+
+
+            for (int i = l; i <= degree; i++) {
+                val_[i] = static_cast<REAL_T> (0.0);
+
+                for (int k = 1; k < i; k++) {
+                    val_[i] -= static_cast<REAL_T> (k) * val_[k] * val_[i - k];
+                }
+                val_[i] /= static_cast<REAL_T> (i);
+                val_[i] += expr_m.Taylor(i) / static_cast<REAL_T> (2.0);
+                val_[i] /= val_[0];
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::sqrt(expr_m.ToDynamic());
         }
 
         /**
@@ -283,6 +318,7 @@ namespace atl {
 
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -295,6 +331,7 @@ namespace atl {
     inline const Sqrt<REAL_T, EXPR> sqrt(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Sqrt<REAL_T, EXPR>(exp.Cast());
     }
+
 
 }//end namespace atl
 

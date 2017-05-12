@@ -38,6 +38,8 @@
 
 namespace atl {
 
+    
+
     /**
      * Expression template to handle log for variable or 
      * container expressions. 
@@ -52,6 +54,10 @@ namespace atl {
     template<class REAL_T, class EXPR>
     struct Log : public ExpressionBase<REAL_T, Log<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
+
+        Log(const Log<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m.Cast()), val_(other.val_) {
+        }
 
         /**
          * Constructor 
@@ -117,6 +123,36 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::log(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+
+                val_[0] = std::log(this->expr_m.Taylor(0));
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            val_.resize(degree + 1);
+
+            for (unsigned int i = l; i <= degree; ++i) {
+                val_[i] = expr_m.Taylor(i);
+                for (unsigned int j = 1; j < i; ++j) {
+                    val_[i] -= (static_cast<REAL_T> (1.0) -
+                            static_cast<REAL_T> (j) / static_cast<REAL_T> (i)) *
+                            expr_m.Taylor(j) * val_[i - j];
+                }
+                val_[i] /= expr_m.Taylor(0);
+            }
+
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::log(expr_m.ToDynamic());
         }
 
         /**
@@ -237,14 +273,14 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            return  (2.0 * (expr_m.EvaluateDerivative(x,i,j))*(expr_m.EvaluateDerivative(y,i,j))*
-                    (expr_m.EvaluateDerivative(z,i,j))) / std::pow(expr_m.GetValue(i,j), 3.0)-
-                    ((expr_m.EvaluateDerivative(x, y,i,j))*(expr_m.EvaluateDerivative(z,i,j))) /
-                    std::pow(expr_m.GetValue(i,j), 2.0)-((expr_m.EvaluateDerivative(x,i,j))*
-                    (expr_m.EvaluateDerivative(y, z,i,j))) / std::pow(expr_m.GetValue(i,j), 2.0)
-                    -((expr_m.EvaluateDerivative(x, z,i,j))*(expr_m.EvaluateDerivative(y,i,j))) /
-                    std::pow(expr_m.GetValue(i,j), 2.0) + expr_m.EvaluateDerivative(x, y, z,i,j) /
-                    expr_m.GetValue(i,j);
+            return (2.0 * (expr_m.EvaluateDerivative(x, i, j))*(expr_m.EvaluateDerivative(y, i, j))*
+                    (expr_m.EvaluateDerivative(z, i, j))) / std::pow(expr_m.GetValue(i, j), 3.0)-
+                    ((expr_m.EvaluateDerivative(x, y, i, j))*(expr_m.EvaluateDerivative(z, i, j))) /
+                    std::pow(expr_m.GetValue(i, j), 2.0)-((expr_m.EvaluateDerivative(x, i, j))*
+                    (expr_m.EvaluateDerivative(y, z, i, j))) / std::pow(expr_m.GetValue(i, j), 2.0)
+                    -((expr_m.EvaluateDerivative(x, z, i, j))*(expr_m.EvaluateDerivative(y, i, j))) /
+                    std::pow(expr_m.GetValue(i, j), 2.0) + expr_m.EvaluateDerivative(x, y, z, i, j) /
+                    expr_m.GetValue(i, j);
         }
 
         /**
@@ -277,6 +313,8 @@ namespace atl {
 
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> val_;
+
     };
 
     /**
@@ -290,6 +328,23 @@ namespace atl {
         return Log<REAL_T, EXPR>(exp.Cast());
     }
 
+
+
 }//end namespace atl
+
+
+namespace std {
+
+    /**
+     * Returns an expression template representing log. 
+     * 
+     * @param exp
+     * @return 
+     */
+    template<class REAL_T, class EXPR>
+    inline const atl::Log<REAL_T, EXPR> log(const atl::ExpressionBase<REAL_T, EXPR>& exp) {
+        return atl::Log<REAL_T, EXPR>(exp.Cast());
+    }
+}
 
 #endif

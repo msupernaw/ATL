@@ -45,7 +45,7 @@ public:
         //        logSigma = 1.0;
         pin>>logSigma;
         //        logSigmaB = 0.0;
-        pin>>logSigma;
+        pin>>logSigmaB;
         
         
         

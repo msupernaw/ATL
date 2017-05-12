@@ -4,11 +4,12 @@
 #include <sstream>
 #include <limits>
 #include <fstream>
+#include <cmath>
 #include "../StringUtil.hpp"
-#include "../../AutoDiff/Variable.hpp"
-#include "../../Containers/Matrix.hpp"
-#include "../../Containers/Vector.hpp"
-#include "../../Containers/Array.hpp"
+#include "../../Variable.hpp"
+#include "../../Matrix.hpp"
+#include "../../Vector.hpp"
+//#include "../../Array.hpp"
 
 namespace atl {
 
@@ -271,23 +272,23 @@ namespace atl {
         return in;
     }
 
-    template<typename T>
-    StreamedDataFile& operator>>(StreamedDataFile& in, atl::Vector<T>& v) {
-        for (int i = 0; i < v.Size(0); i++) {
-            in >> v(i);
-        }
-        return in;
-    }
-
-    template<typename T>
-    StreamedDataFile& operator>>(StreamedDataFile& in, atl::Matrix<T>& m) {
-        for (int i = 0; i < m.Size(0); i++) {
-            for (int j = 0; j < m.Size(1); j++) {
-                in >> m(i, j);
-            }
-        }
-        return in;
-    }
+//    template<typename T>
+//    StreamedDataFile& operator>>(StreamedDataFile& in, atl::Vector<T>& v) {
+//        for (int i = 0; i < v.Size(0); i++) {
+//            in >> v(i);
+//        }
+//        return in;
+//    }
+//
+//    template<typename T>
+//    StreamedDataFile& operator>>(StreamedDataFile& in, atl::Matrix<T>& m) {
+//        for (int i = 0; i < m.Size(0); i++) {
+//            for (int j = 0; j < m.Size(1); j++) {
+//                in >> m(i, j);
+//            }
+//        }
+//        return in;
+//    }
 
 }
 

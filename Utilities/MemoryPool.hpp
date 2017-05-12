@@ -36,7 +36,7 @@ namespace util {
 
     public:
 
-        MemoryPool(uint32_t size) : next_size_m(size), size_m(size), pool(size), free_list(size), index(size - 1), next_m(NULL) {
+        MemoryPool(uint32_t size = 100) : next_size_m(size), size_m(size), pool(size), free_list(size), index(size - 1), next_m(NULL) {
             //            pool = new T[size];
             for (int i = 0; i < size_m; i++) {
                 free_list[i] = (&pool[i]);
@@ -82,6 +82,45 @@ namespace util {
 
     };
 
+    
+
+    template <typename T>
+    class pool_allocator : public std::allocator<T> {
+        static MemoryPool<T> pool;
+    public:
+        typedef size_t size_type;
+        typedef T* pointer;
+        typedef const T* const_pointer;
+
+        template<typename _Tp1>
+        struct rebind {
+            typedef pool_allocator<_Tp1> other;
+        };
+
+        pointer allocate(size_type n, const void *hint = 0) {
+            return (pointer)pool_allocator::pool.malloc();
+        }
+
+        void deallocate(pointer p, size_type n) {
+            return pool_allocator::pool.free((pointer)p);
+        }
+
+        pool_allocator() throw () : std::allocator<T>() {
+        }
+
+        pool_allocator(const pool_allocator &a) throw () : std::allocator<T>(a) {
+        }
+
+        template <class U>
+        pool_allocator(const pool_allocator<U> &a) throw () : std::allocator<T>(a) {
+        }
+
+        ~pool_allocator() throw () {
+        }
+    };
+
+    template <class T>
+    MemoryPool<T> pool_allocator<T>::pool;
 
 }
 #endif

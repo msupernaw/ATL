@@ -5,6 +5,7 @@
 
 namespace atl {
 
+    
     /**
      * Expression template to handle arctangent for variable or 
      * container expressions. 
@@ -19,6 +20,10 @@ namespace atl {
     template<class REAL_T, class EXPR>
     struct ATan : public ExpressionBase<REAL_T, ATan<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
+
+        ATan(const ATan<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m), b_(other.b_), val_(other.val_) {
+        }
 
         /**
          * Constructor
@@ -85,6 +90,43 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::atan(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                b_.reserve(5);
+                val_.reserve(5);
+                b_.resize(1);
+                val_.resize(1);
+
+                b_[0] = (static_cast<REAL_T> (1.0) + this->expr_m.Taylor(0) * this->expr_m.Taylor(0));
+                val_[0] = std::atan(this->expr_m.Taylor(0));
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            b_.resize(degree + 1);
+            val_.resize(degree + 1);
+
+            for (int i = l; i <= degree; i++) {
+                val_[i] = static_cast<REAL_T> (0.0);
+                b_[i] = static_cast<REAL_T> (2.0) * expr_m.Taylor(0) * expr_m.Taylor(i);
+
+                for (unsigned int j = 1; j < i; ++j) {
+                    b_[i] += expr_m.Taylor(j) * expr_m.Taylor(i - j);
+                    val_[i] -= static_cast<REAL_T> (j) * val_[j] * b_[i - j];
+                }
+
+                val_[i] /= static_cast<REAL_T> (i);
+                val_[i] += expr_m.Taylor(i);
+                val_[i] /= b_[0];
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::atan(expr_m.ToDynamic());
         }
 
         /**
@@ -292,6 +334,8 @@ namespace atl {
             return ss.str();
         }
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> b_;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -304,6 +348,7 @@ namespace atl {
     inline const ATan<REAL_T, EXPR> atan(const ExpressionBase<REAL_T, EXPR>& exp) {
         return ATan<REAL_T, EXPR>(exp.Cast());
     }
+
 
 }//end namespace atl
 

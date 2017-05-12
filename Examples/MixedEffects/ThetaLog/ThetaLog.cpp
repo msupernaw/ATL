@@ -71,9 +71,9 @@ public:
         else return atl::exp(logres);
     }
     
-    virtual const atl::Variable<T> Evaluate() {
+    virtual void Objective_Function(atl::Variable<T>& ans) {
         
-        //        atl::Variable<T> r0 = atl::exp(logr0);
+              atl::Variable<T> r0 = atl::exp(logr0);
         //        atl::Variable<T> theta = atl::exp(logtheta);
         //        atl::Variable<T> K = atl::exp(logK);
         //        atl::Variable<T> Q = atl::exp(logQ);
@@ -81,11 +81,11 @@ public:
         
         
         int timeSteps = Y.size();
-        atl::Variable<T> ans = T(0.0);
+        ans = T(0.0);
         
         //        atl::Variable<T> sqrtq = atl::sqrt(Q);
         for (int i = 1; i < timeSteps; i++) {
-            atl::Variable<T> m = X[i - 1] + atl::exp(logr0) * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / atl::exp(logK), atl::exp(logtheta)));
+            atl::Variable<T> m = X[i - 1] +r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / atl::exp(logK), atl::exp(logtheta)));
             ans -= this->dnorm(X[i], m, atl::sqrt(atl::exp(logQ)), true);
         }
         //        atl::Variable<T> sqrtr = atl::sqrt(R);
@@ -93,9 +93,8 @@ public:
             ans -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::sqrt(atl::exp(logR)), true);
         }
         
-        return ans;
+        //return ans;
     }
-    
     void Report() {
         std::ofstream out;
         out.open("ThetaLog.par");

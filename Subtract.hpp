@@ -14,6 +14,8 @@
 #ifndef SUBTRACT_HPP
 #define SUBTRACT_HPP
 #include <cassert>
+#include "Real.hpp"
+#include "Expression.hpp"
 
 namespace atl {
 
@@ -29,6 +31,10 @@ namespace atl {
     template <class REAL_T, class LHS, class RHS>
     struct Subtract : public ExpressionBase<REAL_T, Subtract<REAL_T, LHS, RHS> > {
         typedef REAL_T BASE_TYPE;
+
+        Subtract(const Subtract<REAL_T, LHS, RHS>& other) :
+        real_m(other.real_m), lhs_m(other.lhs_m), rhs_m(other.rhs_m), value_m(other.value_m) {
+        }
 
         /**
          * Constructor for two variable types.
@@ -114,11 +120,19 @@ namespace atl {
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
             lhs_m.PushNLIds(ids, nl);
-            rhs_m.PushNLIds(ids,nl);
+            rhs_m.PushNLIds(ids, nl);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            return lhs_m.Taylor(degree) - rhs_m.Taylor(degree);
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return lhs_m.ComplexEvaluate(x, h) - rhs_m.ComplexEvaluate(x, h);
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return (lhs_m.ToDynamic() - rhs_m.ToDynamic());
         }
 
         /**
@@ -310,12 +324,13 @@ namespace atl {
      * @param b
      * @return 
      */
-    template <class REAL_T,class RHS>
+    template <class REAL_T, class RHS>
     inline const Subtract<REAL_T, Real<REAL_T>, RHS> operator-(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Subtract<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
     }
 
+ 
 }
 
 #endif /* SUBTRACT_HPP */

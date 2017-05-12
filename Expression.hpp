@@ -16,11 +16,13 @@
 
 #include <cassert>
 #include "Tape.hpp"
+
 #include <sstream>
 #include <ostream>
 #include <complex>
 
 namespace atl {
+
 
     enum ExpressionType {
         ET_BASE = 0,
@@ -95,6 +97,10 @@ namespace atl {
             return Cast().ComplexEvaluate(x, h);
         }
 
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return Cast().ToDynamic();
+        }
+
         inline REAL_T EvaluateDerivative(uint32_t x) const {
             return Cast().EvaluateDerivative(x);
         }
@@ -109,6 +115,10 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, size_t i, size_t j = 0, REAL_T h = 1e-20) const {
             return Cast().ComplexEvaluate(x, i, j, h);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            return Cast().Taylor(degree);
         }
 
         inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
@@ -149,14 +159,105 @@ namespace atl {
 
     };
 
+
+
 }
 
-template<typename T, typename A>
-std::ostream& operator<<(std::ostream& out, const atl::ExpressionBase<T, A>& expr) {
-    out << expr.GetValue();
-    return out;
+template <class REAL_T, class T>
+std::ostream & operator<<(std::ostream &vout, const atl::ExpressionBase<REAL_T, T> &e) {
+    vout << e.GetValue();
+    return vout;
 }
 
+template<class REAL_T, class T, class TT>
+inline const int operator==(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() == rhs.GetValue();
+}
+
+template<class REAL_T, class T, class TT>
+inline const int operator!=(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() != rhs.GetValue();
+}
+
+template<class REAL_T, class T, class TT>
+inline const int operator<(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() < rhs.GetValue();
+}
+
+template<class REAL_T, class T, class TT>
+inline const int operator>(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() > rhs.GetValue();
+}
+
+template<class REAL_T, class T, class TT>
+inline const int operator<=(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() <= rhs.GetValue();
+}
+
+template<class REAL_T, class T, class TT>
+inline const int operator>=(const atl::ExpressionBase<REAL_T, T>& lhs, const atl::ExpressionBase<REAL_T, TT>& rhs) {
+    return lhs.GetValue() >= rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator==(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs == rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator!=(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs != rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator<(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs < rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator>(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs > rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator<=(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs <= rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator>=(const REAL_T &lhs, const atl::ExpressionBase<REAL_T, T>& rhs) {
+    return lhs >= rhs.GetValue();
+}
+
+template<class REAL_T, class T>
+inline const int operator==(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() == rhs;
+}
+
+template<class REAL_T, class T>
+inline const int operator!=(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() != rhs;
+}
+
+template<class REAL_T, class T>
+inline const int operator<(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() <= rhs;
+}
+
+template<class REAL_T, class T>
+inline const int operator>(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() > rhs;
+}
+
+template<class REAL_T, class T>
+inline const int operator<=(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() <= rhs;
+}
+
+template<class REAL_T, class T>
+inline const int operator>=(const atl::ExpressionBase<REAL_T, T>& lhs, const REAL_T &rhs) {
+    return lhs.GetValue() >= rhs;
+}
 
 #endif /* EXPRESSION_HPP */
 

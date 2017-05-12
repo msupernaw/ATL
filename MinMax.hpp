@@ -313,21 +313,17 @@ namespace atl {
      * 
      * @param a
      * @param b
-     * @param C default = 1e-50
+     * @param C default = 1e-5
      * @return 
      */
     template <typename T>
-    inline const atl::Variable<T> max(const atl::Variable<T>& a, const atl::Variable<T>& b, atl::Variable<T> C = static_cast<T>(1e-50)) {
+    inline const atl::Variable<T> ad_max(const atl::Variable<T>& a, const atl::Variable<T>& b, atl::Variable<T> C = static_cast<T>(1e-5)) {
 //        atl::Variable<T> aminusb = a-b;
         return (a + b + atl::ad_fabs(a-b,C))*static_cast<T>(.5);
     }
 
 
-    //    template <class REAL_T, class LHS, class RHS>
-    //    inline const Min<REAL_T, LHS, RHS> min(const ExpressionBase<REAL_T, LHS>& a,
-    //            const ExpressionBase<REAL_T, RHS>& b) {
-    //        return Min<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
-    //    }
+
 
 
 #define AD_MAX(a,b) (a + b + atl::ad_fabs(a - b))*.5
@@ -341,16 +337,25 @@ namespace atl {
      * 
      * @param a
      * @param b
-     * @param C default = 1e-50
+     * @param C default = 1e-5
      * @return 
      */
     template <typename T>
-    inline const atl::Variable<T> min(const atl::Variable<T>& a, const atl::Variable<T>& b,  atl::Variable<T> C = 1e-12) {
+    inline const atl::Variable<T> ad_min(const atl::Variable<T>& a, const atl::Variable<T>& b,  atl::Variable<T> C = 1e-5) {
         return  (a + b - atl::ad_fabs(a - b,C))*.5;
     }
 
 #define AD_MIN(a,b) (a + b - atl::ad_fabs(a - b))*.5
 
+    
+//            template <class REAL_T, class LHS, class RHS>
+//        inline const Min<REAL_T, LHS, RHS> min(const ExpressionBase<REAL_T, LHS>& a,
+//                const ExpressionBase<REAL_T, RHS>& b) {
+//            return Min<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
+//        }
+//            
+       
+    
 }
 
 

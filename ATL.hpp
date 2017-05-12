@@ -54,7 +54,8 @@
 #include "ThreadPool.hpp"
 #include "Variable.hpp"
 #include "Vector.hpp"
-
+#include "Optimization.hpp"
+#include "Utilities/IO/StreamedDataFile.hpp"
 
 
 namespace atl {

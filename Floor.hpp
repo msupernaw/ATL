@@ -59,6 +59,10 @@ namespace atl {
     struct Floor : public ExpressionBase<REAL_T, Floor<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        Floor(const Floor<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m) {
+        }
+
         /**
          * Constructor
          * 
@@ -121,6 +125,10 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::floor(expr_m.ComplexEvaluate(x, h));
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::floor(expr_m.ToDynamic());
         }
 
         /**
@@ -246,6 +254,8 @@ namespace atl {
     inline const Floor<REAL_T, EXPR> floor(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Floor<REAL_T, EXPR>(exp.Cast());
     }
+
+
 
 }//end namespace atl
 

@@ -53,6 +53,10 @@ namespace atl {
     struct Cosh : public ExpressionBase<REAL_T, Cosh<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        Cosh(const Cosh<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m), sinh_(other.sinh_), val_(other.val_) {
+        }
+
         /**
          * Constructor. 
          * 
@@ -118,6 +122,38 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::cosh(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                sinh_.reserve(5);
+                val_.reserve(5);
+                sinh_.resize(1);
+                val_.resize(1);
+                sinh_[0] = std::sinh(this->expr_m.Taylor(0));
+                val_[0] = std::cosh(this->expr_m.Taylor(0));
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            sinh_.resize(degree + 1);
+            val_.resize(degree + 1);
+
+            for (int i = l; i <= degree; i++) {
+                val_[i] = static_cast<REAL_T> (0.0);
+                sinh_[i] = static_cast<REAL_T> (0.0);
+                for (unsigned int j = 0; j <= i; ++j) {
+                    sinh_[i] += static_cast<REAL_T> (j) * expr_m.Taylor(j) * val_[i - j];
+                    val_[i] += static_cast<REAL_T> (j) * expr_m.Taylor(j) * sinh_[i - j];
+                }
+                sinh_[i] /= static_cast<REAL_T> (i);
+                val_[i] /= static_cast<REAL_T> (i);
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::cosh(expr_m.ToDynamic());
         }
 
         /**
@@ -187,7 +223,7 @@ namespace atl {
                     + std::cosh(expr_m.GetValue())*(expr_m.EvaluateDerivative(x, z))
                     *(expr_m.EvaluateDerivative(y)) + std::sinh(expr_m.GetValue())
                     *(expr_m.EvaluateDerivative(x, y, z));
-            
+
         }
 
         /**
@@ -296,6 +332,8 @@ namespace atl {
         }
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> sinh_;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -308,6 +346,8 @@ namespace atl {
     inline const Cosh<REAL_T, EXPR> cosh(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Cosh<REAL_T, EXPR>(exp.Cast());
     }
+
+
 
 }//end namespace atl
 

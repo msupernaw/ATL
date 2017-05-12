@@ -20,6 +20,10 @@ namespace atl {
     struct ASin : public ExpressionBase<REAL_T, ASin<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        ASin(const ASin<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m), b_(other.b_), val_(other.val_) {
+        }
+
         /**
          * Constructor 
          * 
@@ -84,6 +88,52 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::asin(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                b_.reserve(5);
+                val_.reserve(5);
+                b_.resize(1);
+                val_.resize(1);
+
+                b_[0] = std::sqrt(static_cast<REAL_T> (1.0) - this->expr_m.Taylor(0) * this->expr_m.Taylor(0));
+                val_[0] = std::asin(this->expr_m.Taylor(0));
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            b_.resize(degree + 1);
+            val_.resize(degree + 1);
+            REAL_T temp = static_cast<REAL_T> (0.0);
+            for (int i = l; i <= degree; i++) {
+                temp = static_cast<REAL_T> (0.0);
+
+                for (int k = 0; k <= i; k++) {
+                    temp -= this->expr_m.Taylor(k) * this->expr_m.Taylor(i - k);
+                }
+                val_[i] = static_cast<REAL_T> (0.0);
+                b_[i] = static_cast<REAL_T> (0.0);
+
+                for (unsigned int j = 1; j < i; ++j) {
+                    b_[i] -= static_cast<REAL_T> (j) * b_[j] * b_[i - j];
+                    val_[i] -= static_cast<REAL_T> (j) * val_[j] * b_[i - j];
+                }
+                b_[i] /= static_cast<REAL_T> (i);
+                val_[i] /= static_cast<REAL_T> (i);
+
+                b_[i] += temp / static_cast<REAL_T> (2.0);
+                val_[i] += this->expr_m.Taylor(i);
+
+                b_[i] /= b_[0];
+                val_[i] /= b_[0];
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::asin(expr_m.ToDynamic());
         }
 
         /**
@@ -298,6 +348,8 @@ namespace atl {
         }
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> b_;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -310,6 +362,8 @@ namespace atl {
     inline const ASin<REAL_T, EXPR> asin(const ExpressionBase<REAL_T, EXPR>& exp) {
         return ASin<REAL_T, EXPR>(exp.Cast());
     }
+
+
 
 }//end namespace atl
 

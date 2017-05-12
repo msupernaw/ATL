@@ -17,6 +17,7 @@
 
 #include "Platform.hpp"
 
+#include "DynamicExpression.hpp"
 #include <iostream>
 #include "VariableInfo.hpp"
 #include "CLFAllocator.hpp"
@@ -36,7 +37,9 @@ namespace atl {
         THIRD_ORDER_REVERSE,
         FIRST_ORDER_FORWARD,
         SECOND_ORDER_FORWARD,
-        THIRD_ORDER_FORWARD
+        THIRD_ORDER_FORWARD,
+        UTPM_REVERSE,
+        DYNAMIC_RECORD
     };
 
     template<typename REAL_T>
@@ -49,10 +52,15 @@ namespace atl {
 
     template<typename REAL_T>
     struct StackEntry {
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > exp;
+
         typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         VariableInfoPtr w;
+        REAL_T wv;
+        uint32_t min_id = std::numeric_limits<uint32_t>::max();
+        uint32_t max_id = std::numeric_limits<uint32_t>::min();
 
-//        std::string exp;
+        //        std::string exp;
         typedef std::set<VariableInfoPtr, atl::less_variable_info<REAL_T> > vi_storage;
         typedef typename vi_storage::iterator vi_iterator;
 
@@ -62,15 +70,23 @@ namespace atl {
         vi_storage pushed_ids;
         std::vector<VariableInfoPtr > id_list;
         std::vector<REAL_T> first;
+#warning use unordered_map here?????
         std::vector<REAL_T> second;
         std::vector<REAL_T> third;
+        std::unordered_map<uint32_t, std::vector<REAL_T> > taylor_coeff;
 
         StackEntry() {
+            //            exp = std::make_shared<RealDynamic<REAL_T> >(0.0);
         }
 
         StackEntry(const StackEntry<REAL_T>& other) :
-        w(other.w),/* exp(other.exp), */is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third) {
+        exp(other.exp), w(other.w), wv(other.wv), min_id(other.min_id), max_id(other.max_id), is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third), taylor_coeff(other.taylor_coeff) {
         }
+
+
+        //        StackEntry(const StackEntry<REAL_T>& other) :
+        //        w(other.w),  exp(other.exp), is_nl(other.is_nl), ids(other.ids), nl_ids(other.nl_ids), pushed_ids(other.pushed_ids), id_list(other.id_list), first(other.first), second(other.second), third(other.third) {
+        //        }
 
         /**
          * Push an id into this entry. Used for higher-order
@@ -106,16 +122,22 @@ namespace atl {
          * Reset this entry.
          */
         void Reset() {
-//            exp = "";
+            min_id = std::numeric_limits<uint32_t>::max();
+            max_id = std::numeric_limits<uint32_t>::min();
             w.reset(); // = NULL;
+            //            for(int i=0; i < this->id_list.size(); i++){
+            //                this->id_list[i]->value=0.0;
+            //            }
+            wv = 0.0;
             is_nl = false;
-            first.resize(0);
-            second.resize(0);
-            third.resize(0);
+            first.clear(); //resize(0);
+            second.clear(); //.resize(0);
+            third.clear(); //.resize(0);
             ids.clear();
             pushed_ids.clear();
             id_list.clear();
             nl_ids.clear();
+            taylor_coeff.clear();
         }
 
 
@@ -127,7 +149,7 @@ namespace atl {
     template<typename T>
     std::ostream& operator<<(std::ostream& out, const StackEntry<T>& entry) {
         out << "--------------------------------------------------------------\n";
-        out << entry.exp << "\n";
+        //        out << entry.exp << "\n";
         out << "w = " << entry.w->id << "\n";
         out << " value = " << entry.w->value << "\n";
         typename StackEntry<T>::vi_iterator it;
@@ -150,6 +172,18 @@ namespace atl {
             out << entry.first[i] << " ";
         }
         out << "]\n";
+
+        out << "taylor_coeff:\n";
+        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+            std::cout << "id[" << (*it)->id << "] [";
+            const std::vector<T>& coeff = entry.taylor_coeff.at((*it)->id);
+            for (int i = 0; i < coeff.size(); i++) {
+                out << coeff[i] << " ";
+            }
+            out << "]\n";
+
+        }
+        out << "\n";
 
         if (entry.second.size() == entry.first.size() * entry.first.size()) {
             out << "local hessian[ \n";
@@ -198,6 +232,21 @@ namespace atl {
         }
     };
 
+    class SpinLockGuard {
+        SpinLock& sl;
+    public:
+
+        SpinLockGuard(SpinLock& sl) :
+        sl(sl) {
+            sl.lock();
+        }
+
+        ~SpinLockGuard() {
+            sl.unlock();
+        }
+
+    };
+
     template<typename REAL_T>
     struct ForwardModeDerivativeInfo {
         uint32_t id;
@@ -205,6 +254,7 @@ namespace atl {
         typedef typename std::unordered_map<uint32_t, REAL_T > first_order_container;
         typedef typename std::unordered_map<uint32_t, first_order_container > second_order_container;
         typedef typename std::unordered_map<uint32_t, second_order_container > third_order_container;
+
         first_order_container first_order_derivtives;
         second_order_container second_order_derivtives;
         third_order_container third_order_derivatives;
@@ -234,6 +284,7 @@ namespace atl {
         atl::clfallocator<std::pair<const uint32_t, REAL_T> > > first_order_container;
 
         first_order_container first_order_derivatives;
+        first_order_container range_weights;
 
         typedef typename first_order_container::iterator first_order_iterator;
 
@@ -255,7 +306,8 @@ namespace atl {
         third_order_container third_order_derivatives;
         typedef typename third_order_container::iterator third_order_iterator;
 
-
+        std::unordered_map<uint32_t, std::vector<REAL_T> > taylor_coeff;
+        int taylor_order = 1;
 
         bool recording = true;
         DerivativeTraceLevel derivative_trace_level = FIRST_ORDER_REVERSE;
@@ -275,6 +327,7 @@ namespace atl {
          */
         Tape(size_t size = 10000000) {
             stack.reserve(size);
+            stack.resize(10000);
             //            std::cout << "Capacity = " << stack.capacity() << "\n";
         }
 
@@ -332,8 +385,64 @@ namespace atl {
             return ret;
         }
 
+        /**
+         * Extracts the dependent variables from the tape structure and 
+         * returns them in a list.
+         * 
+         * @return 
+         */
+        const typename atl::StackEntry<REAL_T>::vi_storage DependentList() {
+            typename atl::StackEntry<REAL_T>::vi_storage list;
+            for (int i = 0; i < this->stack_current; i++) {
+                list.insert(this->stack[i].w);
+            }
+            return list;
+        }
+
+        /**
+         * Extracts the dependent variables from the tape structure and 
+         * returns them in a list.
+         * 
+         * @return 
+         */
+        const typename atl::StackEntry<REAL_T>::vi_storage IndependentList() {
+            typename atl::StackEntry<REAL_T>::vi_storage dlist;
+            for (int i = 0; i < this->stack_current; i++) {
+                dlist.insert(this->stack[i].w);
+            }
+
+            typename atl::StackEntry<REAL_T>::vi_storage ilist;
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            for (int i = 0; i < this->stack_current; i++) {
+                for (it = this->stack[i].ids.begin(); it != this->stack[i].ids.end(); ++it) {
+                    if (dlist.find(*it) == dlist.end()) {
+                        ilist.insert((*it));
+                    }
+                }
+            }
+
+            return ilist;
+        }
+
         inline StackEntry<REAL_T>& NextEntry() {
             return this->stack[this->NextIndex()];
+        }
+
+        void SetRangeWeight(uint32_t id, REAL_T w) {
+            if (w != static_cast<REAL_T> (0.0))
+                this->range_weights[id] = w;
+        }
+
+        inline const REAL_T GetRangeWeight(uint32_t i) {
+#ifdef ATL_THREAD_SAFE
+            SpinLockGuard slg(stack_lock);
+#endif
+            first_order_iterator it = this->range_weights.find(i);
+            if (it != this->range_weights.end()) {
+                return (*it).second;
+            } else {
+                return static_cast<REAL_T> (1.0);
+            }
         }
 
         inline REAL_T& Reference(uint32_t i) {
@@ -361,6 +470,9 @@ namespace atl {
         }
 
         inline const REAL_T Value(uint32_t i) {
+#ifdef ATL_THREAD_SAFE
+            SpinLockGuard slg(stack_lock);
+#endif
             first_order_iterator it = this->first_order_derivatives.find(i);
             if (it != this->first_order_derivatives.end()) {
                 return (*it).second;
@@ -370,6 +482,9 @@ namespace atl {
         }
 
         inline const REAL_T Value(uint32_t i, uint32_t j) {
+#ifdef ATL_THREAD_SAFE
+            SpinLockGuard slg(stack_lock);
+#endif
             if (j < i) {
                 std::swap(i, j);
             }
@@ -389,7 +504,9 @@ namespace atl {
         }
 
         inline const REAL_T Value(uint32_t i, uint32_t j, uint32_t k) {
-
+#ifdef ATL_THREAD_SAFE
+            SpinLockGuard slg(stack_lock);
+#endif
             if (i < j) {
                 if (k < i) std::swap(i, k);
             } else {
@@ -418,6 +535,19 @@ namespace atl {
 
         }
 
+        std::pair<uint32_t, uint32_t> FindMinMaxIds() {
+            std::pair<uint32_t, uint32_t> ret;
+            ret.first = std::numeric_limits<uint32_t>::max();
+            ret.second = std::numeric_limits<uint32_t>::min();
+            
+            for(int i =0; i < this->stack_current; i++){
+                ret.first = std::min(stack[i].min_id,ret.first);
+                ret.second = std::max(stack[i].max_id,ret.second);
+            }
+            
+            return ret;
+        }
+
         /**
          * Accumulates reverse mode derivatives according 
          * to \a derivative_trace_level.
@@ -425,17 +555,195 @@ namespace atl {
          */
         void Accumulate() {
 
+            typename atl::StackEntry<REAL_T>::vi_iterator vit;
+            typename atl::StackEntry<REAL_T>::vi_storage dependents = this->DependentList();
+
+            std::vector<REAL_T>& W = this->taylor_coeff[this->stack[(stack_current - 1)].w->id];
+            if (W.size()<this->taylor_order)W.resize(taylor_order + 1);
+            for (int i = 0; i <= this->taylor_order; i++) {
+                W[i] = 1.;
+            }
+            std::vector<REAL_T> WW(this->taylor_order + 1, 0.0);
+            for (int i = (stack_current - 1); i >= 0; i--) {
+                std::vector<REAL_T>& w = this->taylor_coeff[this->stack[i].w->id];
+
+
+                for (int j = 1; j <= taylor_order; j++) {
+                    WW[j] = w[j];
+                }
+
+                for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
+                    std::vector<REAL_T>& v = this->taylor_coeff[(*vit)->id];
+                    if (v.size()<this->taylor_order + 1) {
+                        v.resize(taylor_order + 1);
+                    }
+                    std::vector<REAL_T>& vbar = this->stack[i].taylor_coeff[(*vit)->id];
+                    assert(vbar.size() == (taylor_order + 1));
+
+
+                    for (int j = 1; j <= taylor_order; j++) {
+                        for (int k = j; k <= taylor_order; k++) {
+                            v[k] += (WW[k] * vbar[k]) / (1.0 / (REAL_T) factorial(k - 1));
+                        }
+                    }
+                }
+            }
+
+
         }
 
-        void AccumulateFirstOrder() {
+        int factorial(int n) {
+            if (n > 1)
+                return n * factorial(n - 1);
+            else
+                return 1;
+        }
+
+        void DynamicForward() {
+            //            std::cout<<"current size "<<stack_current<<std::endl;
+            for (int i = 0; i < stack_current; i++) {
+                //                std::cout<<__func__<<" "<<i<<std::endl;
+
+                atl::StackEntry<REAL_T>& entry = this->stack[i];
+                //                std::cout<<entry.exp->ToString()<<"\n";
+                entry.first.resize(entry.ids.size());
+                int index = 0;
+                typename atl::StackEntry<REAL_T>::vi_storage::const_iterator it;
+                for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                    entry.min_id = std::min((*it)->id, entry.min_id);
+                    entry.max_id = std::max((*it)->id, entry.max_id);
+                    //                    entry.first[i] = entry.exp->EvaluateDerivative((*it)->id);
+                    index++;
+                }
+
+                REAL_T v = entry.exp->GetValue();
+                //                entry.w->value =v;
+            }
+        }
+
+        void DynamicReverse(first_order_container& derivatives) {
+            derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+            REAL_T w = static_cast<REAL_T> (0.0);
+            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+            size_t index;
+            for (int i = (stack_current - 1); i >= 0; i--) {
+
+                REAL_T& W = derivatives[this->stack[i].w->id];
+                if (W != static_cast<REAL_T> (0.0)) {
+                    w = W;
+
+                    W = static_cast<REAL_T> (0.0);
+                    index = 0;
+                    for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
+                        derivatives[(*vit)->id] += w * this->stack[i].first[index];
+                        index++;
+                    }
+
+                }
+            }
+
+        }
+
+        /**
+         * Returns the Gradient and the Hessian. Second-order works by differentiating the 
+         * expression with respect to the Hessian row and then accumulating the 
+         * gradient for that row in reverse. Method only computes the lower triangle
+         * of the Hessian and then sets the upper triangle values according to 
+         * Clairaut’s rule.
+         * @param derivatives
+         * @param second_mixed
+         */
+        void DynamicReverse(first_order_container& derivatives, second_order_container& second_mixed) {
+
+
+            derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+            REAL_T w = static_cast<REAL_T> (0.0);
+            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+            typename atl::StackEntry< REAL_T>::vi_iterator jit;
+            size_t index;
+
+            for (int i = (stack_current - 1); i >= 0; i--) {
+                REAL_T& GW = derivatives[this->stack[i].w->id];
+                REAL_T gw = GW;
+
+                GW = static_cast<REAL_T> (0.0);
+                for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
+                    //Gradient 
+                    derivatives[(*vit)->id] += gw * this->stack[i].exp->EvaluateDerivative((*vit)->id);
+
+                    first_order_container& dx1 = second_mixed[(*vit)->id];
+                    dx1[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+                    REAL_T& W = dx1[this->stack[i].w->id];
+                    w = W;
+                    if (w != std::fpclassify(0.0)) {
+                        W = static_cast<REAL_T> (0.0);
+                        index = 0;
+                        for (jit = this->stack[i].ids.begin(); jit != vit; ++jit) {
+                            first_order_container& dx2 = second_mixed[(*jit)->id];
+                            REAL_T dx = w * this->stack[i].exp->EvaluateDerivative((*vit)->id, (*jit)->id);
+                            if (dx != std::fpclassify(0.0)) {
+                                //Hessian off-diagonal
+                                dx2[(*vit)->id] += dx;
+                                dx1[(*jit)->id] += dx;
+
+                            }
+                        }
+
+                        //Hessian diagonal
+                        REAL_T dx = w * this->stack[i].exp->EvaluateDerivative((*vit)->id, (*vit)->id);
+                        if (w != std::fpclassify(0.0)) {
+                            dx1[(*vit)->id] += dx;
+                        }
+                    }
+                }
+            }
+        }
+
+        //            for (vit = ind.begin(); vit != ind.end(); ++vit) {
+        //                first_order_container& dx1 = second_mixed[(*vit)->id];
+        //                for (int i = (stack_current - 1); i >= 0; i--) {
+        //                    dx1[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+        //                    REAL_T& W = dx1[this->stack[i].w->id];
+        //                    w = W;
+        //                    if (w != std::fpclassify(0.0)) {
+        //                        W = static_cast<REAL_T> (0.0);
+        //                        index = 0;
+        //                        for (jit = this->stack[i].ids.begin(); jit != this->stack[i].ids.end(); ++jit) {
+        //                            dx1[(*jit)->id] += w * this->stack[i].exp->EvaluateDerivative((*vit)->id, (*jit)->id);
+        //                            index++;
+        //                        }
+        //                    }
+        //                }
+        //
+        //
+        //            }
+
+        void UTPM(const std::vector<REAL_T>& range_weights) {
+
+            const typename atl::StackEntry<REAL_T>::vi_storage dep = this->DependentList();
+            typename atl::StackEntry<REAL_T>::vi_storage::const_iterator it;
+            for (it = dep.begin(); it != dep.end(); ++it) {
+                REAL_T& w = this->Reference((*it)->id);
+                for (int i = 0; i < range_weights.size(); i++) {
+                    w += range_weights[i];
+                }
+            }
+
+            //            this->AccumulateFirstOrder(false);
+
+        }
+
+        void AccumulateFirstOrder(bool reset = true) {
             if (recording) {
-                this->first_order_derivatives.clear();
-                this->first_order_derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+
+                if (reset) {
+                    this->first_order_derivatives[this->stack[(stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+                }
                 REAL_T w = static_cast<REAL_T> (0.0);
                 typename atl::StackEntry< REAL_T>::vi_iterator vit;
                 size_t index;
                 for (int i = (stack_current - 1); i >= 0; i--) {
-                    
+
                     REAL_T& W = this->first_order_derivatives[this->stack[i].w->id];
                     if (W != static_cast<REAL_T> (0.0)) {
                         w = W;
@@ -443,19 +751,22 @@ namespace atl {
                         W = static_cast<REAL_T> (0.0);
                         index = 0;
                         for (vit = this->stack[i].ids.begin(); vit != this->stack[i].ids.end(); ++vit) {
+                            //                            std::cout << this->first_order_derivatives[(*vit)->id]
+                            //                                    << "+=" << w << "*" << this->stack[i].first[index] << "\n";
                             this->first_order_derivatives[(*vit)->id] += w * this->stack[i].first[index];
                             index++;
                         }
 
                     }
                 }
+
             }
         }
 
         void AccumulateSecondOrder() {
             if (recording) {
-                this->first_order_derivatives.clear();
-                this->second_order_derivatives.clear();
+                //                this->first_order_derivatives.clear();
+                //                this->second_order_derivatives.clear();
 
                 REAL_T w;
 
@@ -512,7 +823,6 @@ namespace atl {
                     //                    }
 
                     current_entry.Prepare();
-
                     size_t ID_LIST_SIZE = current_entry.id_list.size();
                     vij.resize(ID_LIST_SIZE);
 
@@ -597,6 +907,7 @@ namespace atl {
                     }
 
                     if (i > 0) {
+
                         if (current_entry.is_nl) {
                             for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
                                 for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
@@ -617,9 +928,9 @@ namespace atl {
         void AccumulateThirdOrder() {
 
             if (recording) {
-                this->first_order_derivatives.clear();
-                this->second_order_derivatives.clear();
-                this->third_order_derivatives.clear();
+                //                this->first_order_derivatives.clear();
+                //                this->second_order_derivatives.clear();
+                //                this->third_order_derivatives.clear();
 
                 REAL_T w;
 
@@ -899,6 +1210,8 @@ namespace atl {
 
 
                     if (i > 0) {
+
+
                         if (current_entry.is_nl) {
                             for (int ii = 0; ii < ID_LIST_SIZE; ii++) {
                                 for (int jj = ii; jj < ID_LIST_SIZE; jj++) {
@@ -924,6 +1237,7 @@ namespace atl {
 
         void Reset(bool empty_trash = true) {
             this->first_order_derivatives.clear();
+            this->range_weights.clear();
             this->second_order_derivatives.clear();
             this->third_order_derivatives.clear();
 

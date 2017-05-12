@@ -13,6 +13,10 @@ namespace atl {
     struct Ceil : public ExpressionBase<REAL_T, Ceil<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        Ceil(const Ceil<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m) {
+        }
+
         /**
          * Constructor
          * 
@@ -77,6 +81,10 @@ namespace atl {
 
         inline void PushNLIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, bool nl = false)const {
             expr_m.PushNLIds(ids, nl);
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::ceil(expr_m.ToDynamic());
         }
 
         /**
@@ -191,6 +199,7 @@ namespace atl {
     inline const Ceil<REAL_T, EXPR> ceil(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Ceil<REAL_T, EXPR>(exp.Cast());
     }
+
 
 }//end namespace atl
 

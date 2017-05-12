@@ -34,7 +34,7 @@
 #define COS_HPP
 
 #include "Expression.hpp"
-
+#include <vector>
 namespace atl {
 
     /**
@@ -51,6 +51,10 @@ namespace atl {
     template<class REAL_T, class EXPR>
     struct Cos : public ExpressionBase<REAL_T, Cos<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
+
+        Cos(const Cos<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m), sin_(other.sin_), val_(other.val_) {
+        }
 
         /**
          * Constructor. 
@@ -115,6 +119,42 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20)const {
             return std::cos(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                sin_.reserve(5);
+                val_.reserve(5);
+                sin_.resize(1);
+                val_.resize(1);
+                sin_[0] = std::sin(this->expr_m.Taylor(0));
+                val_[0] = std::cos(this->expr_m.Taylor(0));
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            sin_.resize(degree + 1);
+            val_.resize(degree + 1);
+
+            for (int i = l; i <= degree; i++) {
+                val_[i] = static_cast<REAL_T> (0.0);
+                sin_[i] = static_cast<REAL_T> (0.0);
+                for (unsigned int j = 0; j <= i; ++j) {
+                    sin_[i] += static_cast<REAL_T> (j) * expr_m.Taylor(j) * val_[i - j];
+                    val_[i] -= static_cast<REAL_T> (j) * expr_m.Taylor(j) * sin_[i - j];
+                }
+                sin_[i] /= static_cast<REAL_T> (i);
+                val_[i] /= static_cast<REAL_T> (i);
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+#ifdef USE_DELEGATES
+            return atl::CosFunctions<REAL_T>::Create(expr_m.ToDynamic());
+#else
+            return atl::cos(expr_m.ToDynamic());
+#endif
         }
 
         /**
@@ -283,6 +323,8 @@ namespace atl {
         }
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> sin_;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -295,6 +337,7 @@ namespace atl {
     inline const Cos<REAL_T, EXPR> cos(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Cos<REAL_T, EXPR>(exp.Cast());
     }
+
 
 }//end namespace atl
 

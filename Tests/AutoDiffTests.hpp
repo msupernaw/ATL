@@ -906,7 +906,7 @@ namespace atl {
 
                 virtual void ObjectiveFunction(atl::Variable<T>& f) {
 
-                    size_t timeSteps = 5; //Y.size();
+                    size_t timeSteps = Y.size();
                     atl::Variable<T> r0 = atl::exp(logr0);
                     atl::Variable<T> theta = atl::exp(logtheta);
                     atl::Variable<T> K = atl::exp(logK);
@@ -2262,7 +2262,7 @@ namespace atl {
                 void ObjectiveFunction(var& f) {
                     f = static_cast<T> (0.0);
                     var sum;
-                    for (int i = 0; i < x.size() - 1; i++) {
+                    for (int i = 0; i < x.size(); i++) {
                         sum += atl::pow(x[i], 4.0) - 16.0 * atl::pow(x[i], 2.0) + 5.0 * x[i];
                     }
                     f = sum / 2.0;

@@ -14,6 +14,9 @@
 #ifndef REAL_HPP
 #define REAL_HPP
 
+#include "Expression.hpp"
+
+
 namespace atl {
 
     /**
@@ -115,6 +118,18 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::complex<REAL_T>(this->value);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            return degree == 0 ? this->value : static_cast<REAL_T> (0.0);
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+#ifdef USE_DELEGATES
+            return atl::RealFunctions<REAL_T>::Create(this->value);
+#else
+            return std::make_shared<atl::RealDynamic<REAL_T> >(this->value);
+#endif
         }
 
         /**
@@ -228,6 +243,7 @@ namespace atl {
 
 
     };
+
 
 
 }

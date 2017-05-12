@@ -39,6 +39,7 @@
 
 namespace atl {
 
+   
     /**
      * Expression template to handle tangent for variable or 
      * container expressions. 
@@ -53,6 +54,10 @@ namespace atl {
     template<class REAL_T, class EXPR>
     struct Tan : public ExpressionBase<REAL_T, Tan<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
+
+        Tan(const Tan<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m) {
+        }
 
         /**
          * Constructor 
@@ -112,6 +117,41 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::tan(expr_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+                b_.reserve(5);
+                b_.resize(1);
+                val_[0] = std::tan(this->expr_m.Taylor(0));
+                b_[0] = val_[0] * val_[0];
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            val_.resize(degree + 1);
+            b_.resize(degree + 1);
+
+            for (int i = l; i <= degree; i++) {
+                REAL_T tmp = static_cast<REAL_T> (i);
+                val_[i] = expr_m.Taylor(i);
+
+                for (int k = 1; k <= i; k++) {
+                    val_[i] += static_cast<REAL_T> (k) * expr_m.Taylor(k) * b_[i - k] / tmp;
+                }
+
+                b_[i] = val_[0] * val_[i];
+                for (int k = 1; k <= i; k++) {
+                    b_[i] += val_[k] * val_[i - k];
+                }
+            }
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::tan(expr_m.ToDynamic());
         }
 
         /**
@@ -288,6 +328,9 @@ namespace atl {
 
 
         const EXPR& expr_m;
+        mutable std::vector<REAL_T> val_;
+        mutable std::vector<REAL_T> b_;
+
     };
 
     /**
@@ -300,6 +343,9 @@ namespace atl {
     inline const Tan<REAL_T, EXPR> tan(const ExpressionBase<REAL_T, EXPR>& exp) {
         return Tan<REAL_T, EXPR>(exp.Cast());
     }
+
+
+
 
 }//end namespace atl
 

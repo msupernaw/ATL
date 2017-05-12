@@ -15,10 +15,13 @@
 #define POW_HPP
 
 #include "Expression.hpp"
-
+#include "Multiply.hpp"
+#include "Log.hpp"
+#include "Exp.hpp"
 
 namespace atl {
 
+  
     /**
      * Expression template to handle pow for variable or 
      * container expressions. 
@@ -35,8 +38,11 @@ namespace atl {
         typedef REAL_T BASE_TYPE;
 
 
-
         BinaryMethod pow_method;
+
+        Pow(const Pow<REAL_T, LHS, RHS>& other) :
+        pow_method(other.pow_method), real_m(other.real_m), lhs_m(other.lhs_m), rhs_m(other.rhs_m), value_m(other.value_m) {
+        }
 
         /**
          * Constructor for two expression template types.
@@ -131,6 +137,32 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return std::pow(lhs_m.ComplexEvaluate(x, h), rhs_m.ComplexEvaluate(x, h));
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+
+                val_[0] = std::pow(this->lhs_m.Taylor(0), rhs_m.Taylor(0));
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            val_.resize(degree + 1);
+
+            for (unsigned int i = l; i <= degree; ++i) {
+                REAL_T x0inv = static_cast<REAL_T> (1.0) / lhs_m.Taylor(0);
+                val_[i] = val_[i - 1] * x0inv * (rhs_m.Taylor(0) - i + static_cast<REAL_T> (1.0)) / static_cast<REAL_T> (i);
+
+            }
+
+            return val_[degree];
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::pow(lhs_m.ToDynamic(), rhs_m.ToDynamic());
         }
 
         /**
@@ -543,35 +575,35 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-        switch (this->pow_method) {
+            switch (this->pow_method) {
                 case EXP_EXP:
-                    return std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(-1.0 * ((lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(x, y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + ((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i,j) - ((lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(x, z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) +
-                            ((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(x, z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, y,z,i,j))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x, y,i,j))) / lhs_m.GetValue(i,j) - ((lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) +
-                            (2.0 * rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 3.0) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)-(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y, z))) / std::pow(lhs_m.GetValue(i,j), 2.0)-(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, z,i,j))*(lhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,z,i,j))) / lhs_m.GetValue(i,j)) +
-                            std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y, z))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, z,i,j))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, z,i,j))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, y,i,j))+((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,i,j))) / lhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j));
+                    return std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(-1.0 * ((lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(x, y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + ((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i, j) - ((lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(x, z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) +
+                            ((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, y, z, i, j))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, y, i, j))) / lhs_m.GetValue(i, j) - ((lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) +
+                            (2.0 * rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 3.0) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)-(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, z))) / std::pow(lhs_m.GetValue(i, j), 2.0)-(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, z, i, j))*(lhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, z, i, j))) / lhs_m.GetValue(i, j)) +
+                            std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, z))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, z, i, j))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, z, i, j))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, y, i, j))+((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, i, j))) / lhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j));
 
                 case EXP_REAL:
-                    return (rhs_m.GetValue(i,j) - 2.0)*(rhs_m.GetValue(i,j) - 1.0) * rhs_m.GetValue(i,j) * std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j) - 3.0) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) - 1.0) * rhs_m.GetValue(i,j) * std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j) - 2.0) * (lhs_m.EvaluateDerivative(x, y,i,j))*
-                            (lhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) - 1.0) * rhs_m.GetValue(i,j) * std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j) - 2.0) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y, z))+(rhs_m.GetValue(i,j) - 1.0) * rhs_m.GetValue(i,j) * std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j) - 2.0) * (lhs_m.EvaluateDerivative(x, z,i,j))*
-                            (lhs_m.EvaluateDerivative(y,i,j)) + rhs_m.GetValue(i,j) * std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j) - 1.0) * (lhs_m.EvaluateDerivative(x, y,z,i,j));
+                    return (rhs_m.GetValue(i, j) - 2.0)*(rhs_m.GetValue(i, j) - 1.0) * rhs_m.GetValue(i, j) * std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j) - 3.0) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) - 1.0) * rhs_m.GetValue(i, j) * std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j) - 2.0) * (lhs_m.EvaluateDerivative(x, y, i, j))*
+                            (lhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) - 1.0) * rhs_m.GetValue(i, j) * std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j) - 2.0) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, z))+(rhs_m.GetValue(i, j) - 1.0) * rhs_m.GetValue(i, j) * std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j) - 2.0) * (lhs_m.EvaluateDerivative(x, z, i, j))*
+                            (lhs_m.EvaluateDerivative(y, i, j)) + rhs_m.GetValue(i, j) * std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j) - 1.0) * (lhs_m.EvaluateDerivative(x, y, z, i, j));
 
                 case REAL_EXP:
-                    return std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(-1.0 * ((lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(x, y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + ((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i,j) - ((lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(x, z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) +
-                            ((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(x, z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, y,z,i,j))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x, y,i,j))) / lhs_m.GetValue(i,j) - ((lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) +
-                            (2.0 * rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 3.0) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)-(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y, z))) / std::pow(lhs_m.GetValue(i,j), 2.0)-(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, z,i,j))*(lhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,z,i,j))) / lhs_m.GetValue(i,j)) +
-                            std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y, z))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, z,i,j))+((lhs_m.EvaluateDerivative(z,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(z,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, z,i,j))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*
-                            (((lhs_m.EvaluateDerivative(x,i,j))*(rhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j) + std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x, y,i,j))+((lhs_m.EvaluateDerivative(y,i,j))*(rhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j) - (rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))*(lhs_m.EvaluateDerivative(y,i,j))) / std::pow(lhs_m.GetValue(i,j), 2.0)+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x, y,i,j))) / lhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j)) + std::pow(lhs_m.GetValue(i,j), rhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(x,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(x,i,j))) / lhs_m.GetValue(i,j))*(std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(y,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(y,i,j))) / lhs_m.GetValue(i,j))*
-                            (std::log(lhs_m.GetValue(i,j))*(rhs_m.EvaluateDerivative(z,i,j))+(rhs_m.GetValue(i,j) * (lhs_m.EvaluateDerivative(z,i,j))) / lhs_m.GetValue(i,j));
+                    return std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(-1.0 * ((lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(x, y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + ((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i, j) - ((lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(x, z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) +
+                            ((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, y, z, i, j))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, y, i, j))) / lhs_m.GetValue(i, j) - ((lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) +
+                            (2.0 * rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 3.0) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)-(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, z))) / std::pow(lhs_m.GetValue(i, j), 2.0)-(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, z, i, j))*(lhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, z, i, j))) / lhs_m.GetValue(i, j)) +
+                            std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, z))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, z))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, z, i, j))+((lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(z, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, z, i, j))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*
+                            (((lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j) + std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, y, i, j))+((lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j) - (rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j))) / std::pow(lhs_m.GetValue(i, j), 2.0)+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, y, i, j))) / lhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j)) + std::pow(lhs_m.GetValue(i, j), rhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(x, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(x, i, j))) / lhs_m.GetValue(i, j))*(std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(y, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(y, i, j))) / lhs_m.GetValue(i, j))*
+                            (std::log(lhs_m.GetValue(i, j))*(rhs_m.EvaluateDerivative(z, i, j))+(rhs_m.GetValue(i, j) * (lhs_m.EvaluateDerivative(z, i, j))) / lhs_m.GetValue(i, j));
 
 
             }
@@ -639,6 +671,7 @@ namespace atl {
         const LHS& lhs_m;
         const RHS& rhs_m;
         REAL_T value_m;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -680,6 +713,10 @@ namespace atl {
             const ExpressionBase<REAL_T, RHS>& b) {
         return Pow<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
     }
+
+
+
+
 }
 
 

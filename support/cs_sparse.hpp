@@ -1,12 +1,17 @@
 #ifndef _CS_SPARSE_HPP
 #define _CS_SPARSE_HPP
 
+
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <stddef.h>
 #include <thread>
+#include <vector>
+
+//#include "../Variable.hpp"
 
 #define CS_VER 3                    /* CSparse Version */
 #define CS_SUBVER 1
@@ -17,6 +22,8 @@
 /**
  * Edited by Matthew Supernaw to allow for template arguments.
  */
+
+//using namespace atl;
 
 #ifdef G
 #undef G
@@ -78,6 +85,13 @@ template<typename Type>
 csi cs_sprealloc(cs_sparse<Type> *A, csi nzmax);
 void *cs_malloc(csi n, size_t size);
 
+template<typename Type>
+csi cs_lsolve_x(const cs_sparse<Type> *L, Type *x, int i);
+
+/* solve L'x=b where x and b are dense.  x=b on input, solution on output. */
+template<typename Type>
+csi cs_ltsolve_x(const cs_sparse<Type> *L, Type *x, int i);
+
 /* --- secondary CSparse routines and data structures ----------------------- */
 template<typename Type>
 struct cs_symbolic /* symbolic Cholesky, LU, or QR analysis */ {
@@ -127,12 +141,12 @@ csi cs_ipvec(const csi *p, const Type *b, Type *x, csi n);
 template<typename Type>
 csi cs_lsolve(const cs_sparse<Type> *L, Type *x);
 template<typename Type>
-csi cs_ltsolve(const cs_sparse<Type> *L, Type *x,bool concurrent = false);
+csi cs_ltsolve(const cs_sparse<Type> *L, Type *x, bool concurrent = false);
 template<typename Type>
 cs_numeric<Type> *cs_lu(const cs_sparse<Type> *A, const cs_symbolic<Type> *S, Type tol);
 template<typename Type>
 cs_sparse<Type> *cs_permute(const cs_sparse<Type> *A, const csi *pinv, const csi *q, csi values);
-template<typename Type>
+
 csi *cs_pinv(const csi *p, csi n);
 template<typename Type>
 csi cs_pvec(const csi *p, const Type *b, Type *x, csi n);
@@ -144,6 +158,8 @@ template<typename Type>
 csi cs_cholsol(csi order, const cs_sparse<Type> *A, Type *b, cs_symbolic<Type> *S);
 template<typename Type>
 csi cs_cholsol(csi order, const cs_sparse<Type> *A, Type *b, cs_numeric<Type> *N, cs_symbolic<Type> *S);
+template<typename Type>
+csi cs_cholsol_x(csi order, const cs_sparse<Type> *A, Type *b, cs_numeric<Type> *N, cs_symbolic<Type> *S, Type *x, int i);
 template<typename Type>
 cs_symbolic<Type> *cs_sqr(csi order, const cs_sparse<Type> *A, csi qr);
 template<typename Type>
@@ -215,7 +231,33 @@ Type cs_det(cs_sparse<Type>* A);
 template<typename Type>
 Type cs_log_det(cs_sparse<Type>* A);
 
+template<typename Type>
+csi sparseinv /* returns -1 on error, or flop count if OK */
+(
+        /* inputs, not modified on output: */
+        csi n, /* L, U, D, and Z are n-by-n */
 
+        csi *Lp, /* L is sparse, lower triangular, stored by column */
+        csi *Li, /* the row indices of L must be sorted */
+        Type *Lx, /* diagonal of L, if present, is ignored */
+
+        Type *d, /* diagonal of D, of size n */
+
+        csi *Up, /* U is sparse, upper triangular, stored by row */
+        csi *Uj, /* the column indices of U need not be sorted */
+        Type *Ux, /* diagonal of U, if present, is ignored */
+
+        csi *Zp, /* Z is sparse, stored by column */
+        csi *Zi, /* the row indices of Z must be sorted */
+
+        /* output, not defined on input: */
+        Type *Zx,
+
+        /* workspace: */
+        Type *z, /* size n, zero on input, restored as such on output */
+        csi *Zdiagp, /* size n */
+        csi *Lmunch /* size n */
+        );
 
 
 #define CS_MAX(a,b) (((a) > (b)) ? (a) : (b))
@@ -291,7 +333,7 @@ csi *cs_amd(csi order, const cs_sparse<Type> *A) /* order 0:natural, 1:Chol, 2:L
     if (!AT) return (NULL);
     m = A->m;
     n = A->n;
-    dense = CS_MAX(16, 10 * sqrt((Type) n)); /* find dense threshold */
+    dense = CS_MAX(static_cast<Type> (16.0), 10.0 * sqrt((Type) n)); /* find dense threshold */
     dense = CS_MIN(n - 2, dense);
     if (order == 1 && n == m) {
         C = cs_add<Type>(A, AT, 0, 0); /* C = A+A' */
@@ -626,7 +668,7 @@ cs_numeric<Type> *cs_chol(const cs_sparse<Type> *A, const cs_symbolic<Type> *S) 
             Lx [p] = lki;
         }
         /* --- Compute L(k,k) ----------------------------------------------- */
-        if (d <= 0) return (cs_ndone(N, E, c, x, 0)); /* not pos def */
+        if (d <= 0.0) return (cs_ndone(N, E, c, x, 0)); /* not pos def */
         p = c [k]++;
         Li [p] = k; /* store L(k,k) = sqrt (d) in column k */
         Lx [p] = sqrt(d);
@@ -675,6 +717,27 @@ csi cs_cholsol(csi order, const cs_sparse<Type> *A, Type *b, cs_numeric<Type> *N
         cs_pvec(S->pinv, x, b, n); /* b = P'*x */
     }
     cs_free(x);
+    //    cs_sfree(S);
+    //    cs_nfree(N);
+    return (ok);
+}
+
+template<typename Type>
+csi cs_cholsol_x(csi order, const cs_sparse<Type> *A, Type *b, cs_numeric<Type> *N, cs_symbolic<Type> *S, Type *x, int i) {
+    csi n, ok;
+    if (!CS_CSC(A) || !b) return (0); /* check inputs */
+    n = A->n;
+    //    S = cs_schol(order, A); /* ordering and symbolic analysis */
+    //    N = cs_chol(A, S); /* numeric Cholesky factorization */
+    //    x = (Type*) cs_malloc(n, sizeof (Type)); /* get workspace */
+    ok = (S && N && x);
+    if (ok) {
+        cs_ipvec(S->pinv, b, x, n); /* x = P*b */
+        cs_lsolve(N->L, x); /* x = L\x */
+        cs_ltsolve(N->L, x); /* x = L'\x */
+        cs_pvec(S->pinv, x, b, n); /* b = P'*x */
+    }
+    //    cs_free(x);
     //    cs_sfree(S);
     //    cs_nfree(N);
     return (ok);
@@ -946,7 +1009,7 @@ cs_dmperm_results<Type> *cs_dmperm(const cs_sparse<Type> *A, csi seed) {
     cs_unmatched(m, wi, p, rr, 3); /* unmatched set R0 */
     cs_free(jmatch);
     /* --- Fine decomposition ----------------------------------------------- */
-    pinv = cs_pinv<Type>(p, m); /* pinv=p' */
+    pinv = cs_pinv(p, m); /* pinv=p' */
     if (!pinv) return (cs_ddone(D, NULL, NULL, 0));
     C = cs_permute(A, pinv, q, 0); /* C=A(p,q) (it will hold A(R2,C2)) */
     cs_free(pinv);
@@ -1126,7 +1189,7 @@ csi cs_fkeep(cs_sparse<Type> *A, csi(*fkeep) (csi, csi, Type, void *), void *oth
         p = Ap [j]; /* get current location of col j */
         Ap [j] = nz; /* record new location of col j */
         for (; p < Ap [j + 1]; p++) {
-            if (fkeep(Ai [p], j, Ax ? Ax [p] : 1, other)) {
+            if (fkeep(Ai [p], j, Ax ? Ax [p] : static_cast<Type> (1), other)) {
                 if (Ax) Ax [nz] = Ax [p]; /* keep A(i,j) */
                 Ai [nz++] = Ai [p];
             }
@@ -1248,11 +1311,36 @@ csi cs_lsolve(const cs_sparse<Type> *L, Type *x) {
     Lp = L->p;
     Li = L->i;
     Lx = L->x;
+    int e = 2;
     for (j = 0; j < n; j++) {
         x [j] /= Lx [Lp [j]];
         for (p = Lp [j] + 1; p < Lp [j + 1]; p++) {
             x [Li [p]] -= Lx [p] * x [j];
         }
+
+    }
+    return (1);
+}
+
+/* solve Lx=b where x and b are dense.  x=b on input, solution on output. */
+template<typename Type>
+csi cs_lsolve_x(const cs_sparse<Type> *L, Type *x, int i) {
+    csi p, j, n, *Lp, *Li;
+    Type *Lx;
+    if (!CS_CSC(L) || !x) return (0); /* check inputs */
+    n = L->n;
+    Lp = L->p;
+    Li = L->i;
+    Lx = L->x;
+    int e = 10;
+    //    int ii = std::max(i-1,0);
+    for (j = i; j < n; j++) {
+        x [j] /= Lx [Lp [j]];
+
+        for (p = Lp [j] + 1; p < Lp [j + 1]; p++) {
+            x [Li [p]] -= Lx [p] * x [j];
+        }
+
     }
     return (1);
 }
@@ -1261,9 +1349,9 @@ template<typename Type>
 void cs_ltsolve_thread(const cs_sparse<Type> *L, Type *x, int start, int end, csi* ret) {
     csi p, j, n, *Lp, *Li;
     Type *Lx;
-    Type* xx = (Type*)malloc(L->n*sizeof(Type));
-    for(csi i=0; i < L->n; i++){
-        xx[i]=x[i];
+    Type* xx = (Type*) malloc(L->n * sizeof (Type));
+    for (csi i = 0; i < L->n; i++) {
+        xx[i] = x[i];
     }
     if (!CS_CSC(L) || !x) {
         *ret = 0;
@@ -1284,6 +1372,32 @@ void cs_ltsolve_thread(const cs_sparse<Type> *L, Type *x, int start, int end, cs
 
 /* solve L'x=b where x and b are dense.  x=b on input, solution on output. */
 template<typename Type>
+csi cs_ltsolve_x(const cs_sparse<Type> *L, Type *x, int i) {
+    csi p, j, n, *Lp, *Li;
+    Type *Lx;
+    if (!CS_CSC(L) || !x) return (0); /* check inputs */
+    n = L->n;
+    Lp = L->p;
+    Li = L->i;
+    Lx = L->x;
+
+
+
+    for (j = n - 1; j >= i; j--) {
+
+        for (p = Lp [j] + 1; p < Lp [j + 1]; p++) {
+            x [j] -= Lx [p] * x [Li [p]];
+
+        }
+        x [j] /= Lx [Lp [j]];
+
+    }
+
+    return (1);
+}
+
+/* solve L'x=b where x and b are dense.  x=b on input, solution on output. */
+template<typename Type>
 csi cs_ltsolve(const cs_sparse<Type> *L, Type *x, bool concurrent) {
     csi p, j, n, *Lp, *Li;
     Type *Lx;
@@ -1299,34 +1413,38 @@ csi cs_ltsolve(const cs_sparse<Type> *L, Type *x, bool concurrent) {
 
         std::vector<csi> ret(nt);
         std::vector<std::thread> threads;
-        for (int i = 0; i <nt; i++){
-            int start ,end = 0;
-            
-                start = i*range;
-            
-            if(i == (nt-1)){
-                end = n-1;
-            }else{
-                end = i*range-1;
+        for (int i = 0; i < nt; i++) {
+            int start, end = 0;
+
+            start = i*range;
+
+            if (i == (nt - 1)) {
+                end = n - 1;
+            } else {
+                end = i * range - 1;
             }
-            threads.push_back(std::thread(cs_ltsolve_thread<Type>,L,x,end,start,(&ret[i])));
+            threads.push_back(std::thread(cs_ltsolve_thread<Type>, L, x, end, start, (&ret[i])));
         }
-        
+
         csi r = 0;
-        for(int i =0; i< threads.size(); i++){
+        for (int i = 0; i < threads.size(); i++) {
             threads[i].join();
-            r = std::max(r,ret[i]);
+            r = std::max(r, ret[i]);
         }
         return r;
 
-        } else {
+    } else {
+
 
 
         for (j = n - 1; j >= 0; j--) {
+
             for (p = Lp [j] + 1; p < Lp [j + 1]; p++) {
                 x [j] -= Lx [p] * x [Li [p]];
+
             }
             x [j] /= Lx [Lp [j]];
+
         }
     }
     return (1);
@@ -1347,11 +1465,11 @@ cs_numeric<Type> *cs_lu(const cs_sparse<Type> *A, const cs_symbolic<Type> *S, Ty
     x = (Type*) cs_malloc(n, sizeof (Type)); /* get Type workspace */
     xi = (csi*) cs_malloc(2 * n, sizeof (csi)); /* get csi workspace */
     N = (cs_numeric<Type>*) cs_calloc(1, sizeof (cs_numeric<Type>)); /* allocate result */
-    if (!x || !xi || !N) return (cs_ndone(N, NULL, xi, x, 0));
+    if (!x || !xi || !N) return (cs_ndone<Type>(N, NULL, xi, x, 0));
     N->L = L = cs_spalloc<Type>(n, n, lnz, 1, 0); /* allocate result L */
     N->U = U = cs_spalloc<Type>(n, n, unz, 1, 0); /* allocate result U */
     N->pinv = pinv = (csi*) cs_malloc(n, sizeof (csi)); /* allocate result pinv */
-    if (!L || !U || !pinv) return (cs_ndone(N, NULL, xi, x, 0));
+    if (!L || !U || !pinv) return (cs_ndone<Type>(N, NULL, xi, x, 0));
     Lp = L->p;
     Up = U->p;
     for (i = 0; i < n; i++) x [i] = 0; /* clear workspace */
@@ -1364,7 +1482,7 @@ cs_numeric<Type> *cs_lu(const cs_sparse<Type> *A, const cs_symbolic<Type> *S, Ty
         Up [k] = unz; /* U(:,k) starts here */
         if ((lnz + n > L->nzmax && !cs_sprealloc(L, 2 * L->nzmax + n)) ||
                 (unz + n > U->nzmax && !cs_sprealloc(U, 2 * U->nzmax + n))) {
-            return (cs_ndone(N, NULL, xi, x, 0));
+            return (cs_ndone<Type>(N, NULL, xi, x, 0));
         }
         Li = L->i;
         Lx = L->x;
@@ -1387,7 +1505,7 @@ cs_numeric<Type> *cs_lu(const cs_sparse<Type> *A, const cs_symbolic<Type> *S, Ty
                 Ux [unz++] = x [i];
             }
         }
-        if (ipiv == -1 || a <= 0) return (cs_ndone(N, NULL, xi, x, 0));
+        if (ipiv == -1 || a <= 0) return (cs_ndone<Type>(N, NULL, xi, x, 0));
         if (pinv [col] < 0 && fabs(x [col]) >= a * tol) ipiv = col;
         /* --- Divide by pivot ---------------------------------------------- */
         pivot = x [ipiv]; /* the chosen pivot */
@@ -1412,7 +1530,7 @@ cs_numeric<Type> *cs_lu(const cs_sparse<Type> *A, const cs_symbolic<Type> *S, Ty
     for (p = 0; p < lnz; p++) Li [p] = pinv [Li [p]];
     cs_sprealloc(L, 0); /* remove extra space from L and U */
     cs_sprealloc(U, 0);
-    return (cs_ndone(N, NULL, xi, x, 1)); /* success */
+    return (cs_ndone<Type>(N, NULL, xi, x, 1)); /* success */
 }
 
 /* x=A\b where A is unsymmetric; b overwritten with solution */
@@ -1595,7 +1713,7 @@ cs_sparse<Type> *cs_multiply(const cs_sparse<Type> *A, const cs_sparse<Type> *B)
         Cx = C->x; /* C->i and C->x may be reallocated */
         Cp [j] = nz; /* column j of C starts here */
         for (p = Bp [j]; p < Bp [j + 1]; p++) {
-            nz = cs_scatter(A, Bi [p], Bx ? Bx [p] : 1, w, x, j + 1, C, nz);
+            nz = cs_scatter(A, Bi [p], Bx ? Bx [p] : static_cast<Type> (1), w, x, j + 1, C, nz);
         }
         if (values) for (p = Cp [j]; p < nz; p++) Cx [p] = x [Ci [p]];
     }
@@ -1632,7 +1750,7 @@ cs_sparse<Type> *cs_permute(const cs_sparse<Type> *A, const csi *pinv, const csi
     Ap = A->p;
     Ai = A->i;
     Ax = A->x;
-    C = cs_spalloc(m, n, Ap [n], values && Ax != NULL, 0); /* alloc result */
+    C = cs_spalloc<Type>(m, n, Ap [n], values && Ax != NULL, 0); /* alloc result */
     if (!C) return (cs_done(C, NULL, NULL, 0)); /* out of memory */
     Cp = C->p;
     Ci = C->i;
@@ -1650,7 +1768,6 @@ cs_sparse<Type> *cs_permute(const cs_sparse<Type> *A, const csi *pinv, const csi
 }
 
 /* pinv = p', or p = pinv' */
-template<typename Type>
 csi *cs_pinv(csi const *p, csi n) {
     csi k, *pinv;
     if (!p) return (NULL); /* p = NULL denotes identity */
@@ -1764,13 +1881,13 @@ cs_numeric<Type> *cs_qr(const cs_sparse<Type> *A, const cs_symbolic<Type> *S) {
     w = (csi*) cs_malloc(m2 + n, sizeof (csi)); /* get csi workspace */
     x = (Type*) cs_malloc(m2, sizeof (Type)); /* get Type workspace */
     N = (cs_numeric<Type>*) cs_calloc(1, sizeof (cs_numeric<Type>)); /* allocate result */
-    if (!w || !x || !N) return (cs_ndone(N, NULL, w, x, 0));
+    if (!w || !x || !N) return (cs_ndone<Type>(N, NULL, w, x, 0));
     s = w + m2; /* s is size n */
     for (k = 0; k < m2; k++) x [k] = 0; /* clear workspace x */
     N->L = V = cs_spalloc<Type>(m2, n, vnz, 1, 0); /* allocate result V */
     N->U = R = cs_spalloc<Type>(m2, n, rnz, 1, 0); /* allocate result R */
     N->B = Beta = (Type*) cs_malloc(n, sizeof (Type)); /* allocate result Beta */
-    if (!R || !V || !Beta) return (cs_ndone(N, NULL, w, x, 0));
+    if (!R || !V || !Beta) return (cs_ndone<Type>(N, NULL, w, x, 0));
     Rp = R->p;
     Ri = R->i;
     Rx = R->x;
@@ -1807,7 +1924,7 @@ cs_numeric<Type> *cs_qr(const cs_sparse<Type> *A, const cs_symbolic<Type> *S) {
             Ri [rnz] = i; /* R(i,k) = x(i) */
             Rx [rnz++] = x [i];
             x [i] = 0;
-            if (parent [i] == k) vnz = cs_scatter(V, i, 0, w, NULL, k, V, vnz);
+            if (parent [i] == k) vnz = cs_scatter<Type>(V, i, 0, w, NULL, k, V, vnz);
         }
         for (p = p1; p < vnz; p++) /* gather V(:,k) = x */ {
             Vx [p] = x [Vi [p]];
@@ -1818,7 +1935,7 @@ cs_numeric<Type> *cs_qr(const cs_sparse<Type> *A, const cs_symbolic<Type> *S) {
     }
     Rp [n] = rnz; /* finalize R */
     Vp [n] = vnz; /* finalize V */
-    return (cs_ndone(N, NULL, w, x, 1)); /* success */
+    return (cs_ndone<Type>(N, NULL, w, x, 1)); /* success */
 }
 
 /* x=A\b where A can be rectangular; b overwritten with solution */
@@ -1860,6 +1977,8 @@ csi cs_qrsol(csi order, const cs_sparse<Type> *A, Type *b) {
             cs_pvec(S->pinv, x, b, n); /* b(0:n-1) = x(p(0:n-1)) */
         }
     }
+
+
     cs_free(x);
     cs_sfree(S);
     cs_nfree(N);
@@ -1982,7 +2101,7 @@ cs_symbolic<Type> *cs_schol(csi order, const cs_sparse<Type> *A) {
     S = (cs_symbolic<Type>*) cs_calloc(1, sizeof (cs_symbolic<Type>)); /* allocate result S */
     if (!S) return (NULL); /* out of memory */
     P = cs_amd<Type>(order, A); /* P = amd(A+A'), or natural */
-    S->pinv = cs_pinv<Type>(P, n); /* find inverse permutation */
+    S->pinv = cs_pinv(P, n); /* find inverse permutation */
     cs_free(P);
     if (order && !S->pinv) return (cs_sfree(S));
     C = cs_symperm<Type>(A, S->pinv, 0); /* C = spones(triu(A(P,P))) */
@@ -1994,7 +2113,7 @@ cs_symbolic<Type> *cs_schol(csi order, const cs_sparse<Type> *A) {
     S->cp = (csi*) cs_malloc(n + 1, sizeof (csi)); /* allocate result S->cp */
     S->unz = S->lnz = cs_cumsum<Type>(S->cp, c, n); /* find column pointers for L */
     cs_free(c);
-    return ((S->lnz >= 0) ? S : cs_sfree(S));
+    return ((S->lnz >= static_cast<Type> (0.0)) ? S : cs_sfree(S));
 }
 
 /* solve Gx=b(:,k), where G is either upper (lo=0) or lower (lo=1) triangular */
@@ -2221,7 +2340,7 @@ csi cs_updown(cs_sparse<Type> *L, csi sigma, const cs_sparse<Type> *C, const csi
         p = Lp [j];
         alpha = w [j] / Lx [p]; /* alpha = w(j) / L(j,j) */
         beta2 = beta * beta + sigma * alpha*alpha;
-        if (beta2 <= 0) break; /* not positive definite */
+        if (beta2 <= 0){ printf("not positive definite");break; }/* not positive definite */
         beta2 = sqrt(beta2);
         delta = (sigma > 0) ? (beta / beta2) : (beta2 / beta);
         gamma = sigma * alpha / (beta2 * beta);
@@ -2394,51 +2513,9 @@ csi cs_utsolve(const cs_sparse<Type> *U, Type *x) {
     return (1);
 }
 
-
-
-
-
-
-
 template<typename Type>
 Type cs_det(cs_sparse<Type>* A) {
     csi p, j, m, n, nzmax, nz, *Ap, *Ai;
-    Type *Ax;
-    if (!A) {
-        printf("(null)\n");
-        return (0);
-    }
-    m = A->m;
-    n = A->n;
-    Ap = A->p;
-    Ai = A->i;
-    Ax = A->x;
-    nzmax = A->nzmax;
-    nz = A->nz;
-    Type det = 0;
-
-    int sgn = 0;
-    double ret = 0.0;
-    for (int j = 0; j < n; j++) {
-        for (int k = Ap [j]; k < Ap [j + 1]; k++) {
-            if (j == Ai[k]) {
-                //cout << " k = "  << k << "  x[k] = " << x[k] << endl;
-                if (Ax[k] > 0.0)
-                    ret += (Ax[k]);
-                else if (Ax[k] <= 0.0) {
-                    ret += (-Ax[k]);
-                    sgn++;
-                } 
-            }
-        }
-    }
-
-    return (ret);
-}
-
-template<typename Type>
-Type cs_log_det(cs_sparse<Type>* A) {
-   csi p, j, m, n, nzmax, nz, *Ap, *Ai;
     Type *Ax;
     if (!A) {
         printf("(null)\n");
@@ -2458,19 +2535,178 @@ Type cs_log_det(cs_sparse<Type>* A) {
     for (int j = 0; j < n; j++) {
         for (int k = Ap [j]; k < Ap [j + 1]; k++) {
             if (j == Ai[k]) {
-                 ret += std::log(std::fabs(Ax[k]));
                 //cout << " k = "  << k << "  x[k] = " << x[k] << endl;
-//                if (Ax[k] > 0.0)
-//                    ret += std::log(Ax[k]);
-//                else if (Ax[k] <= 0.0) {
-//                    ret += std::log(-Ax[k]);
-//                    sgn++;
-//                } 
+                if (Ax[k] > 0.0)
+                    ret += (Ax[k]);
+                else if (Ax[k] <= 0.0) {
+                    ret += (-Ax[k]);
+                    sgn++;
+                }
             }
         }
     }
 
-    return (2.0*ret);
+    return (ret);
+}
+
+template<typename Type>
+Type cs_log_det(cs_sparse<Type>* A) {
+    csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+    Type *Ax;
+    if (!A) {
+        printf("(null)\n");
+        return (0);
+    }
+    m = A->m;
+    n = A->n;
+    Ap = A->p;
+    Ai = A->i;
+    Ax = A->x;
+    nzmax = A->nzmax;
+    nz = A->nz;
+    Type det = 0;
+
+    int sgn = 0;
+    Type ret = 0.0;
+    for (int j = 0; j < n; j++) {
+        for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+            if (j == Ai[k]) {
+                ret += std::log(std::fabs(Ax[k]));
+            }
+        }
+    }
+
+    return (static_cast<Type> (2.0) * ret);
+}
+
+template<typename Type>
+csi sparseinv /* returns -1 on error, or flop count if OK */
+(
+        /* inputs, not modified on output: */
+        csi n, /* L, U, D, and Z are n-by-n */
+
+        csi *Lp, /* L is sparse, lower triangular, stored by column */
+        csi *Li, /* the row indices of L must be sorted */
+        Type *Lx, /* diagonal of L, if present, is ignored */
+
+        Type *d, /* diagonal of D, of size n */
+
+        csi *Up, /* U is sparse, upper triangular, stored by row */
+        csi *Uj, /* the column indices of U need not be sorted */
+        Type *Ux, /* diagonal of U, if present, is ignored */
+
+        csi *Zp, /* Z is sparse, stored by column */
+        csi *Zi, /* the row indices of Z must be sorted */
+
+        /* output, not defined on input: */
+        Type *Zx,
+        //,
+
+        /* workspace: */
+        Type *z, /* size n, zero on input, restored as such on output */
+        csi *Zdiagp, /* size n */
+        csi *Lmunch /* size n */
+        ) {
+    Type ljk, zkj;
+    csi j, i, k, p, znz, pdiag, up, zp, flops = n;
+
+    /* ---------------------------------------------------------------------- */
+    /* initializations */
+    /* ---------------------------------------------------------------------- */
+
+    /* clear the numerical values of Z */
+    znz = Zp [n];
+    for (p = 0; p < znz; p++) {
+        Zx [p] = 0;
+    }
+
+    /* find the diagonal of Z and initialize it */
+    for (j = 0; j < n; j++) {
+        pdiag = -1;
+        for (p = Zp [j]; p < Zp [j + 1] && pdiag == -1; p++) {
+            if (Zi [p] == j) {
+                pdiag = p;
+                Zx [p] = 1 / d [j];
+            }
+        }
+        Zdiagp [j] = pdiag;
+        if (pdiag == -1) return (-1); /* Z must have a zero-free diagonal */
+    }
+
+    /* Lmunch [k] points to the last entry in column k of L */
+    for (k = 0; k < n; k++) {
+        Lmunch [k] = Lp [k + 1] - 1;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* compute the sparse inverse subset */
+    /* ---------------------------------------------------------------------- */
+
+    for (j = n - 1; j >= 0; j--) {
+
+        /* ------------------------------------------------------------------ */
+        /* scatter Z (:,j) into z workspace */
+        /* ------------------------------------------------------------------ */
+
+        /* only the lower triangular part is needed, since the upper triangular
+           part is all zero */
+        for (p = Zdiagp [j]; p < Zp [j + 1]; p++) {
+            z [Zi [p]] = Zx [p];
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* compute the strictly upper triangular part of Z (:,j) */
+        /* ------------------------------------------------------------------ */
+
+        /* for k = (j-1):-1:1 but only for the entries Z(k,j) */
+        for (p = Zdiagp [j] - 1; p >= Zp [j]; p--) {
+            /* Z (k,j) = - U (k,k+1:n) * Z (k+1:n,j) */
+            k = Zi [p];
+            zkj = 0;
+            flops += (Up [k + 1] - Up [k]);
+            for (up = Up [k]; up < Up [k + 1]; up++) {
+                /* skip the diagonal of U, if present */
+                i = Uj [up];
+                if (i > k) {
+                    zkj -= Ux [up] * z [i];
+                }
+            }
+            z [k] = zkj;
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* left-looking update to lower triangular part of Z */
+        /* ------------------------------------------------------------------ */
+
+        /* for k = (j-1):-1:1 but only for the entries Z(k,j) */
+        for (p = Zdiagp [j] - 1; p >= Zp [j]; p--) {
+            k = Zi [p];
+
+            /* ljk = L (j,k) */
+            if (Lmunch [k] < Lp [k] || Li [Lmunch [k]] != j) {
+                /* L (j,k) is zero, so there is no work to do */
+                continue;
+            }
+            ljk = Lx [Lmunch [k]--];
+
+            /* Z (k+1:n,k) = Z (k+1:n,k) - Z (k+1:n,j) * L (j,k) */
+            flops += (Zp [k + 1] - Zdiagp [k]);
+            for (zp = Zdiagp [k]; zp < Zp [k + 1]; zp++) {
+                Zx [zp] -= z [Zi [zp]] * ljk;
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* gather Z (:,j) back from z workspace */
+        /* ------------------------------------------------------------------ */
+
+        for (p = Zp [j]; p < Zp [j + 1]; p++) {
+            i = Zi [p];
+            Zx [p] = z [i];
+            z [i] = 0;
+        }
+    }
+    return (flops);
 }
 
 

@@ -19,9 +19,9 @@
 #include "Transformations.h"
 #include <vector>
 #include <valarray>
+#include <cassert>
 
 namespace atl {
-
 
 
 
@@ -51,6 +51,7 @@ namespace atl {
         REAL_T min_boundary_m;
         REAL_T max_boundary_m;
         bool bounded_m;
+        static bool show;
         std::string name;
 
         Variable(REAL_T value = static_cast<REAL_T> (0.0),
@@ -65,12 +66,46 @@ namespace atl {
             //            info->value = v;
         }
 
+        Variable(int value,
+                REAL_T min_boundary = std::numeric_limits<REAL_T>::min(),
+                REAL_T max_boundary = std::numeric_limits<REAL_T>::max()) :
+        bounded_m(false),
+        min_boundary_m(min_boundary),
+        max_boundary_m(max_boundary),
+        transformation(&default_transformation) {
+
+            info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (value));
+            //            info->value = v;
+        }
+
+        Variable(long value,
+                REAL_T min_boundary = std::numeric_limits<REAL_T>::min(),
+                REAL_T max_boundary = std::numeric_limits<REAL_T>::max()) :
+        bounded_m(false),
+        min_boundary_m(min_boundary),
+        max_boundary_m(max_boundary),
+        transformation(&default_transformation) {
+
+            info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (value));
+            //            info->value = v;
+        }
+
+        //        Variable(const Variable<REAL_T>& other) :
+        //        info(other.info), transformation(other.transformation),
+        //                min_boundary_m(other.min_boundary_m), 
+        //                max_boundary_m(other.max_boundary_m), 
+        //                bounded_m(other.bounded_m), 
+        //                name(other.name) {
+        //            
+        //        }
+
         Variable(const Variable<REAL_T>& other) :
         info(other.info),
         min_boundary_m(other.min_boundary_m),
         max_boundary_m(other.max_boundary_m),
         bounded_m(other.bounded_m),
         transformation(other.transformation) {
+
         }
 
         template<class A>
@@ -79,9 +114,11 @@ namespace atl {
         min_boundary_m(std::numeric_limits<REAL_T>::min()),
         max_boundary_m(std::numeric_limits<REAL_T>::max()),
         transformation(&default_transformation) {
+
             info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (0.0));
 
             if (Variable<REAL_T>::tape.recording) {
+
                 size_t index = atl::Variable<REAL_T>::tape.NextIndex();
                 this->Assign(Variable<REAL_T>::tape, exp, index);
             } else {
@@ -93,6 +130,27 @@ namespace atl {
 
         }
 
+        operator int() const {
+            return static_cast<int> (this->info->value);
+        }
+
+        operator long() const {
+            return static_cast<long> (this->info->value);
+        }
+
+        operator REAL_T() {
+            return (this->info->value);
+        }
+
+        void Copy(const Variable<REAL_T>& other) {
+            info = (other.info);
+            min_boundary_m = (other.min_boundary_m);
+            max_boundary_m = (other.max_boundary_m);
+            bounded_m = (other.bounded_m);
+            transformation = (other.transformation);
+
+        }
+
         Variable& operator=(const REAL_T& v) {
             this->info->value = v;
             return *this;
@@ -100,12 +158,13 @@ namespace atl {
 
         Variable& operator=(const Variable<REAL_T>& other) {
             if (Variable<REAL_T>::tape.recording) {
+                //                this->info = other.info;
                 size_t index = atl::Variable<REAL_T>::tape.NextIndex();
                 this->Assign(Variable<REAL_T>::tape, other, index);
             } else {
                 this->SetValue(other.GetValue());
             }
-            //            this->info = other.info;
+
             return *this;
         }
 
@@ -133,6 +192,7 @@ namespace atl {
         inline Variable& operator=(const ExpressionBase<REAL_T, A>& exp) {
 
             if (Variable<REAL_T>::tape.recording) {
+
                 size_t index = atl::Variable<REAL_T>::tape.NextIndex();
                 this->Assign(atl::Variable<REAL_T>::tape, exp, index);
             } else {
@@ -215,8 +275,10 @@ namespace atl {
 
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
-//                entry.exp = exp.ToExpressionTemplateString();
+
+                //                entry.exp = exp.ToExpressionTemplateString();
                 entry.w = this->info;
+                entry.w->is_nl = true;
                 entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
                 typename atl::StackEntry<REAL_T>::vi_iterator it;
                 typename atl::StackEntry<REAL_T>::vi_iterator jt;
@@ -224,22 +286,28 @@ namespace atl {
                 size_t i = 0;
                 size_t j = 0;
                 size_t k = 0;
+                entry.wv = exp.GetValue();
                 switch (tape.derivative_trace_level) {
 
                     case FIRST_ORDER_REVERSE:
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             i++;
                         }
                         break;
 
                     case SECOND_ORDER_REVERSE:
+                        entry.w->is_nl = exp.IsNonlinear();
                         entry.is_nl = exp.IsNonlinear();
+
                         //                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             j = 0;
                             for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
@@ -251,11 +319,15 @@ namespace atl {
                         break;
 
                     case THIRD_ORDER_REVERSE:
+                        entry.w->is_nl = exp.IsNonlinear();
                         entry.is_nl = exp.IsNonlinear();
+
                         //                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
                             j = 0;
                             for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
@@ -272,13 +344,39 @@ namespace atl {
                             i++;
                         }
                         break;
+                    case atl::UTPM_REVERSE:
 
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            (*it)->tayor_coefficients.resize(tape.taylor_order + 1);
+                            (*it)->tayor_coefficients[0] = (*it)->value;
+                        }
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            (*it)->tayor_coefficients[1] = static_cast<REAL_T> (1.0);
+                            for (i = 0; i <= tape.taylor_order; i++) {
+                                entry.taylor_coeff[(*it)->id].push_back(exp.Taylor(i));
+                            }
+                            (*it)->tayor_coefficients[1] = static_cast<REAL_T> (0.0);
+                        }
+
+                        break;
+
+                    case DYNAMIC_RECORD:
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                        }
+                        entry.exp = exp.ToDynamic();
+                        break;
                     default:
                         std::cout << "Unknown Derivative Trace Level.\n";
                         exit(0);
                 }
             }
+
             this->info->value = exp.GetValue();
+
             return *this;
         }
 
@@ -500,6 +598,27 @@ namespace atl {
             }
         }
 
+        inline const REAL_T Taylor(uint32_t degree) const {
+
+
+            if (degree >= this->info->tayor_coefficients.size()) {
+                this->info->tayor_coefficients.resize(degree + 10);
+                this->info->tayor_coefficients[0] = this->GetValue();
+            }
+            assert(degree < this->info->tayor_coefficients.size());
+            return this->info->tayor_coefficients[degree];
+        }
+
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+#ifdef USE_DELEGATES
+            return atl::VariableFunctions<REAL_T>::Create(this->info);
+#else
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > var =
+                    std::make_shared<atl::VariableDynamic<REAL_T> >(this->info);
+            return std::shared_ptr<VariableDynamic<REAL_T> >(new VariableDynamic<REAL_T>(this->info), VariableDynamic<REAL_T>::free);
+#endif
+        }
+
         inline REAL_T EvaluateDerivative(uint32_t x) const {
             return info->id == x ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
         }
@@ -693,6 +812,9 @@ namespace atl {
     Tape<REAL_T> Variable<REAL_T>::tape(100000);
 
     template<typename REAL_T>
+    bool Variable<REAL_T>::show = false;
+
+    template<typename REAL_T>
     LogitParameterTransformation<REAL_T> Variable<REAL_T>::default_transformation;
 
     template<typename REAL_T>
@@ -700,6 +822,8 @@ namespace atl {
         out << v.GetValue();
         return out;
     }
+
+
 
 
 }

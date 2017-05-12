@@ -58,6 +58,10 @@ namespace atl {
     struct Fabs : public ExpressionBase<REAL_T, Fabs<REAL_T, EXPR> > {
         typedef REAL_T BASE_TYPE;
 
+        Fabs(const Fabs<REAL_T, EXPR>& other) :
+        expr_m(other.expr_m) {
+        }
+
         /**
          * Constructor
          * 
@@ -123,6 +127,24 @@ namespace atl {
             return std::fabs(expr_m.ComplexEvaluate(x, h));
         }
 
+        inline const REAL_T Taylor(uint32_t degree) const {
+
+
+            REAL_T tmp = expr_m.Taylor(0) * expr_m.Taylor(degree);
+            //            }
+            if (tmp < static_cast<REAL_T> (0.0)) {
+                return static_cast<REAL_T> (-1.0);
+            } else if (tmp > static_cast<REAL_T> (0.0)) {
+                return static_cast<REAL_T> (1.0);
+            } else {
+                return static_cast<REAL_T> (0.0);
+            }
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return atl::fabs(expr_m.ToDynamic());
+        }
+
         /**
          * Evaluates the first-order derivative with respect to x.
          * 
@@ -135,6 +157,7 @@ namespace atl {
          * @return 
          */
         inline const REAL_T EvaluateDerivative(uint32_t x) const {
+
             return (expr_m.EvaluateDerivative(x) * expr_m.GetValue()) / this->GetValue();
         }
 
@@ -149,6 +172,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+
             return (expr_m.EvaluateDerivative(x, y) * expr_m.GetValue()) / this->GetValue();
         }
 
@@ -167,6 +191,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+
             return (expr_m.GetValue()*(expr_m.EvaluateDerivative(x, y, z))) / this->GetValue();
         }
 
@@ -183,6 +208,7 @@ namespace atl {
          * @return 
          */
         inline const REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+
             return (expr_m.EvaluateDerivative(x, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
         }
 
@@ -202,6 +228,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+
             return (expr_m.EvaluateDerivative(x, y, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
         }
 
@@ -222,6 +249,7 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+
             return (expr_m.GetValue(i, j)*(expr_m.EvaluateDerivative(x, y, z, i, j))) / this->GetValue(i, j);
         }
 
@@ -231,6 +259,7 @@ namespace atl {
          * @return 
          */
         size_t GetRows() const {
+
             return expr_m.GetRows();
         }
 
@@ -240,6 +269,7 @@ namespace atl {
          * @return 
          */
         bool IsScalar() const {
+
             return expr_m.IsScalar();
         }
 
@@ -250,6 +280,7 @@ namespace atl {
         const std::string ToExpressionTemplateString() const {
             std::stringstream ss;
             ss << "atl::Fabs<T," << expr_m.ToExpressionTemplateString() << " >";
+
             return ss.str();
         }
 
@@ -259,11 +290,13 @@ namespace atl {
 
     template<class REAL_T, class EXPR>
     const Fabs<REAL_T, EXPR> fabs(const ExpressionBase<REAL_T, EXPR>& exp) {
+
         return Fabs<REAL_T, EXPR>(exp.Cast());
     }
 
     template<class REAL_T, class EXPR>
     inline const atl::Fabs<REAL_T, EXPR> abs(const atl::ExpressionBase<REAL_T, EXPR>& expr) {
+
         return atl::Fabs<REAL_T, EXPR > (expr.Cast());
     }
 
@@ -275,6 +308,7 @@ namespace atl {
 
         // For loop to get the square root value of the entered number.
         for (int i = 0; i < std::ceil(a.GetValue()) + 20; i++) {
+
             x = REAL_T(0.5) * (x + a / x);
         }
 
@@ -301,6 +335,18 @@ namespace atl {
 
 #define AD_FABS(x) atl::sqrt((x * x) +1e-50)
 
+
+
+
 }//end namespace atl
+
+namespace std {
+
+    template<class REAL_T, class EXPR>
+    const atl::Variable<REAL_T> fabs(const atl::ExpressionBase<REAL_T, EXPR>& expr, atl::Variable<REAL_T> C = 1e-5) {
+        return atl::sqrt((expr * expr) + C); //, .5);
+    }
+}
+
 
 #endif

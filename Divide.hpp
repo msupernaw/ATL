@@ -14,7 +14,7 @@
 #ifndef DIVISION_HPP
 #define DIVISION_HPP
 
-#include "Real.hpp"
+#include "Expression.hpp"
 #include <cmath>
 
 namespace atl {
@@ -31,6 +31,10 @@ namespace atl {
     template <class REAL_T, class LHS, class RHS>
     struct Divide : public ExpressionBase<REAL_T, Divide<REAL_T, LHS, RHS> > {
         typedef REAL_T BASE_TYPE;
+
+        Divide(const Divide<REAL_T, LHS, RHS>& other) :
+        real_m(other.real_m), lhs_m(other.lhs_m.Cast()), rhs_m(other.rhs_m.Cast()), value_m(other.value_m), val_(other.val_) {
+        }
 
         /**
          * Constructor for two variable types.
@@ -63,6 +67,7 @@ namespace atl {
         Divide(const ExpressionBase<REAL_T, LHS>& lhs, const REAL_T& rhs)
         : lhs_m(lhs.Cast()), rhs_m(real_m) {
             real_m.value = rhs;
+
         }
 
         /**
@@ -137,6 +142,33 @@ namespace atl {
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
             return lhs_m.ComplexEvaluate(x, h) / rhs_m.ComplexEvaluate(x, h);
+        }
+
+        inline const REAL_T Taylor(uint32_t degree) const {
+
+            if (degree == 0) {
+                val_.reserve(5);
+                val_.resize(1);
+
+                val_[0] = lhs_m.Taylor(degree) / rhs_m.Taylor(degree);
+
+                return val_[0];
+            }
+
+            size_t l = val_.size();
+            val_.resize(degree + 1);
+
+
+
+            for (int i = l; i <= degree; i++) {
+                val_[i] = lhs_m.Taylor(i);
+                for (int k = 1; k <= degree; k++) {
+                    val_[i] -= val_[degree - k] * rhs_m.Taylor(k);
+                }
+                val_[i] /= rhs_m.Taylor(0);
+            }
+
+            return val_[degree];
         }
 
         /**
@@ -233,11 +265,11 @@ namespace atl {
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             REAL_T lhs_value_m = lhs_m.GetValue();
             REAL_T rhs_value_m = rhs_m.GetValue();
-            return -1.0 * (static_cast<REAL_T> (6.0) * lhs_value_m*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
-                    (static_cast<REAL_T> (2) * lhs_value_m*(rhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                    ((lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_value_m*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
-                    (static_cast<REAL_T> (2.0) * lhs_value_m*(rhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                    ((lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_value_m*(rhs_m.EvaluateDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
+            return -1.0 * (static_cast<REAL_T> (6.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
+                    (static_cast<REAL_T> (2) * lhs_value_m * (rhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+                    ((lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
+                    (static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+                    ((lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_value_m * (rhs_m.EvaluateDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
                     ((lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + lhs_m.EvaluateDerivative(x, y, z) / rhs_value_m;
         }
 
@@ -267,6 +299,10 @@ namespace atl {
 
                 throw std::invalid_argument("matrix-matrix division not available.");
             }
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+            return (lhs_m.ToDynamic() / rhs_m.ToDynamic());
         }
 
         /**
@@ -579,6 +615,7 @@ namespace atl {
         const LHS& lhs_m;
         const RHS& rhs_m;
         REAL_T value_m;
+        mutable std::vector<REAL_T> val_;
     };
 
     /**
@@ -600,13 +637,11 @@ namespace atl {
         return Divide<REAL_T, LHS, Real<REAL_T> > (a.Cast(), b);
     }
 
-    template <class REAL_T,class RHS>
+    template <class REAL_T, class RHS>
     inline const Divide<REAL_T, Real<REAL_T>, RHS> operator/(const REAL_T& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Divide<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
     }
-
-
 
 
 

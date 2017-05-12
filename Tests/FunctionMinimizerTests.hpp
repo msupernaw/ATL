@@ -166,9 +166,13 @@ namespace atl {
                 T f_;
 
                 void Initialize() {
-                    x = M_PI - 2.0;
+//                    x.SetMinBoundary(-100.0);
+//                    x.SetMaxBoundary(100.0);
+////                    x = M_PI - 1.50;
                     x.SetName("x");
-                    y = M_PI - 2.0;
+//                    y.SetMinBoundary(M_PI);
+//                    y.SetMaxBoundary(M_PI);
+//                    y = M_PI + 1.50;
                     y.SetName("y");
 
                     this->RegisterParameter(x);
@@ -176,7 +180,8 @@ namespace atl {
                 }
 
                 void ObjectiveFunction(var& f) {
-                    f = -1.0 * atl::cos(x) * atl::cos(y) * atl::exp(-1.0 * (atl::pow(x - M_PI, 2.0) + atl::pow(y - M_PI, 2.0)));
+                    f = 0.0;
+                    f = -1.0 * atl::cos(x) * atl::cos(y) * atl::exp( (-1.0*((x - M_PI)*(x - M_PI)) - ((y - M_PI)*(y - M_PI))));
                     f_ = f.GetValue();
                 }
 
@@ -247,7 +252,7 @@ namespace atl {
                     for (int i = 0; i < x.size(); i++) {
                         x[i] = temp += .002; //(var(i));
                         std::stringstream ss;
-                        ss<<"x_"<<i;
+                        ss << "x_" << i;
                         x[i].SetName(ss.str());
                         this->RegisterParameter(x[i]);
 
@@ -287,16 +292,18 @@ namespace atl {
             void Run() {
 
                 std::stringstream out;
-                
+
                 atl::tests::fmin::Rosenbrock<double> rosenbrock;
                 rosenbrock.Initialize();
-                atl::PortMinimizer<double> lbfgs;
+                atl::LBFGS<double> lbfgs;
                 lbfgs.SetObjectiveFunction(&rosenbrock);
                 lbfgs.Run();
                 if (rosenbrock.Check()) {
                     out << "Rosenbrock test passed.\n";
+                    std::cout << "Rosenbrock test passed.\n";
                 } else {
                     out << "Rosenbrock test failed.\n";
+                    std::cout << "Rosenbrock test failed.\n";
                 }
 
                 Schaffer<double> shaffer;
@@ -304,9 +311,12 @@ namespace atl {
                 lbfgs.SetObjectiveFunction(&shaffer);
                 lbfgs.Run();
                 if (shaffer.Check()) {
-                   out << "Shaefer test passed.\n";
+                    out << "Shaefer test passed.\n";
+                    std::cout << "Shaefer test passed.\n";
                 } else {
-                   out << "Shaefer test failed.\n";
+                    out << "Shaefer test failed.\n";
+                    std::cout << "Shaefer test failed.\n";
+
                 }
 
                 atl::tests::fmin::McCormick<double> mccormick;
@@ -315,20 +325,14 @@ namespace atl {
                 lbfgs.Run();
                 if (mccormick.Check()) {
                     out << "McCormick test passed.\n";
+                    std::cout << "McCormick test passed.\n";
                 } else {
-                  out<< "McCormick test failed.\n";
+                    out << "McCormick test failed.\n";
+                    std::cout << "McCormick test failed.\n";
                 }
 
 
-                atl::tests::fmin::Easom<double> easom;
-                easom.Initialize();
-                lbfgs.SetObjectiveFunction(&easom);
-                lbfgs.Run();
-                if (easom.Check()) {
-                    out << "Easom test passed.\n";
-                } else {
-                   out << "Easom test failed.\n";
-                }
+             
 
                 atl::tests::fmin::Bukin<double> bukin;
                 bukin.Initialize();
@@ -336,8 +340,12 @@ namespace atl {
                 lbfgs.Run();
                 if (bukin.Check()) {
                     out << "Bukin test passed.\n";
+                    std::cout << "Bukin test passed.\n";
+
                 } else {
                     out << "Bukin test failed.\n";
+                    std::cout << "Bukin test failed.\n";
+
                 }
 
 
@@ -346,13 +354,29 @@ namespace atl {
                 lbfgs.SetObjectiveFunction(&styblinski_tang);
                 lbfgs.Run();
                 if (styblinski_tang.Check()) {
-                    out << "StyblinskiTang test passed.\n";
+                    out << "Styblinski Tang test passed.\n";
+                    std::cout << "Styblinski Tang test passed.\n";
                 } else {
-                    out << "StyblinskiTang test failed.\n";
+                    out << "Styblinski Tang test failed.\n";
+                    std::cout << "Styblinski Tang test failed.\n";
                 }
 
-                std::cout<<out.str();
+                   atl::tests::fmin::Easom<double> easom;
+                easom.Initialize();
+                lbfgs.SetTolerance(1e-15);
+                lbfgs.SetObjectiveFunction(&easom);
+                lbfgs.Run();
+                if (easom.Check()) {
+                    out << "Easom test passed.\n";
+                    std::cout << "Easom test passed.\n";
+
+                } else {
+                    out << "Easom test failed.\n";
+                    std::cout << "Easom test failed.\n";
+                }
                 
+                std::cout << out.str();
+
             }
 
 

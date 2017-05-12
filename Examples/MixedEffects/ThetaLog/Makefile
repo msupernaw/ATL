@@ -13,7 +13,7 @@ CCC = c++
 CXX = c++
 BASICOPTS = -O3 -s -m64
 CCFLAGS = -std=c++11
-CXXFLAGS =-O3 -std=c++11 $(EXTRA_CXXFLAGS)
+CXXFLAGS = -O3  -std=c++11 $(EXTRA_CXXFLAGS)
 CCADMIN = 
 
 

@@ -27,7 +27,7 @@
 
 namespace atl {
 
-   
+
     template<class T>
     class OptimizationRoutine;
 
@@ -44,6 +44,8 @@ namespace atl {
         std::vector<atl::Variable<T>* > parameters_m;
 
         std::vector<T> gradient;
+
+
         std::vector<std::vector<T> > parameter_hessian;
         T log_determinant_of_parmameter_hessian;
         std::vector<std::vector<T> > parameter_var_covar_matrix;
@@ -84,14 +86,37 @@ namespace atl {
         std::vector<int> parameter_phases_m;
         std::vector<atl::Variable<T>* > random_variables_m;
         std::vector<int> random_variable_phases_m;
+
+        std::vector<atl::Variable<T>* > all_parameters_m;
         int max_phase_m = 0;
         friend class OptimizationRoutine<T>;
         friend class MCMC<T>;
         int phase_m = 1;
     public:
 
-        inline operator atl::Variable<T>() {
+        inline operator const atl::Variable<T>() {
             return this->Evaluate();
+        }
+
+        inline void ReassignIds() {
+            std::vector<uint32_t > ids;
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                ids.push_back(parameters_m[i]->info->id); // = VariableIdGenerator::instance()->next();
+            }
+
+            for (int i = 0; i < this->random_variables_m.size(); i++) {
+                ids.push_back(random_variables_m[i]->info->id); // = VariableIdGenerator::instance()->next();
+            }
+
+            size_t id = 0;
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                parameters_m[i]->info->id = ids[id++];
+            }
+
+            for (int i = 0; i < this->random_variables_m.size(); i++) {
+                random_variables_m[i]->info->id = ids[id++];
+            }
+
         }
 
         virtual void Initialize() {
@@ -101,7 +126,7 @@ namespace atl {
             return phase_m;
         }
 
-        virtual const atl::Variable<T> Evaluate() = 0;
+//        virtual inline const atl::Variable<T> Evaluate() = 0;
 
         void RegisterParameter(atl::Variable<T>& v, int phase = 1) {
             this->parameters_m.push_back(&v);
@@ -139,7 +164,7 @@ namespace atl {
         }
 
         virtual void Objective_Function(atl::Variable<T>& ff) {
-            ff = this->Evaluate();
+//            ff.Copy(this->Evaluate());
         }
 
         const ObjectiveFunctionStatistics<T> GetObjectiveFunctionStatistics() {
@@ -163,10 +188,437 @@ namespace atl {
         return out;
     }
 
+    template<typename T>
+    struct CholSol {
+
+        inline void operator()() {
+
+        }
+    };
+
     template<class T>
     class OptimizationRoutine {
     protected:
 
+        template<typename Type>
+        struct SCResult {
+            cs_sparse<Type>* A;
+            cs_sparse<Type>* A_inv;
+            cs_numeric<Type>* factor;
+            Type log_det;
+
+            /**
+             * does not free A.
+             */
+            ~SCResult() {
+
+                if (A_inv)
+                    cs_spfree<Type>(A_inv);
+
+                if (factor)
+                    cs_nfree<Type>(factor);
+            }
+        };
+
+        /**
+         * Sparse Cholesky class used in ATL random effects modeling.
+         * Uses CSparse
+         */
+        template<typename Type>
+        class SparseCholesky {
+            struct cs_symbolic<Type> *S;
+            //    struct cs_numeric<Type> *chol;
+            //
+            //    struct cs_sparse<Type> *A_inv;
+            //    struct cs_sparse<Type> *a_inv;
+
+        public:
+
+            SparseCholesky() {
+
+            }
+
+            /**
+             * Constructor.
+             * 
+             * @param A in compressed format
+             */
+            SparseCholesky(struct cs_sparse<Type>* A) {
+                S = cs_schol<double>(0, A);
+
+            }
+
+            /**
+             * 
+             * @param A       - input
+             * @param A_inv   - output
+             * @param factor  - output
+             * @param log_det - output
+             */
+            const SCResult<Type> Analyze(cs_sparse<Type>* A) {
+
+                SCResult<Type> ret;
+                ret.A = A;
+
+
+                //1. do symbolic factorization if needed
+                if (S == NULL) {
+                    S = cs_schol<Type>(0, ret.A);
+                }
+
+                //2. do numeric factorization
+                if (S != NULL) {
+                    ret.factor = cs_chol<Type>(ret.A, S);
+                }
+
+                //cholesky failed
+                if (ret.factor == NULL) {
+                    ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
+                }
+
+                //3. compute the inverse subset
+                if (ret.factor != NULL) {
+                    inv(ret);
+
+                }
+
+                //4. compute the log determinant
+
+                ret.log_det = cs_log_det<Type>(ret.factor->L);
+
+                return ret;
+            }
+
+            Type trace(struct cs_sparse<Type>* A) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+                Type trace = 0.0;
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        if (j == Ai[k]) {
+                            trace += Ax[k];
+                        }
+                    }
+                }
+                return trace;
+            }
+
+            void print_as_vector(struct cs_sparse<Type>* A) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+
+                        std::cout << Ax[k] << "\n";
+
+                    }
+                }
+            }
+
+            void diagonal(struct cs_sparse<Type>* A, Type* d, Type multiplier = static_cast<Type> (1.0)) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        if (j == Ai[k]) {
+                            d[j] = Ax[k] * multiplier;
+                        }
+                    }
+                }
+            }
+
+            void half_diagonal(struct cs_sparse<Type>* A) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        if (j == Ai[k]) {
+                            Ax[k] *= static_cast<Type> (.5);
+                        }
+                    }
+                }
+            }
+
+            void as_vector(struct cs_sparse<Type>* A, std::vector<Type>& d) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        d.push_back(Ax[k]);
+                    }
+                }
+            }
+
+            ////            struct cs_sparse<Type>* cs_tril(struct cs_sparse<Type>* A, csi i) {
+            //                struct cs_sparse<Type>* B = cs_spalloc<Type>(0, 0, 1, 1, 1);
+            //                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+            //                Type* Ax;
+            //                n = A->n;
+            //                Ap = A->p;
+            //                Ai = A->i;
+            //                Ax = A->x;
+            //
+            //                for (int j = 0; j < n; j++) {
+            //                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+            //                        if (!(Ai[k] < j - i)) {
+            //                            cs_entry<Type>(B, Ai[k], j, Ax[k]);
+            //                        }
+            //                    }
+            //                }
+            //
+            //
+            //                struct cs_sparse<Type>* BB = cs_compress<Type>(B);
+            //                cs_free(B);
+            //                return BB;
+            //            }
+
+            struct cs_sparse<Type>* cs_tril(struct cs_sparse<Type>* A, csi i) {
+                struct cs_sparse<Type>* B = cs_spalloc<Type>(0, 0, 1, 1, 1);
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        if (!(Ai[k] < j - i)) {
+                            cs_entry<Type>(B, Ai[k], j, Ax[k]);
+                        }
+                    }
+                }
+
+
+                struct cs_sparse<Type>* BB = cs_compress<Type>(B);
+                cs_free(B);
+                return BB;
+            }
+
+            void cs_print_dense(struct cs_sparse<Type>* A) {
+                struct cs_sparse<Type>* B = cs_transpose<Type>(A, 0);
+
+                csi n, *Ap, *Ai;
+                csi m = B->m;
+                n = B->n;
+                Ap = B->p;
+                Ai = B->i;
+                Type* Ax;
+                Ax = B->x;
+                for (int i = 0; i < n; i++) {
+                    int j = 0;
+                    if (Ap [i] == 0 && Ap [i + 1] == 0) {
+                        int k = 0;
+                        for (int k = 0; k < n; k++) {
+                            std::cout << "0 ";
+                        }
+                    }
+                    int k = 0;
+                    for (k = Ap [i]; k < Ap [i + 1]; k++) {
+
+
+                        while (j++ < Ai[k]) {
+                            std::cout << "0 ";
+                        }
+                        //                        std::cout << Ax[k] << " ";
+
+                        if (k == Ap [i + 1] - 1) {
+                            k = Ap [i + 1] - 1;
+                            while (++k < n) {
+                                std::cout << "0 ";
+                            }
+                        }
+
+                    }
+                    std::cout << std::endl;
+                }
+                cs_free(B);
+            }
+
+            void cs_clone(struct cs_sparse<Type>* A, struct cs_sparse<Type>* B) {
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        cs_entry<Type>(B, Ai[k], j, Ax[k]);
+                    }
+                }
+
+            }
+
+            struct cs_sparse<Type>* clone(struct cs_sparse<Type>* A) {
+
+
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                n = A->n;
+                struct cs_sparse<Type>* B = cs_spalloc<Type>(n, n, 1, 1, 1);
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        cs_entry<Type>(B, Ai[k], j, Ax[k]);
+                    }
+                }
+
+                struct cs_sparse<Type>* ret = cs_compress<Type>(B);
+                cs_spfree<Type>(B);
+                return ret;
+            }
+
+        private:
+
+            struct cs_sparse<Type>* mrdivide(struct cs_sparse<Type>* A, Type* B) {
+                struct cs_sparse<Type>* ret = cs_spalloc<Type>(0, 0, 1, 1, 1);
+                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+                Type* Ax;
+                m = A->m;
+                n = A->n;
+                Ap = A->p;
+                Ai = A->i;
+                Ax = A->x;
+                nzmax = A->nzmax;
+                nz = A->nz;
+
+                for (int j = 0; j < n; j++) {
+                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                        cs_entry<Type>(ret, Ai[k], j, Ax[k] / B[j]);
+                    }
+                }
+
+                struct cs_sparse<Type>* RET = cs_compress<Type>(ret);
+                cs_free(ret);
+                return RET;
+            }
+
+            void inv(SCResult<Type>& ret) {
+                int n = static_cast<int> (ret.A->n);
+
+                cs_sparse<Type>* a_inv = cs_spalloc<Type>(n, n, 1, 1, 1);
+                cs_clone(ret.A, a_inv);
+
+                ret.A_inv = cs_compress<Type>(a_inv);
+                cs_spfree<Type>(a_inv);
+
+
+
+                csi* L_p = ret.factor->L->p;
+                csi* L_i = ret.factor->L->i;
+                Type* L_x = ret.factor->L->x;
+
+
+                //get the diagonal of L
+                std::vector<Type> d(n);
+                for (size_t j = 0; j < n; j++) {
+                    d[j] = L_x[L_p[j]];
+                    assert(d[j] != 0.0);
+                }
+
+
+                //right divide L by the diagonal
+                cs_sparse<Type>* L_D = mrdivide(ret.factor->L, d.data());
+
+
+                //Lower triangular part of L
+                cs_sparse<Type>* L_tril = cs_tril(L_D, -1);
+
+                L_p = L_tril->p;
+                L_i = L_tril->i;
+                L_x = L_tril->x;
+
+                //square the diagonal
+                for (size_t j = 0; j < n; j++) {
+                    d[j] = d[j] * d[j];
+                    assert(d[j] != 0.0);
+                }
+
+
+
+
+
+
+
+                // work space
+                std::vector<Type> z(ret.A->nzmax);
+                std::vector<csi> Zdiagp(ret.A->nzmax), Lmunch(ret.A->nzmax);
+                //
+                // compute the subset of the inverse 
+                int flops = sparseinv(
+                        n,
+                        L_p,
+                        L_i,
+                        L_x,
+                        d.data(),
+                        L_p,
+                        L_i,
+                        L_x,
+                        ret.A_inv->p,
+                        ret.A_inv->i,
+                        ret.A_inv->x,
+                        z.data(),
+                        Zdiagp.data(),
+                        Lmunch.data()
+                        );
+
+                //free temporary structures
+
+                cs_spfree<Type>(L_tril);
+                cs_spfree<Type>(L_D);
+
+
+            }
+
+
+        };
+
+
+        SparseCholesky<T> sparse_cholesky;
 
         ObjectiveFunction<T>* objective_function_m = NULL;
         std::vector<atl::Variable<T>* > parameters_m;
@@ -197,13 +649,15 @@ namespace atl {
         atl::Tape<T> inner_gs;
         atl::Variable<T> log_det;
 
-        std::unordered_map<int, std::vector<int> > hessian_patern_map;
+        std::vector< std::vector<int> > hessian_pattern_map;
         //
         long outer_iteration;
 
 
         struct cs_symbolic<T> *S_outer = NULL;
         struct cs_symbolic<T>* S_inner = NULL;
+        std::vector<T> x_scratch;
+        std::vector<T> re_dx;
         bool pattern_known = false;
     public:
 
@@ -247,6 +701,11 @@ namespace atl {
     protected:
 
         void Prepare(int phase) {
+
+            if (phase == 1) {
+                this->objective_function_m->ReassignIds();
+            }
+
             this->outer_iteration = 0;
             this->parameters_m.resize(0);
             this->random_variables_m.resize(0);
@@ -266,13 +725,15 @@ namespace atl {
                 }
             }
 
-           
 
+            this->x_scratch.resize(this->random_variables_m.size());
+            this->hessian_pattern_map.resize(this->random_variables_m.size());
+            re_dx.resize(this->random_variables_m.size());
         }
 
         void CallInnerObjectiveFunction(atl::Variable<T>& f) {
             atl::Variable<T>::tape.Reset();
-            f = this->objective_function_m->Evaluate();
+            this->objective_function_m->Objective_Function(f);
         }
 
         void CallObjectiveFunction(atl::Variable<T>& f) {
@@ -280,7 +741,7 @@ namespace atl {
             if (this->random_variables_m.size() > 0) {//this is a laplace problem
                 this->EvaluateLaplace(f);
             } else {
-                f = this->objective_function_m->Evaluate();
+                this->objective_function_m->Objective_Function(f);
             }
         }
 
@@ -327,6 +788,11 @@ namespace atl {
 
         }
 
+        struct cs_sparse<T>* InverseSubset(struct cs_sparse<T>* L) {
+
+        }
+
+
     public:
 
         void EvaluateLaplace(atl::Variable<T>& f) {
@@ -334,7 +800,9 @@ namespace atl {
             bool recording = atl::Variable<T>::tape.recording;
             size_t PARAMETERS_SIZE = this->parameters_m.size();
             size_t RANDOM_SIZE = this->random_variables_m.size();
+            size_t ALL_SIZE = this->all_variables_m.size();
             struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
+
             if (recording) {
                 for (int i = 0; i < RANDOM_SIZE; i++) {
                     this->random_variables_m[i]->SetValue(0.0);
@@ -366,8 +834,8 @@ namespace atl {
                 atl::Variable<T>::tape.derivative_trace_level = atl::THIRD_ORDER_REVERSE;
                 atl::Variable<T>::tape.recording = true;
                 atl::Variable<T>::tape.Reset();
-                atl::Variable<T> innerf = this->objective_function_m->Evaluate();
-
+                atl::Variable<T> innerf; // = this->objective_function_m->Evaluate();
+                this->objective_function_m->Objective_Function(innerf);
                 if (innerf.GetValue() != innerf.GetValue()) {
                     std::cout << "Inner minimizer returned NaN, bailing out!" << std::endl;
                     exit(0);
@@ -388,26 +856,38 @@ namespace atl {
                 for (int j = 0; j < PARAMETERS_SIZE; j++) {
                     g[j] = atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id);
                 }
-                for (int i = 0; i < RANDOM_SIZE; i++) {
-                    std::vector<int>& hm = hessian_patern_map[i];
-                    hm.clear();
-                    for (int j = 0; j < RANDOM_SIZE; j++) {
-                        T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
 
-                        if (dxx != 0.0) {
-                            cs_entry<T>(RHessian, i, j, dxx);
-                            hm.push_back(j);
+                if (!this->pattern_known) {
+                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                        std::vector<int>& hm = hessian_pattern_map[i];
+                        hm.clear();
+                        for (int j = 0; j < RANDOM_SIZE; j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
+
+                            if (dxx != 0.0) {
+                                cs_entry<T>(RHessian, i, j, dxx);
+                                hm.push_back(j);
+                            }
+                        }
+                    }
+                    this->pattern_known = true;
+                } else {
+                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                        std::vector<int>& hm = hessian_pattern_map[i];
+                        for (int j = 0; j < hm.size(); j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
+                            cs_entry<T>(RHessian, i, hm[j], dxx);
+
                         }
                     }
                 }
-                this->pattern_known = true;
                 struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
                 cs_spfree(RHessian);
                 //                
                 if (this->S_outer == NULL)
                     this->S_outer = cs_schol<T>(0, hessian);
-
                 struct cs_numeric<T> *chol = cs_chol<T>(hessian, this->S_outer);
+
 
 
 
@@ -415,6 +895,7 @@ namespace atl {
                 //compute logdetH
                 T ld = cs_log_det(chol->L);
                 log_det = ld;
+
 
 
                 for (int i = 0; i < PARAMETERS_SIZE; i++) {
@@ -427,28 +908,57 @@ namespace atl {
                 std::cout << "Starting Trace(H)..." << std::flush;
                 auto trace_start = std::chrono::steady_clock::now();
 #endif
-                std::vector<T> re_dx(RANDOM_SIZE);
-
-                for (int p = 0; p < PARAMETERS_SIZE; p++) {
-                    T trace = 0;
-
-                    for (int i = 0; i < RANDOM_SIZE; i++) {
-                        std::fill(re_dx.begin(), re_dx.end(), 0.0);
-                        std::vector<int>& hm = this->hessian_patern_map[i];
-                        for (int j = 0; j < hm.size(); j++) {
-                            re_dx[hm[j]] = atl::Variable<T>::tape.Value(
-                                    this->random_variables_m[i]->info->id,
-                                    this->random_variables_m[hm[j]]->info->id,
-                                    this->parameters_m[p]->info->id);
-                        }
-                        int error = cs_cholsol(0, hessian, re_dx.data(), chol, this->S_outer);
-                        trace += re_dx[i];
-                    }
-
-                    derivatives_logdet[this->parameters_m[p]->info] = trace;
 
 
-                }
+                /*****************************************************************************************************
+                 Notes from Kasper:
+                 
+                The first order banded Hessian is a useful test case as it should in theory take just O(RANDOM_SIZE).
+
+                Your code has a nested loop of length PARAMETERS_SIZE * RANDOM_SIZE.
+                Inside that loop there's a further loop of length RANDOM_SIZE hidden in the cs_cholsol call. So your algorithm takes at least
+                O( PARAMETERS_SIZE * RANDOM_SIZE^2 )
+
+                The comments following equation 8 eliminate the need for the nested loop:
+
+                The multiple matrix-vector solves can be replaced by a single pass through the inverse subset algorithm.
+
+                The outer loop can be replaced be a single reverse sweep of tape T3 using the elements of the inverse subset as range weights.
+
+                I admit that this may not be completely obvious from the paper :)
+                 
+                 *****************************************************************************************************/
+
+
+
+                                std::cout << "start\nlog det actual:     ";
+                                for (int p = 0; p < PARAMETERS_SIZE; p++) {
+                                    T trace = 0;
+                                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                
+                                        std::fill(re_dx.begin(), re_dx.end(), 0.0);
+                                        std::vector<int>& hm = this->hessian_pattern_map[i];
+                                        for (int j = 0; j < hm.size(); j++) {
+                
+                                            re_dx[hm[j]] = atl::Variable<T>::tape.Value(
+                                                    this->random_variables_m[i]->info->id,
+                                                    this->random_variables_m[hm[j]]->info->id,
+                                                    this->parameters_m[p]->info->id);
+                
+                
+                                        }
+                                        std::fill(x_scratch.begin(), x_scratch.end(), static_cast<T> (0.0));
+                                        int error = cs_cholsol_x(0, hessian, re_dx.data(), chol, this->S_outer, this->x_scratch.data(), i);
+                                        trace += re_dx[i];
+                                    }
+                //                    std::cout << "{" << this->parameters_m[p]->info->id << ", " << trace << "} ";
+                                    derivatives_logdet[this->parameters_m[p]->info] = trace;
+                                }
+                                std::cout << "\n";
+
+
+
+
 
 #ifdef USE_TIMER
                 auto trace_end = std::chrono::steady_clock::now();
@@ -456,9 +966,219 @@ namespace atl {
                 std::cout << "Derivative Logdet time = " << trace_time.count() << " secs\n" << std::endl;
 #endif
 
+
+                struct cs_sparse<T>* fuu = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                struct cs_sparse<T>* h_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                struct cs_sparse<T>* fu_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                for (int j = 0; j < this->parameters_m.size(); j++) {
+                //                    cs_entry<T>(h_theta, 0, j, atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id));
+                //                }
+                //                struct cs_sparse<T>* ftheta_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                struct cs_sparse<T>* h_u = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                struct cs_sparse<T>* h_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                struct cs_sparse<T>* fuu_all = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //
+                //                for (int j = 0; j < this->all_variables_m.size(); j++) {
+                //                    for (int i = 0; i < this->all_variables_m.size(); i++) {
+                //                        cs_entry<T>(fuu_all, j, i, atl::Variable<T>::tape.Value(this->all_variables_m[j]->info->id, this->all_variables_m[i]->info->id));
+                //                    }
+                //                }
+
+                //                for (int j = 0; j < this->parameters_m.size(); j++) {
+                //                    cs_entry<T>(h_theta, 0, j, atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id));
+                //                    for (int i = 0; i < this->parameters_m.size(); i++) {
+                //                        cs_entry<T>(ftheta_theta, j, i, atl::Variable<T>::tape.Value(this->parameters_m[j]->info->id, this->parameters_m[i]->info->id));
+                //                    }
+                //                }
+
+                //                int fuu_nonzeros = 0;
+                //                std::vector<T> hu(this->random_variables_m.size());
+                for (int i = 0; i < this->random_variables_m.size(); i++) {
+                    //                    hu[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
+                    //
+                    //                    cs_entry<T>(h_u, 0, i, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id));
+                    for (int j = 0; j < this->random_variables_m.size(); j++) {
+                        cs_entry<T>(fuu, i, j, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
+                                this->random_variables_m[j]->info->id));
+                        if (atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
+                                this->random_variables_m[j]->info->id) != 0.0) {
+                            //                            fuu_nonzeros++;
+                        }
+                    }
+                }
+                //                for (int i = 0; i < this->random_variables_m.size(); i++) {
+                //
+                //                    for (int j = 0; j < this->parameters_m.size(); j++) {
+                //                        cs_entry<T>(fu_theta, i, j, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
+                //                                this->parameters_m[j]->info->id));
+                //                    }
+                //                }
+
+
+
+
+                struct cs_sparse<T>* fuu_ = cs_compress<T>(fuu);
+                //                struct cs_sparse<T>* hu_ = cs_compress<T>(h_u);
+                //                struct cs_sparse<T>* fu_theta_ = cs_compress<T>(fu_theta);
+                //                struct cs_sparse<T>* h_theta_ = cs_compress<T>(h_theta);
+                SCResult<T> ret = this->sparse_cholesky.Analyze(fuu_);
+
+                //                std::cout << "start\nlog det actual with mult:     ";
+//                struct cs_sparse<T>* Fuu = this->sparse_cholesky.clone(hessian);
+//                //                 
+//                for (int p = 0; p < PARAMETERS_SIZE; p++) {
+//                    T trace = 0;
+//
+//                    csi j, n, *Ap, *Ai;
+//                    T* Ax;
+//                    n = hessian->n;
+//                    Ap = hessian->p;
+//                    Ai = hessian->i;
+//                    Ax = hessian->x;
+//
+//                    T* Bx;
+//                    //                    Bx = Fuu->x
+//                    for (int j = 0; j < n; j++) {
+//                        for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+//                            //                            std::cout<<Ai[k]<<", "<<j<<", "<<p<<"\n";
+//                            T entry = atl::Variable<T>::tape.Value(this->random_variables_m[Ai[k]]->info->id,
+//                                    this->random_variables_m[j]->info->id,
+//                                    this->parameters_m[p]->info->id);
+//                            Fuu->x[k] = entry;
+//                            //                            cs_entry<T>(Fuu, k, j, entry);
+//                        }
+//                    }
+//
+//
+//                    struct cs_sparse<T>* MM = cs_multiply<T>(Fuu, ret.A_inv);
+//
+//                    trace = sparse_cholesky.trace(MM);
+//
+//
+//                    //                    std::cout << "{" << this->parameters_m[p]->info->id << ", " << trace << "} ";
+//                    derivatives_logdet[this->parameters_m[p]->info] = trace;
+//                }
+                //                std::cout << "\n";
+                //
+
+
+
+
+
+
+
+
+                //                struct cs_sparse<T>* tril_inv = this->sparse_cholesky.cs_tril(ret.A_inv, 0);
+                //                this->sparse_cholesky.half_diagonal(tril_inv);
+                //                                for (int p = 0; p < PARAMETERS_SIZE; p++) {
+                //                                    struct cs_sparse<T>* ppp = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                
+                //                                    T trace = 0;
+                //                                    for (int i = 0; i < RANDOM_SIZE; i++) {
+                //                
+                //                                        std::vector<int>& hm = this->hessian_pattern_map[i];
+                //                                        for (int j = 0; j < hm.size(); j++) {
+                //                
+                //                                            cs_entry<T>(ppp, i, hm[j], atl::Variable<T>::tape.Value(
+                //                                                    this->random_variables_m[i]->info->id,
+                //                                                    this->random_variables_m[hm[j]]->info->id,
+                //                                                    this->parameters_m[p]->info->id));
+                //                
+                //                                        }
+                //                
+                //                                    }
+                //                                    struct cs_sparse<T>* PPP = cs_compress<T>(ppp);
+                //                                    struct cs_sparse<T>* product = cs_multiply<T>(PPP, ret.A_inv);
+                //                                    trace = sparse_cholesky.trace(product);
+                ////                                    derivatives_logdet[this->parameters_m[p]->info] = trace;
+                //                                    std::cout << trace << " ";
+                //                                    cs_spfree<T>(ppp);
+                //                                    cs_spfree<T>(PPP);
+                //                                    cs_spfree<T>(product);
+                //                                }
+                //                
+                //                                std::cout << "\n";
+
+
+                //                this->sparse_cholesky.print_as_vector(ret.A_inv);
+                //
+                //                                struct cs_sparse<T>* v = cs_multiply(hu_, ret.A_inv);
+                //                                struct cs_sparse<T>* V = cs_compress<T>(v);
+                //                                sparse_cholesky.print_as_vector(v);
+                //                                cs_print(v, 1);
+                //                std::cout << hu.size() << " --- " << this->random_variables_m.size() << "\n";
+                //                for (int i = 0; i < hu.size(); i++) {
+                //                    cs_entry<T>(v, 0, i, hu[i]);
+                //                }
+                //                std::fill(x_scratch.begin(), x_scratch.end(), static_cast<T> (0.0));
+                //                struct cs_sparse<T>* tri_inv = sparse_cholesky.cs_tril(ret.A_inv, 0);
+                //                sparse_cholesky.half_diagonal(tri_inv); //,hu.data(),.5);
+                //                struct cs_sparse<T>* v = cs_multiply(hu_, tri_inv);
+                //                //                                struct cs_sparse<T>* V = cs_compress<T>(v);
+                ////                sparse_cholesky.print_as_vector(v);
+                //                std::cout << fuu_nonzeros << " nonzeros in hessian\n";
+                //
+                //                cs_cholsol(0, tri_inv, hu.data()); //, ret.factor, this->S_outer, this->x_scratch.data());//, 0);
+                //                std::cout << ret.A_inv->nz << " non-zeros in hessian^-1\n";
+                //                //                std::cout << hu.size() << " --- " << this->random_variables_m.size() << "\n";
+                //                //                hu[0] = 1.0;
+                //
+                //                //                struct cs_sparse<T>* Vc = cs_compress<T>(v);
+                //                //                struct cs_sparse<T>* mm = cs_multiply<T>(V, ret.A_inv);
+                //                //
+                //                //                struct cs_sparse<T>* m2 = cs_multiply<T>(mm, fu_theta_);
+                //                //                struct cs_sparse<T>* m3 = cs_add<T>(h_theta_, m2, 1.0, -1.0);
+                //                //                                cs_print<T>(mm, 1);
+                //                //
+                //
+                //                atl::Variable<T>::tape.Reset();
+                //                atl::Variable<T>::tape.recording = true;
+                //                atl::Variable<T>::tape.derivative_trace_level = atl::FIRST_ORDER_REVERSE;
+                //                f = this->objective_function_m->Evaluate();
+                //
+                //
+                //                atl::Variable<T>::tape.AccumulateFirstOrder();
+                //                std::cout << atl::Variable<T>::tape.DependentList().size() << " == " << hu.size() << "\n";
+                //                for (int i = 0; i < hu.size(); i++) {
+                //                    //                    std::cout << hu[i] << "\n";
+                //                }
+                //
+                //                //                std::fill(hu.begin(), hu.end(), static_cast<T> (0.0));
+                //                //                sparse_cholesky.diagonal(ret.A_inv, hu.data());
+                //                //                                for (int i = 0; i < hu.size(); i++) {
+                //                //                                                        atl::Variable<T>::tape.SetRangeWeight(-1 * this->random_variables_m[i]->info->id, hu[i]);
+                //                //                                    atl::Variable<T>::tape.Reference(this->random_variables_m[i]->info->id) = hu[i];
+                //                //                    T& w = atl::Variable<T>::tape.Reference(this->random_variables_m[i]->info->id);
+                //                //                    std::cout<<w<<" -- > ";
+                //                //                    w += hu[i];
+                //                //                     std::cout<<w<<"\n";
+                //                //                    iii--;
+                //                //                    std::cout<<hu[i]<<" ";
+                //                //                                }
+                //                //                //                std::cout<<"\n";
+                //                //                atl::Variable<T>::tape.AccumulateFirstOrder(false);
+                //                atl::Variable<T>::tape.UTPM(hu);
+                //                atl::Variable<T>::tape.AccumulateFirstOrder(false);
+                //                //
+                //                std::cout << "seeded second pass: ";
+                //                //                struct cs_sparse<T>* vVV = cs_spalloc<T>(0, 0, 1, 1, 1);
+                //                //                 for (int i = 0; i < this->random_variables_m.size(); i++) {
+                //                //                    cs_entry<T>(vVV, 0,i, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id));
+                //                //                 }
+                //                //                
+                //                for (int i = 0; i < this->parameters_m.size(); i++) {
+                //                    //                    cs_entry<T>(vVV, i, 0, atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id));
+                //                    std::cout << "{" << this->parameters_m[i]->info->id << ", " << atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id) << "} ";
+                //                }
+                //                std::cout << "\ndone \n";
+
+                //                struct cs_sparse<T>* VVV = cs_compress<T>(vVV);
+                //                struct cs_sparse<T>* m4 = cs_multiply<T>(VVV, fu_theta_);
+                //                cs_print<T>(m4, 1);
                 atl::Variable<T>::tape.Reset();
                 atl::Variable<T>::tape.recording = false;
-                f = this->objective_function_m->Evaluate();
+                f = 0.0;
+                this->objective_function_m->Objective_Function(f);
                 //                f.SetName("F");
                 atl::Variable<T>::tape.recording = recording;
 
@@ -508,12 +1228,13 @@ namespace atl {
                 this->ClearReStructures();
                 atl::Variable<T>::tape.recording = true;
                 atl::Variable<T>::tape.Reset();
-                atl::Variable<T> innerf = this->objective_function_m->Evaluate();
+                atl::Variable<T> innerf; // = this->objective_function_m->Evaluate();
+                this->objective_function_m->Objective_Function(innerf);
                 atl::Variable<T>::tape.AccumulateSecondOrder();
                 if (!this->pattern_known) {
 
                     for (int i = 0; i < RANDOM_SIZE; i++) {
-                        std::vector<int>& hm = hessian_patern_map[i];
+                        std::vector<int>& hm = hessian_pattern_map[i];
                         hm.clear();
                         for (int j = 0; j < RANDOM_SIZE; j++) {
                             T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
@@ -526,7 +1247,7 @@ namespace atl {
                     this->pattern_known = true;
                 } else {
                     for (int i = 0; i < RANDOM_SIZE; i++) {
-                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        std::vector<int>& hm = this->hessian_pattern_map[i];
                         for (int j = 0; j < hm.size(); j++) {
                             T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
                             cs_entry(RHessian, i, hm[j], dxx);
@@ -556,13 +1277,14 @@ namespace atl {
                 if (chol == NULL) {
                     ld = 1.0;
                 } else {
-                    ld = cs_log_det(chol->L); 
+                    ld = cs_log_det(chol->L);
                 }
 
                 log_det = ld;
                 atl::Variable<T>::tape.recording = false;
-                f = this->objective_function_m->Evaluate();
-
+                f = 0.0;
+                //                f = this->objective_function_m->Evaluate();
+                this->objective_function_m->Objective_Function(f);
                 f += static_cast<T> (.5) * log_det;
                 f -= static_cast<T> (.5)*(static_cast<T> (RANDOM_SIZE) * std::log((static_cast<T> (2.0 * M_PI))));
 
@@ -572,8 +1294,6 @@ namespace atl {
             }
         }
 
-
-        
         void ComputeGradient(std::vector<atl::Variable<T>* >&p,
                 std::valarray<T>&g, T & maxgc) {
             g.resize(p.size());
@@ -656,14 +1376,15 @@ namespace atl {
             std::vector<T> gradient_(nops);
 
             struct cs_symbolic<T>* S = NULL;
-
             for (int iter = 0; iter < max_iter; iter++) {
 
 
                 atl::Variable<T>::tape.Reset();
                 atl::Variable<T>::SetRecording(true);
                 atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
-                fx = this->objective_function_m->Evaluate();
+//                fx = this->objective_function_m->Evaluate();
+                fx = 0.0;
+                this->objective_function_m->Objective_Function(fx);
                 this->inner_function_value = fx.GetValue();
 
                 atl::Variable<T>::tape.AccumulateSecondOrder();
@@ -676,7 +1397,7 @@ namespace atl {
                         gradient_[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
 
                         int jj = 0;
-                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        std::vector<int>& hm = this->hessian_pattern_map[i];
                         for (int j = 0; j <this->random_variables_m.size(); j++) {
 
                             T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[j]->info->id);
@@ -689,17 +1410,17 @@ namespace atl {
                     }
                     this->pattern_known = true;
                 } else {
-                   
+
                     for (int i = 0; i <this->random_variables_m.size(); i++) {
                         gradient_[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
-                        std::vector<int>& hm = this->hessian_patern_map[i];
+                        std::vector<int>& hm = this->hessian_pattern_map[i];
                         for (int j = 0; j < hm.size(); j++) {
                             T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
-                                cs_entry(RHessian, i, hm[j], dxx);
+                            cs_entry(RHessian, i, hm[j], dxx);
                         }
                     }
                 }
-                
+
 
 
                 struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
@@ -720,10 +1441,10 @@ namespace atl {
 
                 cs_free(hessian);
                 std::cout << "  Newton raphson " << iter << ", inner maxgc = " << this->inner_maxgc << std::endl;
-                if (this->inner_maxgc <= tol ) {
+                if (this->inner_maxgc <= tol) {
                     return true;
                 }
-                
+
 
 
                 for (int j = 0; j < random_variables_m.size(); j++) {
@@ -735,8 +1456,6 @@ namespace atl {
             return false;
 
         }
-
-       
 
         bool line_search(std::vector<atl::Variable<T>* >& parameters,
                 T& function_value,
@@ -1180,24 +1899,24 @@ namespace atl {
                     }
                     this->maxgc = maxgc;
 
-//                                        if ((std::fabs(previous_function_value) - std::fabs(fx)) < 1e-15) {
-//                                            std::cout << "Line searching....\n";
-//                                            if (!this->line_search(this->parameters_m,
-//                                                    this->function_value,
-//                                                    this->x,
-//                                                    this->best,
-//                                                    z,
-//                                                    this->gradient,
-//                                                    wg,
-//                                                    this->maxgc,
-//                                                    iter, false)) {
-//                                                std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
-//                                                for (int i = 0; i < n; i++) {
-//                                                    this->x[i] = this->best[i];
-//                                                }
-//                    
-//                                            }
-//                                        }
+                    //                                        if ((std::fabs(previous_function_value) - std::fabs(fx)) < 1e-15) {
+                    //                                            std::cout << "Line searching....\n";
+                    //                                            if (!this->line_search(this->parameters_m,
+                    //                                                    this->function_value,
+                    //                                                    this->x,
+                    //                                                    this->best,
+                    //                                                    z,
+                    //                                                    this->gradient,
+                    //                                                    wg,
+                    //                                                    this->maxgc,
+                    //                                                    iter, false)) {
+                    //                                                std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
+                    //                                                for (int i = 0; i < n; i++) {
+                    //                                                    this->x[i] = this->best[i];
+                    //                                                }
+                    //                    
+                    //                                            }
+                    //                                        }
 
                     for (int i = 0; i < n; i++) {
                         if (std::fabs(g[i]) > maxgc) {
@@ -1213,7 +1932,7 @@ namespace atl {
                         g[i] = this->gradient[i];
                     }
 
-                    if ((iter % 10) == 0) {
+                    if (iter == 1 || (iter % 10) == 0) {
                         this->Print();
                     }
                 } else {
