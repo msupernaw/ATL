@@ -539,12 +539,12 @@ namespace atl {
             std::pair<uint32_t, uint32_t> ret;
             ret.first = std::numeric_limits<uint32_t>::max();
             ret.second = std::numeric_limits<uint32_t>::min();
-            
-            for(int i =0; i < this->stack_current; i++){
-                ret.first = std::min(stack[i].min_id,ret.first);
-                ret.second = std::max(stack[i].max_id,ret.second);
+
+            for (int i = 0; i < this->stack_current; i++) {
+                ret.first = std::min(stack[i].min_id, ret.first);
+                ret.second = std::max(stack[i].max_id, ret.second);
             }
-            
+
             return ret;
         }
 
@@ -1284,6 +1284,151 @@ namespace atl {
 
 
 
+    };
+
+    template<typename REAL_T>
+    class DerivativeStructure {
+    public:
+        atl::Tape<REAL_T>& tape;
+
+        typename atl::Tape<REAL_T>::first_order_container gradient;
+        typename atl::Tape<REAL_T>::second_order_container higher_order;
+        std::vector< typename atl::Tape<REAL_T>::first_order_container > derivatives;
+        int order;
+        uint32_t min;
+        uint32_t max;
+        std::vector<std::vector<uint32_t> > indexes;
+
+        DerivativeStructure(atl::Tape<REAL_T>& tape, int order = 1) :
+        tape(tape), order(order) {
+            this->derivatives.resize(order);
+            std::pair<uint32_t, uint32_t> min_max = tape.FindMinMaxIds();
+            this->min = min_max.first;
+            this->max = min_max.second;
+
+
+            for (int i = 1; i <= order; i++) {
+                indexes.push_back(std::vector<uint32_t>(i));
+            }
+
+        }
+
+        void Run() {
+            int current_order = 1;
+            gradient[tape.stack[(tape.stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+            REAL_T w = static_cast<REAL_T> (0.0);
+            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+
+            for (int i = (tape.stack_current - 1); i >= 0; i--) {
+                REAL_T& GW = gradient[tape.stack[i].w->id];
+                REAL_T gw = GW;
+
+                GW = static_cast<REAL_T> (0.0);
+                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+                    //Gradient 
+                    gradient[(*vit)->id] += gw * tape.stack[i].exp->EvaluateDerivative((*vit)->id);
+                    if (this->order > 1) {
+                        this->Eval(current_order + 1, tape.stack[i].w, tape.stack[i].exp, tape.stack[i].ids,{vit});
+                    }
+
+                }
+
+            }
+        }
+
+        inline REAL_T Value(std::vector<uint32_t> index) {
+            int order = index.size();
+            std::sort(index.begin(), index.end());
+            uint32_t key = this->key(index, this->max);
+            return this->derivatives[order - 1][key];
+
+        }
+
+    private:
+
+        inline void Eval(const int& current_order,
+                const typename atl::StackEntry<REAL_T>::VariableInfoPtr& w_,
+                const std::shared_ptr < atl::DynamicExpressionBase<REAL_T > >& exp_,
+                const typename atl::StackEntry<REAL_T>::vi_storage& ids_,
+                const std::vector< typename atl::StackEntry<REAL_T>::vi_iterator >& ids) {
+
+            typename atl::StackEntry<REAL_T>::vi_iterator piter = ids[ids.size() - 1];
+            uint32_t pid = (*ids[ids.size() - 1])->id;
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            std::shared_ptr < atl::DynamicExpressionBase<REAL_T > > exp;
+
+
+            uint32_t rank = (current_order % 2);
+            if (rank == 0 && current_order != order) {
+                exp = exp_->Differentiate((*ids[ids.size() - (current_order - 1)])->id);
+            } else {
+                exp = exp_;
+            }
+            std::vector<uint32_t>& _ids = this->indexes[current_order - 1];
+            for (int i = 0; i < ids.size(); i++) {
+                _ids[i] = (*ids[i])->id;
+            }
+
+            _ids[_ids.size() - 1] = tape.stack[tape.stack_current - 1].w->id;
+            uint32_t key = this->key(_ids, this->max);
+            this->derivatives[current_order - 1][key] = static_cast<REAL_T> (1.0);
+
+            _ids[_ids.size() - 1] = w_->id;
+            key = this->key(_ids, this->max);
+            REAL_T& W = this->derivatives[current_order - 1][key];
+            REAL_T w = W;
+            W = static_cast<REAL_T> (0.0);
+
+            REAL_T dx;
+            for (it = ids_.begin(); it != piter; it++) {
+                _ids[_ids.size() - 1] = (*it)->id;
+
+
+
+                dx = w * exp_->EvaluateDerivative(pid, _ids[_ids.size() - 1]);
+                if (dx != std::fpclassify(0.0)) {
+                    key = this->key(_ids, this->max);
+                    this->derivatives[current_order - 1][key] += dx;
+                }
+                if (current_order < this->order) {
+                    std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+                    nids.push_back(it);
+                    this->Eval(current_order + 1, w_, exp, ids_, nids);
+                }
+            }
+
+            dx = w * exp_->EvaluateDerivative(pid, pid);
+
+            if (dx != std::fpclassify(0.0)) {
+                _ids[_ids.size() - 1] = pid;
+                key = this->key(_ids, this->max);
+                this->derivatives[current_order - 1][key] += dx;
+            }
+
+            if (current_order < this->order) {
+                std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+                nids.push_back(piter);
+                this->Eval(current_order + 1, w_, exp, ids_, nids);
+            }
+
+        }
+
+        uint32_t key(const std::vector< uint32_t>& ids, int max) {
+            uint32_t order = ids.size();
+            uint32_t key = 0;
+            uint32_t no = order - 1;
+            uint32_t tmp = 0;
+            for (int i = 0; i < order - 1; i++) {
+                tmp = (ids[i]);
+                tmp *= std::pow(max, no);
+                key += tmp;
+                no--;
+
+
+            }
+            key += (ids[ids.size() - 1]);
+            return key;
+        }
     };
 
 

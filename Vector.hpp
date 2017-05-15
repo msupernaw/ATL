@@ -44,6 +44,10 @@ namespace atl {
             this->data_m.resize(size);
         }
 
+         atl::Variable<T>& operator()(size_t j) {
+            return this->data_m[j];
+        }
+        
         /**
          * Returns the size of this vector.
          * @return 

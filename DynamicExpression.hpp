@@ -1589,7 +1589,6 @@ namespace atl {
         return std::make_shared<ATanDynamic<REAL_T> >(exp);
     }
 
-
     template<typename REAL_T>
     struct AddDynamic : DynamicExpressionBase<REAL_T> {
         std::shared_ptr<DynamicExpressionBase<REAL_T> > lhs_m;
@@ -1731,7 +1730,7 @@ namespace atl {
 
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id) {
             std::shared_ptr<DynamicExpressionBase<REAL_T> > neg_one = std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (-1.0));
-            return neg_one * expr_m->Differentiate(id) * atl::sin(expr_m->Clone());
+            return neg_one * expr_m->Differentiate(id) * atl::sin(expr_m);
         }
 
         virtual const REAL_T GetValue() const {
@@ -2038,7 +2037,7 @@ namespace atl {
         }
 
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id) {
-            return exp_m->Differentiate(id) / exp_m->Clone();
+            return exp_m->Differentiate(id) / exp_m;
         }
 
         virtual const REAL_T GetValue() const {
@@ -2337,6 +2336,11 @@ namespace atl {
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) * std::cos(exp_m->GetValue());
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return (std::cos(exp_m->GetValue()) * exp_m->EvaluateDerivative(x, y))-
+                    std::sin(exp_m->GetValue()) * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
