@@ -1192,6 +1192,7 @@ namespace atl {
 
 #include <cmath>
 #include <sstream>
+#include <unordered_map>
 #include "VariableInfo.hpp"
 #include "Platform.hpp"
 #include "Utilities/MemoryPool.hpp"
@@ -1200,6 +1201,7 @@ namespace atl {
 
 #ifndef ATL_WINDOWS
 #include "clfmalloc.h"
+#include "Tape.hpp"
 #endif
 
 
@@ -1222,11 +1224,32 @@ namespace atl {
         }
 
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id) = 0;
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() = 0;
         virtual const REAL_T GetValue() const = 0;
         virtual const REAL_T EvaluateDerivative(uint32_t id) const = 0;
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const = 0;
+        virtual void PushOrder(int i) = 0;
 
-        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return 0.0;
+        /**
+         * For expressions that were differentiated, variables become "Differentiated 
+         * Variables". the id is set and if the "Differentiated Varaible" has the 
+         * same id, it returns one at a call to "GetValue()" otherwise zero. This
+         * function must be called before the forward sweep on the expression
+         * is performed.
+         * 
+         * @param id
+         */
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+
+        }
+
+        /**
+         * When an expression is differentiated, dependent variables must be mapped to
+         * a new set of dependent variables. 
+         * @param vmap
+         */
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+
         }
         virtual const REAL_T Taylor(uint32_t degree) const = 0;
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Clone() = 0;
@@ -1234,59 +1257,6 @@ namespace atl {
 
 
     };
-
-    template<typename REAL_T>
-    struct DynamicExpresssion {
-        //function wrappers to handle both unary and binary operations. 
-        //With unary the std::shared_ptr<DynamicExpresssion<REAL_T> > second argument is ignored.
-        typedef std::function<const REAL_T(std::shared_ptr<DynamicExpresssion<REAL_T> >, std::shared_ptr<DynamicExpresssion<REAL_T> >) > ValueFunction;
-        typedef std::function<const REAL_T(uint32_t, std::shared_ptr<DynamicExpresssion<REAL_T> >, std::shared_ptr<DynamicExpresssion<REAL_T> >) > FirstOrderFunction;
-        typedef std::function<const REAL_T(uint32_t, uint32_t, std::shared_ptr<DynamicExpresssion<REAL_T> >, std::shared_ptr<DynamicExpresssion<REAL_T> >) > SecondOrderFunction;
-        typedef std::function< std::shared_ptr<DynamicExpresssion<REAL_T> > (uint32_t, std::shared_ptr<DynamicExpresssion<REAL_T> >, std::shared_ptr<DynamicExpresssion<REAL_T> >) > DifferentiateFunction;
-
-
-        ValueFunction value_f;
-        FirstOrderFunction first_order_value_f;
-        SecondOrderFunction second_order_value_f;
-        DifferentiateFunction differentiate_f;
-        std::shared_ptr<DynamicExpresssion<REAL_T> > exp1;
-        std::shared_ptr<DynamicExpresssion<REAL_T> > exp2;
-
-        DynamicExpresssion() {
-        }
-
-        DynamicExpresssion(ValueFunction value_f,
-                FirstOrderFunction first_order_value_f,
-                SecondOrderFunction second_order_value_f,
-                DifferentiateFunction differentiate_f,
-                std::shared_ptr<DynamicExpresssion<REAL_T> > exp1,
-                std::shared_ptr<DynamicExpresssion<REAL_T> > exp2) :
-        value_f(value_f),
-        first_order_value_f(first_order_value_f),
-        second_order_value_f(second_order_value_f),
-        differentiate_f(differentiate_f),
-        exp1(exp1),
-        exp2(exp2) {
-        }
-
-        inline const REAL_T GetValue() {
-            return value_f(exp1, exp2);
-        }
-
-        inline const REAL_T EvaluateDerivative(uint32_t x) {
-            return first_order_value_f(x, exp1, exp2);
-        }
-
-        inline const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) {
-            return second_order_value_f(x, y, exp1, exp2);
-        }
-
-        inline std::shared_ptr<DynamicExpresssion<REAL_T> > Differentiate(uint32_t x) {
-            return differentiate_f(x, exp1, exp2);
-        }
-
-    };
-
 
 
     //Prototypes
@@ -1358,6 +1328,9 @@ namespace atl {
 
     template<typename REAL_T>
     struct VariableDynamic;
+
+    template<typename REAL_T>
+    struct DifferentiatedVariableDynamic;
 
     template<class REAL_T>
     inline const std::shared_ptr<DynamicExpressionBase<REAL_T> > acos(const std::shared_ptr<DynamicExpressionBase<REAL_T> >& exp);
@@ -1450,8 +1423,10 @@ namespace atl {
             return neg_one * exp->Differentiate(id) / atl::sqrt(one - exp->Clone() * exp->Clone());
         }
 
-        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id, size_t i, size_t j) {
-            return NULL;
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > neg_one = std::make_shared<atl::RealDynamic<REAL_T> >(-1.0);
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<atl::RealDynamic<REAL_T> >(1.0);
+            return neg_one * exp->Differentiate() / atl::sqrt(one - exp->Clone() * exp->Clone());
         }
 
         virtual const REAL_T GetValue() const {
@@ -1459,7 +1434,27 @@ namespace atl {
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
-            return 0.0;
+            REAL_T fx = exp->GetValue();
+            return -1.0 * exp->EvaluateDerivative(id) / std::sqrt(1.0 - fx * fx);
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T fx = exp->GetValue();
+            return (((-1.0 * (fx * exp->EvaluateDerivative(x) * exp->EvaluateDerivative(y)))
+                    / std::pow((1.0 - fx * fx), 1.5))
+                    - (exp->EvaluateDerivative(x, y) / std::sqrt(1.0 - fx * fx)));
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1512,6 +1507,11 @@ namespace atl {
             return exp->Differentiate(id) / atl::sqrt(one - exp->Clone() * exp->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            const std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<RealDynamic<REAL_T> >(1.0);
+            return exp->Differentiate() / atl::sqrt(one - exp->Clone() * exp->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return std::asin(this->exp->GetValue());
         }
@@ -1519,6 +1519,25 @@ namespace atl {
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             REAL_T fx = exp->GetValue();
             return exp->EvaluateDerivative(id) / std::sqrt(1.0 - fx * fx);
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T fx = exp->GetValue();
+            return ((((fx * exp->EvaluateDerivative(x) * exp->EvaluateDerivative(y)))
+                    / std::pow((1.0 - fx * fx), 1.5))
+                    +(exp->EvaluateDerivative(x, y) / std::sqrt(1.0 - fx * fx)));
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1559,6 +1578,11 @@ namespace atl {
             return exp->Differentiate(id) / (exp->Clone() * exp->Clone() + one);
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<RealDynamic<REAL_T> >(1.0);
+            return exp->Differentiate() / (exp->Clone() * exp->Clone() + one);
+        }
+
         virtual const REAL_T GetValue() const {
             return std::atan(this->exp->GetValue());
         }
@@ -1566,6 +1590,25 @@ namespace atl {
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             REAL_T fx = exp->GetValue();
             return exp->EvaluateDerivative(id) / (fx * fx + 1.0);
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T fx = exp->GetValue();
+            return (exp->EvaluateDerivative(x, y) / (fx * fx + 1.0)) -
+                    (2.0 * fx * exp->EvaluateDerivative(x) *
+                    exp->EvaluateDerivative(y)) / ((fx * fx + 1.0)*(fx * fx + 1.0));
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1593,7 +1636,7 @@ namespace atl {
     struct AddDynamic : DynamicExpressionBase<REAL_T> {
         std::shared_ptr<DynamicExpressionBase<REAL_T> > lhs_m;
         std::shared_ptr<DynamicExpressionBase<REAL_T> > rhs_m;
-        static util::MemoryPool<AddDynamic<REAL_T> > pool;
+        //        static util::MemoryPool<AddDynamic<REAL_T> > pool;
 
         AddDynamic() {
 
@@ -1616,6 +1659,10 @@ namespace atl {
             return lhs_m->Differentiate(id) + rhs_m->Differentiate(id);
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return lhs_m->Differentiate() + rhs_m->Differentiate();
+        }
+
         virtual const REAL_T GetValue() const {
             return lhs_m->GetValue() + rhs_m->GetValue();
         }
@@ -1626,6 +1673,21 @@ namespace atl {
 
         virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
             return lhs_m->EvaluateDerivative(x, y) + rhs_m->EvaluateDerivative(x, y);
+        }
+
+        virtual void PushOrder(int i) {
+            lhs_m->PushOrder(i);
+            rhs_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            lhs_m->DifferentiatedBy(id);
+            rhs_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            lhs_m->SwapDependents(vmap);
+            rhs_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1642,29 +1704,30 @@ namespace atl {
             return ss.str();
         }
 
-
-#ifndef ATL_WINDOWS
-
-        static void* operator new(size_t size){
-            return AddDynamic<REAL_T>::pool.malloc();
-        }
-
-        static void free(AddDynamic<REAL_T>* ptr) {
-            AddDynamic<REAL_T>::pool.free(ptr);
-        }
-
-#endif
+        //
+        //#ifndef ATL_WINDOWS
+        //
+        //        static void* operator new(size_t size){
+        //            return AddDynamic<REAL_T>::pool.malloc();
+        //        }
+        //
+        //        static void free(AddDynamic<REAL_T>* ptr) {
+        //            AddDynamic<REAL_T>::pool.free(ptr);
+        //        }
+        //
+        //#endif
 
     };
 
-    template<typename REAL_T>
-    util::MemoryPool<AddDynamic<REAL_T> > AddDynamic<REAL_T>::pool(1000000);
+    //    template<typename REAL_T>
+    //    util::MemoryPool<AddDynamic<REAL_T> > AddDynamic<REAL_T>::pool(1000000);
 
     template<class REAL_T>
     inline const std::shared_ptr<DynamicExpressionBase<REAL_T> > operator+(
             const std::shared_ptr<DynamicExpressionBase<REAL_T> >& lhs,
             const std::shared_ptr<DynamicExpressionBase<REAL_T> >& rhs) {
-        return std::shared_ptr<AddDynamic<REAL_T> >(new AddDynamic<REAL_T>(lhs, rhs), AddDynamic<REAL_T>::free);
+        return std::shared_ptr<AddDynamic<REAL_T> >(new AddDynamic<REAL_T>(lhs, rhs)); //
+        //        return std::shared_ptr<AddDynamic<REAL_T> >(new AddDynamic<REAL_T>(lhs, rhs), AddDynamic<REAL_T>::free);
     }
 
     template<typename REAL_T>
@@ -1679,6 +1742,10 @@ namespace atl {
             return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(0.0));
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(0.0));
+        }
+
         virtual DynamicExpressionType Type() {
             return DYNAMIC_EXPRESSION;
         }
@@ -1689,6 +1756,22 @@ namespace atl {
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return 0.0;
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return 0.0;
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1715,7 +1798,7 @@ namespace atl {
     template<typename REAL_T>
     struct CosDynamic : DynamicExpressionBase<REAL_T> {
         std::shared_ptr<DynamicExpressionBase<REAL_T> > expr_m;
-        static util::MemoryPool<CosDynamic<REAL_T> > pool;
+        //        static util::MemoryPool<CosDynamic<REAL_T> > pool;
 
         CosDynamic() {
         }
@@ -1733,6 +1816,11 @@ namespace atl {
             return neg_one * expr_m->Differentiate(id) * atl::sin(expr_m);
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > neg_one = std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (-1.0));
+            return neg_one * expr_m->Differentiate() * atl::sin(expr_m);
+        }
+
         virtual const REAL_T GetValue() const {
             return std::cos(expr_m->GetValue());
         }
@@ -1744,6 +1832,18 @@ namespace atl {
         virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
             return ((-1.0 * std::cos(expr_m->GetValue()) * expr_m->EvaluateDerivative(x) * expr_m->EvaluateDerivative(y))
                     - (1.0 * std::sin(expr_m->GetValue()) * expr_m->EvaluateDerivative(x, y)));
+        }
+
+        virtual void PushOrder(int i) {
+            expr_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            expr_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            expr_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1763,25 +1863,25 @@ namespace atl {
 
 #ifndef ATL_WINDOWS
 
-        static void* operator new(size_t size){
-            return CosDynamic<REAL_T>::pool.malloc();
-        }
-
-        static void free(void* ptr) {
-            CosDynamic<REAL_T>::pool.free(ptr);
-        }
+        //        static void* operator new(size_t size){
+        //            return CosDynamic<REAL_T>::pool.malloc();
+        //        }
+        //
+        //        static void free(void* ptr) {
+        //            CosDynamic<REAL_T>::pool.free(ptr);
+        //        }
 
 #endif
 
     };
 
-    template<typename REAL_T>
-    util::MemoryPool<CosDynamic<REAL_T> > CosDynamic<REAL_T>::pool(1000000);
+    //    template<typename REAL_T>
+    //    util::MemoryPool<CosDynamic<REAL_T> > CosDynamic<REAL_T>::pool(1000000);
 
     template<class REAL_T>
     inline const std::shared_ptr<DynamicExpressionBase<REAL_T> > cos(const std::shared_ptr<DynamicExpressionBase<REAL_T> >& exp) {
-        //        return std::make_shared<CosDynamic<REAL_T> >(exp);
-        return std::shared_ptr<CosDynamic<REAL_T> >(new CosDynamic<REAL_T>(exp), CosDynamic<REAL_T>::free);
+        return std::make_shared<CosDynamic<REAL_T> >(exp);
+        //        return std::shared_ptr<CosDynamic<REAL_T> >(new CosDynamic<REAL_T>(exp), CosDynamic<REAL_T>::free);
     }
 
     template<typename REAL_T>
@@ -1800,12 +1900,33 @@ namespace atl {
             return exp_m->Differentiate(id) * atl::sinh(exp_m->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return exp_m->Differentiate() * atl::sinh(exp_m->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return std::cosh(exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) * std::sinh(exp_m->GetValue());
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return ((std::cosh(exp_m->GetValue()) * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y))
+                    + (std::sinh(exp_m->GetValue()) * exp_m->EvaluateDerivative(x, y)));
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1847,24 +1968,48 @@ namespace atl {
                     rhs_m->Differentiate(id) * lhs_m->Clone()) / (rhs_m->Clone() * rhs_m->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return (rhs_m->Clone() * lhs_m->Differentiate() -
+                    rhs_m->Differentiate() * lhs_m->Clone()) / (rhs_m->Clone() * rhs_m->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return lhs_m->GetValue() / rhs_m->GetValue();
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
+            //            if (rhs_m->Type() == atl::DYNAMIC_REAL_SCALAR) {
+            //                return lhs_m->EvaluateDerivative(id) / rhs_m->GetValue();
+            //            }
+
             return (rhs_m->GetValue() * lhs_m->EvaluateDerivative(id) -
                     rhs_m->EvaluateDerivative(id) * lhs_m->GetValue()) / (rhs_m->GetValue() * rhs_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
             REAL_T lhs_value_m = lhs_m->GetValue();
-            REAL_T rhs_value_m = 1.0 / rhs_m->GetValue();
-            REAL_T aa = ((2.0 * lhs_value_m * rhs_m->EvaluateDerivative(x) * rhs_m->EvaluateDerivative(y)) * (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
-            REAL_T bb = ((lhs_m->EvaluateDerivative(x) * rhs_m->EvaluateDerivative(y)) * (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
-            REAL_T cc = ((lhs_value_m * rhs_m->EvaluateDerivative(x, y)) * (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
-            REAL_T dd = ((lhs_m->EvaluateDerivative(y) * rhs_m->EvaluateDerivative(x)) * (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
-            REAL_T ee = lhs_m->EvaluateDerivative(x, y) * rhs_value_m;
+            REAL_T rhs_value_m = rhs_m->GetValue();
+            REAL_T aa = ((2.0 * lhs_value_m * rhs_m->EvaluateDerivative(x) * rhs_m->EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
+            REAL_T bb = ((lhs_m->EvaluateDerivative(x) * rhs_m->EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
+            REAL_T cc = ((lhs_value_m * rhs_m->EvaluateDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
+            REAL_T dd = ((lhs_m->EvaluateDerivative(y) * rhs_m->EvaluateDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
+            REAL_T ee = lhs_m->EvaluateDerivative(x, y) / rhs_value_m;
             return aa - bb - cc - dd + ee;
+        }
+
+        virtual void PushOrder(int i) {
+            lhs_m->PushOrder(i);
+            rhs_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            lhs_m->DifferentiatedBy(id);
+            rhs_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            lhs_m->SwapDependents(vmap);
+            rhs_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1905,12 +2050,34 @@ namespace atl {
             return exp_m->Differentiate(id) * this->Clone();
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return exp_m->Differentiate() * this->Clone();
+        }
+
         virtual const REAL_T GetValue() const {
             return std::exp(exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) * this->GetValue();
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return this->GetValue() *(exp_m->EvaluateDerivative(x))*
+                    (exp_m->EvaluateDerivative(y)) + this->GetValue() *
+                    (exp_m->EvaluateDerivative(x, y));
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1949,12 +2116,32 @@ namespace atl {
             return (exp_m->Differentiate(id) * exp_m->Clone()) / this->Clone();
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return (exp_m->Differentiate() * exp_m->Clone()) / this->Clone();
+        }
+
         virtual const REAL_T GetValue() const {
             return std::fabs(exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
-            return (exp_m->EvaluateDerivative(id) * exp_m->GetValue()) / this->GetValue();
+            return exp_m->EvaluateDerivative(id) * this->GetValue();
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return (exp_m->EvaluateDerivative(x, y) * exp_m->GetValue()) / this->GetValue();
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -1995,12 +2182,32 @@ namespace atl {
             return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(0.0));
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(0.0));
+        }
+
         virtual const REAL_T GetValue() const {
             return std::floor(this->exp->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return 0.0;
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return 0.0;
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2040,6 +2247,10 @@ namespace atl {
             return exp_m->Differentiate(id) / exp_m;
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return exp_m->Differentiate() / exp_m;
+        }
+
         virtual const REAL_T GetValue() const {
             return std::log(this->exp_m->GetValue());
         }
@@ -2052,6 +2263,18 @@ namespace atl {
             return (exp_m->EvaluateDerivative(x, y) / exp_m->GetValue()) -
                     (exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y))
                     / (exp_m->GetValue() * exp_m->GetValue());
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2091,12 +2314,34 @@ namespace atl {
             return (exp->Differentiate(id) / (std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(AD_LOG10)) * exp->Clone()));
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return (exp->Differentiate() / (std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(AD_LOG10)) * exp->Clone()));
+        }
+
         virtual const REAL_T GetValue() const {
             return std::log10(exp->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return (exp->EvaluateDerivative(id) / (AD_LOG10 * exp->GetValue()));
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T fx = exp->GetValue();
+            return (exp->EvaluateDerivative(x, y) / (AD_LOG10 * fx)) -
+                    ((exp->EvaluateDerivative(x) * exp->EvaluateDerivative(y)) / (AD_LOG10 * (fx * fx)));
+        }
+
+        virtual void PushOrder(int i) {
+            exp->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2124,7 +2369,7 @@ namespace atl {
     struct MultiplyDynamic : DynamicExpressionBase<REAL_T> {
         std::shared_ptr<DynamicExpressionBase<REAL_T> > lhs_m;
         std::shared_ptr<DynamicExpressionBase<REAL_T> > rhs_m;
-        static util::MemoryPool<MultiplyDynamic<REAL_T> > pool;
+        //        static util::MemoryPool<MultiplyDynamic<REAL_T> > pool;
 
         MultiplyDynamic() {
 
@@ -2144,6 +2389,11 @@ namespace atl {
                     lhs_m->Differentiate(id) * rhs_m->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return (lhs_m->Clone() * rhs_m->Differentiate() +
+                    lhs_m->Differentiate() * rhs_m->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return lhs_m->GetValue() * rhs_m->GetValue();
         }
@@ -2158,6 +2408,21 @@ namespace atl {
                     lhs_m->GetValue() * rhs_m->EvaluateDerivative(x, y) +
                     lhs_m->EvaluateDerivative(y) * rhs_m->EvaluateDerivative(x) +
                     rhs_m->GetValue() * lhs_m->EvaluateDerivative(x, y);
+        }
+
+        virtual void PushOrder(int i) {
+            lhs_m->PushOrder(i);
+            rhs_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            lhs_m->DifferentiatedBy(id);
+            rhs_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            lhs_m->SwapDependents(vmap);
+            rhs_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2175,29 +2440,29 @@ namespace atl {
         }
 
 
-#ifndef ATL_WINDOWS
-
-        static void* operator new(size_t size){
-            return MultiplyDynamic<REAL_T>::pool.malloc();
-        }
-
-        static void free(void* ptr) {
-            MultiplyDynamic<REAL_T>::pool.free(ptr);
-        }
-
-#endif
+        //#ifndef ATL_WINDOWS
+        //
+        //        static void* operator new(size_t size){
+        //            return MultiplyDynamic<REAL_T>::pool.malloc();
+        //        }
+        //
+        //        static void free(void* ptr) {
+        //            MultiplyDynamic<REAL_T>::pool.free(ptr);
+        //        }
+        //
+        //#endif
 
     };
-
-    template<typename REAL_T>
-    util::MemoryPool<MultiplyDynamic<REAL_T> > MultiplyDynamic<REAL_T>::pool(1000000);
+    //
+    //    template<typename REAL_T>
+    //    util::MemoryPool<MultiplyDynamic<REAL_T> > MultiplyDynamic<REAL_T>::pool(1000000);
 
     template<class REAL_T>
     inline const std::shared_ptr<DynamicExpressionBase<REAL_T> > operator*(
             const std::shared_ptr<DynamicExpressionBase<REAL_T> >& lhs,
             const std::shared_ptr<DynamicExpressionBase<REAL_T> >& rhs) {
-        //        return std::make_shared<MultiplyDynamic<REAL_T> >(lhs, rhs);
-        return std::shared_ptr<MultiplyDynamic<REAL_T> >(new MultiplyDynamic<REAL_T>(lhs, rhs), MultiplyDynamic<REAL_T>::free);
+        return std::make_shared<MultiplyDynamic<REAL_T> >(lhs, rhs);
+        //        return std::shared_ptr<MultiplyDynamic<REAL_T> >(new MultiplyDynamic<REAL_T>(lhs, rhs), MultiplyDynamic<REAL_T>::free);
     }
 
     template<typename REAL_T>
@@ -2235,6 +2500,24 @@ namespace atl {
             return NULL;
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+
+            if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_EXPRESSION) {
+
+                return atl::pow(lhs_m->Clone(), rhs_m->Clone()) * (atl::log(lhs_m->Clone()) *
+                        rhs_m->Differentiate() + rhs_m->Clone() * lhs_m->Differentiate() / lhs_m->Clone());
+
+            } else if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_REAL_SCALAR) {
+                std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<RealDynamic<REAL_T> >(1.0);
+                return atl::pow(lhs_m->Clone(), rhs_m->Clone() - one)*(lhs_m->Clone()) * rhs_m->Clone();
+            } else if (lhs_m->Type() == DYNAMIC_REAL_SCALAR && rhs_m->Type() == DYNAMIC_EXPRESSION) {
+                return rhs_m->Differentiate() * atl::pow(lhs_m->Clone(), rhs_m->Clone()) * atl::log(lhs_m->Clone());
+            }
+
+
+            return NULL; //suppress warning
+        }
+
         virtual const REAL_T GetValue() const {
             return std::pow(lhs_m->GetValue(), rhs_m->GetValue());
         }
@@ -2244,7 +2527,6 @@ namespace atl {
             REAL_T f = lhs_m->GetValue();
             REAL_T fx = lhs_m->EvaluateDerivative(id);
             REAL_T gx = rhs_m->EvaluateDerivative(id);
-
             if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_EXPRESSION) {
                 return std::pow(f, g) * (std::log(f) * gx + g * fx / f);
             } else if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_REAL_SCALAR) {
@@ -2252,8 +2534,69 @@ namespace atl {
             } else if (lhs_m->Type() == DYNAMIC_REAL_SCALAR && rhs_m->Type() == DYNAMIC_EXPRESSION) {
                 return gx * std::pow(f, g) * std::log(f);
             }
-
             return 0.0;
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T fxy; // = lhs_m.EvaluateDerivative(x, y);
+            REAL_T g; // = rhs_m.GetValue();
+            REAL_T f; // = lhs_m.GetValue();
+            REAL_T fx; // = lhs_m.EvaluateDerivative(x);
+            REAL_T gy; // = rhs_m.EvaluateDerivative(y);
+            REAL_T fy; // = lhs_m.EvaluateDerivative(y);
+            REAL_T gx; // = rhs_m.EvaluateDerivative(x);
+            REAL_T gxy; // = rhs_m.EvaluateDerivative(x, y);
+            //            return std::pow(f, g)*(((fx * gy) / f) + std::log(f) * gxy + (fy * gx / f) -
+            //                    (g * fx * fy) / (f * f) + g * fxy / f) + std::pow(f, g)*(std::log(f) * gx +
+            //                    g * fx / f)*(std::log(f) * gy + g * fy / f);
+            REAL_T ret = 0.0;
+
+            if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_EXPRESSION) {
+                fxy = lhs_m->EvaluateDerivative(x, y);
+                g = rhs_m->GetValue();
+                f = lhs_m->GetValue();
+                fx = lhs_m->EvaluateDerivative(x);
+                gy = rhs_m->EvaluateDerivative(y);
+                fy = lhs_m->EvaluateDerivative(y);
+                gx = rhs_m->EvaluateDerivative(x);
+                gxy = rhs_m->EvaluateDerivative(x, y);
+
+                return std::pow(f, g)*(((fx * gy) / f) + std::log(f) * gxy + (fy * gx / f) -
+                        (g * fx * fy) / (f * f) + g * fxy / f) + std::pow(f, g)*(std::log(f) * gx +
+                        g * fx / f)*(std::log(f) * gy + g * fy / f);
+
+
+            } else if (lhs_m->Type() == DYNAMIC_EXPRESSION && rhs_m->Type() == DYNAMIC_REAL_SCALAR) {
+                f = this->lhs_m->GetValue();
+                ret = std::pow(f, rhs_m->GetValue() - static_cast<REAL_T> (2.0)) *
+                        lhs_m->EvaluateDerivative(x) * lhs_m->EvaluateDerivative(y)*
+                        (rhs_m->GetValue() - static_cast<REAL_T> (1.0)) * rhs_m->GetValue() +
+                        std::pow(f, rhs_m->GetValue() - static_cast<REAL_T> (1.0)) *
+                        lhs_m->EvaluateDerivative(x, y) * rhs_m->GetValue();
+                return ret;
+
+            } else if (lhs_m->Type() == DYNAMIC_REAL_SCALAR && rhs_m->Type() == DYNAMIC_EXPRESSION) {
+                fxy = this->GetValue();
+                return rhs_m->EvaluateDerivative(x) * rhs_m->EvaluateDerivative(y) * fxy *
+                        (std::log(this->lhs_m->GetValue() * this->lhs_m->GetValue())) +
+                        rhs_m->EvaluateDerivative(x, y) * fxy * std::log(this->lhs_m->GetValue());
+            }
+            return ret;
+        }
+
+        virtual void PushOrder(int i) {
+            lhs_m->PushOrder(i);
+            rhs_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            lhs_m->DifferentiatedBy(id);
+            rhs_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            lhs_m->SwapDependents(vmap);
+            rhs_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2295,12 +2638,29 @@ namespace atl {
             return std::make_shared<RealDynamic<REAL_T> >(0.0);
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return std::make_shared<RealDynamic<REAL_T> >(0.0);
+        }
+
         virtual const REAL_T GetValue() const {
             return this->value_m;
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return 0.0;
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return 0.0;
+        }
+
+        virtual void PushOrder(int i) {
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2313,7 +2673,7 @@ namespace atl {
 
         const std::string ToString() const {
             std::stringstream ss;
-            ss << "(" << value_m << ")";
+            ss << "real(" << value_m << ")";
             return ss.str();
         }
     };
@@ -2330,6 +2690,10 @@ namespace atl {
             return exp_m->Differentiate(id) * atl::cos(exp_m->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return exp_m->Differentiate() * atl::cos(exp_m->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return std::sin(exp_m->GetValue());
         }
@@ -2341,6 +2705,18 @@ namespace atl {
         virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
             return (std::cos(exp_m->GetValue()) * exp_m->EvaluateDerivative(x, y))-
                     std::sin(exp_m->GetValue()) * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y);
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2376,12 +2752,33 @@ namespace atl {
             return exp_m->Differentiate(id) * atl::cosh(exp_m->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return exp_m->Differentiate() * atl::cosh(exp_m->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return std::sinh(exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) * std::cosh(exp_m->GetValue());
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return ((std::sinh(exp_m->GetValue()) * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y))
+                    + (std::cosh(exp_m->GetValue()) * exp_m->EvaluateDerivative(x, y)));
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2418,12 +2815,34 @@ namespace atl {
             return exp_m->Differentiate(id) / (two * this->Clone());
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > two = std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (2.0));
+            return exp_m->Differentiate() / (two * this->Clone());
+        }
+
         virtual const REAL_T GetValue() const {
             return std::sqrt(this->exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) / (2.0 * this->GetValue());
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return (exp_m->EvaluateDerivative(x, y) / (2.0 * this->GetValue())) -
+                    (exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y)) / (4.0 * std::pow(exp_m->GetValue(), 1.5));
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2461,12 +2880,35 @@ namespace atl {
             return lhs_m->Differentiate(id) - rhs_m->Differentiate(id);
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return lhs_m->Differentiate() - rhs_m->Differentiate();
+        }
+
         virtual const REAL_T GetValue() const {
             return lhs_m->GetValue() - rhs_m->GetValue();
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return lhs_m->EvaluateDerivative(id) - rhs_m->EvaluateDerivative(id);
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return lhs_m->EvaluateDerivative(x, y) - rhs_m->EvaluateDerivative(x, y);
+        }
+
+        virtual void PushOrder(int i) {
+            lhs_m->PushOrder(i);
+            rhs_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            lhs_m->DifferentiatedBy(id);
+            rhs_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            lhs_m->SwapDependents(vmap);
+            rhs_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2505,12 +2947,35 @@ namespace atl {
             return exp_m->Differentiate(id) * (one / atl::cos(exp_m->Clone()))*(one / atl::cos(exp_m->Clone()));
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<RealDynamic<REAL_T> >(1.0);
+            return exp_m->Differentiate() * (one / atl::cos(exp_m->Clone()))*(one / atl::cos(exp_m->Clone()));
+        }
+
         virtual const REAL_T GetValue() const {
             return std::tan(exp_m->GetValue());
         }
 
         virtual const REAL_T EvaluateDerivative(uint32_t id) const {
             return exp_m->EvaluateDerivative(id) * (1.0 / std::cos(exp_m->GetValue()))*(1.0 / std::cos(exp_m->GetValue()));
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            REAL_T sec2 = (1.0 / std::cos(exp_m->GetValue())) * (1.0 / std::cos(exp_m->GetValue()));
+            return 2.0 * sec2 * this->GetValue() * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y) +
+                    sec2 * exp_m->EvaluateDerivative(x, y);
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2548,6 +3013,12 @@ namespace atl {
             return exp_m->Differentiate(id) * sech*sech;
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > one = std::make_shared<RealDynamic<REAL_T> >(1.0);
+            std::shared_ptr<DynamicExpressionBase<REAL_T> > sech = one / atl::cosh(exp_m->Clone());
+            return exp_m->Differentiate() * sech*sech;
+        }
+
         virtual const REAL_T GetValue() const {
             return std::tanh(exp_m->GetValue());
         }
@@ -2561,6 +3032,18 @@ namespace atl {
             REAL_T sech = 1.0 / std::cosh(exp_m->GetValue());
             REAL_T sech2 = sech*sech;
             return sech2 * exp_m->EvaluateDerivative(x, y) - 2.0 * sech2 * this->GetValue() * exp_m->EvaluateDerivative(x) * exp_m->EvaluateDerivative(y);
+        }
+
+        virtual void PushOrder(int i) {
+            exp_m->PushOrder(i);
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            exp_m->DifferentiatedBy(id);
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            exp_m->SwapDependents(vmap);
         }
 
         virtual const REAL_T Taylor(uint32_t degree) const {
@@ -2587,7 +3070,7 @@ namespace atl {
     template<typename REAL_T>
     struct VariableDynamic : DynamicExpressionBase<REAL_T> {
         std::shared_ptr<atl::VariableInfo<REAL_T> > info;
-        static util::MemoryPool<VariableDynamic<REAL_T> > pool;
+        //        static util::MemoryPool<VariableDynamic<REAL_T> > pool;
 
         VariableDynamic() {
         }
@@ -2609,12 +3092,16 @@ namespace atl {
             return std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (this->info->id == id));
         }
 
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new DifferentiatedVariableDynamic<REAL_T>(info, 1));
+        }
+
         virtual const REAL_T GetValue() const {
             return info->value;
         }
 
         const REAL_T EvaluateDerivative(uint32_t id) const {
-            return static_cast<REAL_T> (this->info->id == id);
+            return info->id == id ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
             //            if (this->info.get() == NULL) {
             //                std::cout << "Null variable info\n" << std::flush;
             //                return 0;
@@ -2622,12 +3109,30 @@ namespace atl {
             //            return this->info->id == id ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
         }
 
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return 0.0;
+        }
+
+        virtual void PushOrder(int i) {
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
+            it = vmap.find(this->info->id);
+            if (it != vmap.end()) {
+                this->info = (*it).second;
+            }
+        }
+
         virtual const REAL_T Taylor(uint32_t degree) const {
             return 0.0;
         }
 
         std::shared_ptr<DynamicExpressionBase<REAL_T> > Clone() {
-            return std::shared_ptr<VariableDynamic<REAL_T> >(new VariableDynamic<REAL_T>(this->info), VariableDynamic<REAL_T>::free);
+            return std::shared_ptr<VariableDynamic<REAL_T> >(new VariableDynamic<REAL_T>(this->info)); //, VariableDynamic<REAL_T>::free);
         }
 
         const std::string ToString() const {
@@ -2636,19 +3141,94 @@ namespace atl {
             return ss.str();
         }
 
-        static void* operator new(size_t size){
-            return VariableDynamic<REAL_T>::pool.malloc();
-        }
-
-        static void free(void* ptr) {
-            VariableDynamic<REAL_T>::pool.free(ptr);
-        }
-
+        //        static void* operator new(size_t size){
+        //            return VariableDynamic<REAL_T>::pool.malloc();
+        //        }
+        //
+        //        static void free(void* ptr) {
+        //            VariableDynamic<REAL_T>::pool.free(ptr);
+        //        }
+        //
 
     };
 
     template<typename REAL_T>
-    util::MemoryPool<VariableDynamic<REAL_T> > VariableDynamic<REAL_T>::pool(10000000);
+    struct DifferentiatedVariableDynamic : DynamicExpressionBase<REAL_T> {
+        std::shared_ptr<atl::VariableInfo<REAL_T> > info;
+        uint32_t diff_id = 0;
+        int order = 0;
+
+        DifferentiatedVariableDynamic() {
+        }
+
+        DifferentiatedVariableDynamic(std::shared_ptr<atl::VariableInfo<REAL_T> > info, int order) :
+        info(info), order(order) {
+
+        }
+
+        DifferentiatedVariableDynamic(const VariableDynamic<REAL_T>& other) :
+        info(other.info) {
+        }
+
+        virtual DynamicExpressionType Type() {
+            return DYNAMIC_EXPRESSION;
+        }
+
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id) {
+            return std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (0.0));
+        }
+
+        virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() {
+            return std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (0.0));
+        }
+
+        virtual const REAL_T GetValue() const {
+            return this->info->id == diff_id ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
+        }
+
+        const REAL_T EvaluateDerivative(uint32_t id) const {
+            return 0.0;
+        }
+
+        virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+            return 0.0;
+        }
+
+        virtual void PushOrder(int i) {
+            if (order == 0) {
+                this->order = i;
+            }
+        }
+
+        virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
+            assert(order<=id.size());
+            this->diff_id = id[order-1];
+        }
+
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
+            it = vmap.find(this->info->id);
+            if (it != vmap.end()) {
+                this->info = (*it).second;
+            }
+        }
+
+        virtual const REAL_T Taylor(uint32_t degree) const {
+            return 0.0;
+        }
+
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > Clone() {
+            return std::shared_ptr<DifferentiatedVariableDynamic<REAL_T> >(new DifferentiatedVariableDynamic<REAL_T>(this->info));
+        }
+
+        const std::string ToString() const {
+            std::stringstream ss;
+            ss << "diffv(";
+            this->info->id == diff_id ? ss << static_cast<REAL_T> (1.0) : ss << static_cast<REAL_T> (0.0);
+            ss << ")"; //," << info->value << "]";
+            return ss.str();
+        }
+    };
 
 
 

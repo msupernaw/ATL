@@ -6,11 +6,11 @@ template<typename T>
 class ThetaLog : public atl::ObjectiveFunction<T> {
     std::vector<T> Y;
     std::vector<atl::Variable<T> > X;
-    atl::Variable<T> logr0; //  = -2.6032947;
-    atl::Variable<T> logtheta; //  = 0.7625692;
+    atl::Variable<T> logr0 = -2.6032947;
+    atl::Variable<T> logtheta  = 0.7625692;
     atl::Variable<T> logK = T(6.0); //  = 6.7250075;
-    atl::Variable<T> logQ; //  = -4.7496015;
-    atl::Variable<T> logR; // = -3.1889239;
+    atl::Variable<T> logQ = -4.7496015;
+    atl::Variable<T> logR = -3.1889239;
     
     
 public:
@@ -26,7 +26,7 @@ public:
         
         int size = 0;
         data >> size;
-        //        size = 100;
+//                size = 40;
         std::cout << "size = " << size;
         
         this->Y.resize(size);
@@ -74,23 +74,24 @@ public:
     virtual void Objective_Function(atl::Variable<T>& ans) {
         
               atl::Variable<T> r0 = atl::exp(logr0);
-        //        atl::Variable<T> theta = atl::exp(logtheta);
-        //        atl::Variable<T> K = atl::exp(logK);
-        //        atl::Variable<T> Q = atl::exp(logQ);
-        //        atl::Variable<T> R = atl::exp(logR);
+                atl::Variable<T> theta = atl::exp(logtheta);
+                atl::Variable<T> K = atl::exp(logK);
+                atl::Variable<T> Q = atl::exp(logQ);
+                atl::Variable<T> R = atl::exp(logR);
         
         
         int timeSteps = Y.size();
         ans = T(0.0);
         
         //        atl::Variable<T> sqrtq = atl::sqrt(Q);
+        atl::Variable<T> m;
         for (int i = 1; i < timeSteps; i++) {
-            atl::Variable<T> m = X[i - 1] +r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / atl::exp(logK), atl::exp(logtheta)));
-            ans -= this->dnorm(X[i], m, atl::sqrt(atl::exp(logQ)), true);
+             m = X[i - 1] +r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / K, theta));
+            ans -= this->dnorm(X[i], m, atl::sqrt(Q), true);
         }
         //        atl::Variable<T> sqrtr = atl::sqrt(R);
         for (int i = 0; i < timeSteps; i++) {
-            ans -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::sqrt(atl::exp(logR)), true);
+            ans -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::sqrt(R), true);
         }
         
         //return ans;
@@ -131,7 +132,11 @@ int main(int argc, char** argv) {
     
     //run the minimizer
     fm.Run();
-  
+    //    
+    //    //dump the results
+    //    objective_function.Report();
+    //    
+    //    std::cout<<objective_function.GetObjectiveFunctionStatistics()<<"\n";
     return 0;
 }
 

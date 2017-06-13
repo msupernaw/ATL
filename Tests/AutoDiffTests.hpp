@@ -158,6 +158,7 @@ namespace atl {
 
                     f = 0.0;
                     auto eval_start = std::chrono::steady_clock::now();
+                    var::tape.Reset();
                     this->ObjectiveFunction(f);
                     auto eval_end = std::chrono::steady_clock::now();
                     std::chrono::duration<double> eval_time = eval_end - eval_start;
@@ -167,6 +168,12 @@ namespace atl {
                     std::cout << "computing exact hessian..." << std::flush;
                     auto exact_start = std::chrono::steady_clock::now();
                     var::tape.AccumulateSecondOrder(); //AccumulateSecondOrderReverseOverForward(this->independents);//
+                    //                                        atl::DerivativeStructure<T> ds(var::tape, 2);
+                    //                                        ds.Run();
+                    typename atl::Tape<T>::first_order_container dgradient;
+                    typename atl::Tape<T>::second_order_container dhessian;
+                    //                    var::tape.DynamicReverse(dgradient, dhessian);
+                    //                    ds.Dump(2);
                     auto exact_end = std::chrono::steady_clock::now();
                     std::chrono::duration<double> exact_time = (exact_end - exact_start);
                     std::vector<std::vector<T> > exact_hessian(this->active_parameters_m.size(), std::vector<T> (this->active_parameters_m.size()));
@@ -178,10 +185,11 @@ namespace atl {
 
                             exact_hessian[i][j] = var::tape.Value(this->active_parameters_m[i]->info->id, this->active_parameters_m[j]->info->id); //this->active_parameters_m[i]->info->hessian_row(this->active_parameters_m[j]->info->id);
 #else
-                            exact_hessian[i][j] = var::tape.Value(this->active_parameters_m[i]->info->id, this->active_parameters_m[j]->info->id); //this->active_parameters_m[i]->info->hessian_row(this->active_parameters_m[j]->info->id);this->active_parameters_m[i]->info->hessian_row[this->active_parameters_m[j]->info->id];
+                            exact_hessian[i][j] = var::tape.Value(this->active_parameters_m[i]->info->id, this->active_parameters_m[j]->info->id); //}); //this->active_parameters_m[i]->info->hessian_row(this->active_parameters_m[j]->info->id);this->active_parameters_m[i]->info->hessian_row[this->active_parameters_m[j]->info->id];
 #endif
                         }
                     }
+                    var::tape.Reset();
                     std::cout << "done!\n";
                     std::cout << std::scientific;
 
@@ -729,7 +737,7 @@ namespace atl {
             T AutoDiffTest<T>::tolerance = T(1e-5);
 
             template<class T>
-            T AutoDiffTest<T>::second_tolerance = T(1e-3);
+            T AutoDiffTest<T>::second_tolerance = T(1e-5);
 
             template<class T>
             T AutoDiffTest<T>::third_tolerance = T(1e-1);
@@ -745,18 +753,21 @@ namespace atl {
                 variable b;
                 variable c;
                 variable two;
-                T d;
+                variable d;
 
-                atl::Variable<T> f;
+
+                //                atl::Variable<T> f;
                 std::mt19937 generator; //// mt19937 is a standard mersenne_twister_engine
                 std::normal_distribution<T> distribution;
 
                 Ackley(std::ostream& out) {
                     //                    d = (T) dd;
                     this->RunTestToFile(out);
+
                 }
 
                 void Initialize() {
+
                     a = 20;
                     b = .2;
                     c = 2.0 * M_PI;
@@ -764,7 +775,7 @@ namespace atl {
 
                     T start = -32.768;
                     d = 0.0;
-                    for (T i = -32.767; i < 32.768; i += .05) {
+                    for (T i = -32.767; i < 32.768; i += 5.5) {
                         T r;
                         this->x.push_back(variable((i)));
                         start += .01;
@@ -774,6 +785,7 @@ namespace atl {
                     this->Register(a);
                     this->Register(b);
                     this->Register(c);
+                    std::cout << "Cid = " << c.info->id << "\n";
 
                 }
 
@@ -782,8 +794,8 @@ namespace atl {
                     out << "Parameters:\n";
                     out << "Variable a = " << a << ";\n";
                     out << "Variable b = " << b << ";\n";
-                    out << "Variable c = " << c.info->id << ";\n";
-                    out << "Variable x[" << (int) d << "];\n";
+                    out << "Variable c = " << c << ";\n";
+                    out << "Variable x[" << d << "];\n";
                     out << "f = 0;" << "\n";
                     out << "variable sum1;" << ";\n";
                     out << "variable sum2;" << ";\n";
@@ -807,16 +819,18 @@ namespace atl {
                     variable sum2;
                     variable term1;
                     variable term2;
-
+                    //                    std::cout << "sum1 " << sum1.info->id << "\n";
+                    //                    std::cout << "sum2 " << sum2.info->id << "\n";
                     for (int i = 0; i < x.size(); i++) {
-                        sum1 += x[i] * x[i]; //10.0;//atl::pow(x[i], static_cast<T> (2.0));
+                        sum1 += atl::pow(x[i], static_cast<T> (2.0));
                         sum2 += atl::cos(x[i] * c);
                     }
 
-                    term1 = -1.0 * a * atl::exp(-1.0 * b * atl::sqrt(sum1 / d));
-                    term2 = static_cast<T> (-1.0) * atl::exp(sum2 / d);
+                    term1 = -1.0 * a + sum1 * atl::sqrt(sum1 / d); // * atl::exp(-1.0 * b * atl::sqrt(sum1 / d));
+                    term2 = static_cast<T> (-1.0) *(sum2 / d);
 
                     f = term1 + term2 + a + std::exp(1);
+                    //                    std::cout<<(term1 + term2 + a + std::exp(1)).EvaluateDerivative(term1.info->id,term1.info->id)<<"******\n\n";
                 }
 
 
@@ -849,11 +863,11 @@ namespace atl {
                     7.01468, 6.92291, 6.68062, 7.07283, 6.64972, 7.01744, 6.98964, 6.71007, 6.83583};
 
                 std::vector<atl::Variable<T> > X;
-                atl::Variable<T> logr0; // = -2.6032947;
-                atl::Variable<T> logtheta; // = 0.7625692;
-                atl::Variable<T> logK; // = 6.0; //  = 6.7250075;
+                atl::Variable<T> logr0 = -2.6032947;
+                atl::Variable<T> logtheta = 0.7625692;
+                atl::Variable<T> logK = 6.0; //  = 6.7250075;
                 atl::Variable<T> logQ = -1.7496015;
-                atl::Variable<T> logR; // = -3.1889239;
+                atl::Variable<T> logR = -3.1889239;
 
                 LogTheta2() {
 
@@ -925,7 +939,7 @@ namespace atl {
 
                     //        atl::Variable<T> sqrtq = atl::sqrt(Q);
                     for (int i = 1; i < timeSteps; i++) {
-                        atl::Variable<T> m = X[i - 1] + r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / K, theta));
+                        atl::Variable<T> m = X[i - 1] + r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / K, theta.GetValue()));
                         f -= this->dnorm(X[i], m, atl::sqrt(Q), true);
                     }
                     //        atl::Variable<T> sqrtr = atl::sqrt(R);
@@ -1182,8 +1196,8 @@ namespace atl {
                 void Description(std::stringstream& out) {
                     out << "Test Problem:\n";
                     out << "Parameters:\n";
-                    out << "Variable a = " << a << "\n";
-                    out << "Variable b = " << b << "\n";
+                    out << "Variable a{" << a.info->id << "} = " << a << "\n";
+                    out << "Variable b{" << b.info->id << "}  = " << b << "\n";
                     out << "f = a * b" << std::endl;
 
                 }
@@ -2261,11 +2275,14 @@ namespace atl {
 
                 void ObjectiveFunction(var& f) {
                     f = static_cast<T> (0.0);
+                    var two(2.0);
                     var sum;
                     for (int i = 0; i < x.size(); i++) {
                         sum += atl::pow(x[i], 4.0) - 16.0 * atl::pow(x[i], 2.0) + 5.0 * x[i];
                     }
+                    //                    f = sum;
                     f = sum / 2.0;
+                    //                    std::cout << (sum / 2.0).ToDynamic()->ToString() << "\n";
                 }
 
 
@@ -2294,12 +2311,12 @@ namespace atl {
                     out << "Bukin Function:\n";
                     out << "Parameters:\n";
                     out << "Variable f = 0.0;\n";
-                    out << "f = 100.0*atl::sqrt(atl::ad_fabs(y-.01*atl::pow(x,2.0),1e-6))+.01*atl::ad_fabs(x+10.0,1e-6); \n";
+                    out << "f = 100.0*atl::sqrt(atl::ad_fabs(y-.01*atl::pow(x,2.0),1e-4))+.01*atl::ad_fabs(x+10.0,1e-4); \n";
 
                 }
 
                 void ObjectiveFunction(var& f) {
-                    f = 100.0 * atl::sqrt(atl::ad_fabs<T>(y - .01 * atl::pow(x, 2.0), 1e-6)) + .01 * atl::ad_fabs<T>(x + 10.0, 1e-6);
+                    f = 100.0 * atl::sqrt(atl::ad_fabs<T>(y - .01 * atl::pow(x, 2.0), 1e-4)) + .01 * atl::ad_fabs<T>(x + 10.0, 1e-4);
                 }
 
 
@@ -2340,7 +2357,6 @@ namespace atl {
 
             };
 
-        
             template<class T>
             class McCormickAutoDiffTest : public AutoDiffTest<T> {
             public:
@@ -2407,7 +2423,7 @@ namespace atl {
                 }
 
                 void ObjectiveFunction(var& f) {
-                    f = 0.5 + (atl::pow(atl::sin(atl::pow(x,2.0)- atl::pow(y,2.0)),2.0)-0.5)/atl::pow(1.0+.001*(atl::pow(x,2.0)+atl::pow(y,2.0)),2.0);
+                    f = 0.5 + (atl::pow(atl::sin(atl::pow(x, 2.0) - atl::pow(y, 2.0)), 2.0) - 0.5) / atl::pow(1.0 + .001 * (atl::pow(x, 2.0) + atl::pow(y, 2.0)), 2.0);
                 }
 
 
@@ -2446,16 +2462,16 @@ namespace atl {
                 atl::tests::auto_diff::PowC2AutoDiffTest<real_t> pow3(out);
                 atl::tests::auto_diff::CeilAutoDiffTest<real_t> ceil(out);
                 atl::tests::auto_diff::FloorAutoDiffTest<real_t> floor(out);
-                atl::tests::auto_diff::Ackley<real_t> a(out);
-                atl::tests::auto_diff::LogTheta2<real_t> l(out);
-                atl::tests::auto_diff::RastriginAutoDiffTest<real_t> r(out);
-                atl::tests::auto_diff::SphereAutoDiffTest<real_t> sphere(out);
-                atl::tests::auto_diff::RosenbrockAutoDiffTest<real_t> rosenbrock(out);
-                atl::tests::auto_diff::StyblinskiTangAutoDiffTest<real_t> styblinskitang(out);
-                atl::tests::auto_diff::BukinAutoDiffTest<real_t> bukin(out);
-                atl::tests::auto_diff::EasomAutoDiffTest<real_t> easom(out);
-                atl::tests::auto_diff::McCormickAutoDiffTest<real_t> mccormick(out);
-                atl::tests::auto_diff::SchafferAutoDiffTest<real_t> shaefer(out);
+                atl::tests::auto_diff::Ackley<real_t> a(out); //f
+                atl::tests::auto_diff::LogTheta2<real_t> l(out); //f
+                atl::tests::auto_diff::RastriginAutoDiffTest<real_t> r(out); //f
+                atl::tests::auto_diff::SphereAutoDiffTest<real_t> sphere(out); //p
+                atl::tests::auto_diff::RosenbrockAutoDiffTest<real_t> rosenbrock(out); //p
+                atl::tests::auto_diff::StyblinskiTangAutoDiffTest<real_t> styblinskitang(out); //f
+                atl::tests::auto_diff::BukinAutoDiffTest<real_t> bukin(out); //f
+                atl::tests::auto_diff::EasomAutoDiffTest<real_t> easom(out); //p
+                atl::tests::auto_diff::McCormickAutoDiffTest<real_t> mccormick(out); //p
+                atl::tests::auto_diff::SchafferAutoDiffTest<real_t> shaefer(out); //p
                 std::cout << "Test complete.\n";
                 if (atl::tests::auto_diff::fail == 0) {
                     std::cout << "All tests passed."; //, review file \"autodiff_test.txt\" for details." << std::endl;

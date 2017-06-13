@@ -23,7 +23,6 @@
 
 namespace atl {
 
-
     enum ExpressionType {
         ET_BASE = 0,
         REAL_SCALAR,
@@ -54,6 +53,7 @@ namespace atl {
 
     template<class REAL_T, class A>
     struct ExpressionBase {
+        std::shared_ptr<typename atl::StackEntry<REAL_T>::VariableInfoPtr > info_e;
 
         ExpressionBase() {
 
@@ -147,6 +147,18 @@ namespace atl {
 
         bool IsScalar()const {
             return Cast().IsScalar();
+        }
+
+        void PrepareGraph() const {
+            Cast().PrepareGraph();
+        }
+
+        void PushGraph(atl::Tape<REAL_T>& tape) const {
+            Cast().PushGraph(tape);
+        }
+
+        std::shared_ptr<typename atl::StackEntry<REAL_T>::VariableInfoPtr > GetLocalInfo() const {
+            return Cast().GetLocalInfo();
         }
 
         /**

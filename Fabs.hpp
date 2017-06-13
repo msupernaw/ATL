@@ -329,7 +329,7 @@ namespace atl {
      * @return 
      */
     template<class REAL_T, class EXPR>
-    const atl::Variable<REAL_T> ad_fabs(const atl::ExpressionBase<REAL_T, EXPR>& expr, atl::Variable<REAL_T> C = 1e-50) {
+    const atl::Variable<REAL_T> ad_fabs(const atl::ExpressionBase<REAL_T, EXPR>& expr, atl::Variable<REAL_T> C = 1e-4) {
         return atl::sqrt((expr * expr) + C); //, .5);
     }
 

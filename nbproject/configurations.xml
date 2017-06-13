@@ -27,6 +27,7 @@
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp</itemPath>
+      <itemPath>MatrixUtilities.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp</itemPath>
       <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp</itemPath>
@@ -97,6 +98,7 @@
             <pElem>.</pElem>
             <pElem>.</pElem>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </linkerDynSerch>
         </linkerTool>
       </compileType>
@@ -316,6 +318,8 @@
             flavor2="0">
       </item>
       <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -357,6 +361,7 @@
             <pElem>.</pElem>
             <pElem>.</pElem>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </linkerDynSerch>
         </linkerTool>
       </compileType>
@@ -576,6 +581,8 @@
             flavor2="0">
       </item>
       <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
       </item>

@@ -132,6 +132,7 @@ namespace atl {
         static VISpinLock vinfo_mutex_g;
         static std::vector<VariableInfo<REAL_T>* > freed;
         std::atomic<int> count;
+        std::atomic<int> live;
         uint32_t id;
         REAL_T value;
         bool is_nl = false;
@@ -144,7 +145,7 @@ namespace atl {
          * @param value
          */
         VariableInfo(REAL_T value = static_cast<REAL_T> (0.0)) :
-        id(VariableIdGenerator::instance()->next()), count(1), value(value) {
+        id(VariableIdGenerator::instance()->next()),live(1), count(1), value(value) {
         }
 
         VariableInfo(const VariableInfo<REAL_T>& other) :

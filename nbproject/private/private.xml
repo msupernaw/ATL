@@ -2,7 +2,7 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <data xmlns="http://www.netbeans.org/ns/make-project-private/1">
         <activeConfTypeElem>1</activeConfTypeElem>
-        <activeConfIndexElem>0</activeConfIndexElem>
+        <activeConfIndexElem>1</activeConfIndexElem>
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
@@ -32,11 +32,13 @@
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/main.cpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp</file>
+            <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/DynamicExpression.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Transformations.h</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp</file>
+            <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MatrixUtilities.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp</file>
@@ -49,7 +51,6 @@
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp</file>
-            <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/support/port.hpp</file>
             <file>file:/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp</file>

@@ -63,6 +63,7 @@ namespace atl {
         transformation(&default_transformation) {
 
             info = std::make_shared<VariableInfo<REAL_T> >(value);
+
             //            info->value = v;
         }
 
@@ -130,17 +131,17 @@ namespace atl {
 
         }
 
-        operator int() const {
-            return static_cast<int> (this->info->value);
-        }
-
-        operator long() const {
-            return static_cast<long> (this->info->value);
-        }
-
-        operator REAL_T() {
-            return (this->info->value);
-        }
+        //        operator int() const {
+        //            return static_cast<int> (this->info->value);
+        //        }
+        //
+        //        operator long() const {
+        //            return static_cast<long> (this->info->value);
+        //        }
+        //
+        //        operator REAL_T() {
+        //            return (this->info->value);
+        //        }
 
         void Copy(const Variable<REAL_T>& other) {
             info = (other.info);
@@ -156,17 +157,17 @@ namespace atl {
             return *this;
         }
 
-        Variable& operator=(const Variable<REAL_T>& other) {
-            if (Variable<REAL_T>::tape.recording) {
-                //                this->info = other.info;
-                size_t index = atl::Variable<REAL_T>::tape.NextIndex();
-                this->Assign(Variable<REAL_T>::tape, other, index);
-            } else {
-                this->SetValue(other.GetValue());
-            }
-
-            return *this;
-        }
+        //        Variable& operator=(const Variable<REAL_T>& other) {
+        //            if (Variable<REAL_T>::tape.recording) {
+        //                //                this->info = other.info;
+        //                size_t index = atl::Variable<REAL_T>::tape.NextIndex();
+        //                this->Assign(Variable<REAL_T>::tape, other, index);
+        //            } else {
+        //                this->SetValue(other.GetValue());
+        //            }
+        //
+        //            return *this;
+        //        }
 
 
 
@@ -189,10 +190,9 @@ namespace atl {
         //        }
 
         template<class A>
-        inline Variable& operator=(const ExpressionBase<REAL_T, A>& exp) {
+        inline Variable operator=(const ExpressionBase<REAL_T, A>& exp) {
 
             if (Variable<REAL_T>::tape.recording) {
-
                 size_t index = atl::Variable<REAL_T>::tape.NextIndex();
                 this->Assign(atl::Variable<REAL_T>::tape, exp, index);
             } else {
@@ -268,7 +268,7 @@ namespace atl {
 
             if (tape.recording) {
 
-                //                this->info = std::make_shared<atl::VariableInfo<REAL_T> >(0.0);
+
                 //                if(this->info->index == -999){
                 //                    this->info->index = index;
                 //                }
@@ -277,7 +277,11 @@ namespace atl {
                 exp.PushIds(entry.ids);
 
                 //                entry.exp = exp.ToExpressionTemplateString();
+
+//                 entry.w = std::shared_ptr<atl::VariableInfo<REAL_T> >(new atl::VariableInfo<REAL_T>());
+
                 entry.w = this->info;
+                entry.w->count++;
                 entry.w->is_nl = true;
                 entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
                 typename atl::StackEntry<REAL_T>::vi_iterator it;
@@ -306,6 +310,7 @@ namespace atl {
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
@@ -326,6 +331,7 @@ namespace atl {
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            (*it)->live++;
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateDerivative((*it)->id);
@@ -363,11 +369,14 @@ namespace atl {
                         break;
 
                     case DYNAMIC_RECORD:
+//                this->info = std::shared_ptr<atl::VariableInfo<REAL_T> >(new atl::VariableInfo<REAL_T>());
+
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
                         }
                         entry.exp = exp.ToDynamic();
+
                         break;
                     default:
                         std::cout << "Unknown Derivative Trace Level.\n";
@@ -391,7 +400,7 @@ namespace atl {
             return *this;
         }
 
-        inline Variable& operator-=(const REAL_T& val) {
+        inline Variable operator-=(const REAL_T& val) {
             *this = *this-val;
             return *this;
         }
@@ -401,7 +410,7 @@ namespace atl {
         }
 
         template<class A>
-        inline Variable& operator-=(const ExpressionBase<REAL_T, A>& exp) {
+        inline Variable operator-=(const ExpressionBase<REAL_T, A>& exp) {
             *this = *this-exp;
             return *this;
         }
@@ -615,7 +624,7 @@ namespace atl {
 #else
             std::shared_ptr<DynamicExpressionBase<REAL_T> > var =
                     std::make_shared<atl::VariableDynamic<REAL_T> >(this->info);
-            return std::shared_ptr<VariableDynamic<REAL_T> >(new VariableDynamic<REAL_T>(this->info), VariableDynamic<REAL_T>::free);
+            return std::shared_ptr<VariableDynamic<REAL_T> >(new VariableDynamic<REAL_T>(this->info)); //, VariableDynamic<REAL_T>::free);
 #endif
         }
 

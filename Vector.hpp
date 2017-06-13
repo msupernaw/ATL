@@ -24,7 +24,7 @@ namespace atl {
      */
     template<typename T>
     struct VariableVector : VariableMatrix<T> {
-        using VariableMatrix<T>::operator=;
+//        using VariableMatrix<T>::operator=;
 
         /**
          * Constructor. 

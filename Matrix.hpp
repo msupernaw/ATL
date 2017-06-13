@@ -197,9 +197,7 @@ namespace atl {
                 size_t end;
                 t < (nthreads - 1) ? end = (t + 1) * range : end = rows;
                 size_t index_start = t*chunk;
-                //                (atl::VariableMatrix<T>& m, std::vector<T>& temp,
-                //            size_t index_start, size_t row_start, size_t row_end, size_t chunk,
-                //            atl::ExpressionBase<T, A>& exp)
+             
                 atl::thread_pool_g.DoJob(std::bind(atl::VariableMatrixAssign<T, A>(*this,
                         temp, index_start, start, end, exp)), wv);
 

@@ -1195,10 +1195,11 @@ namespace atl {
                 size_t in = 0;
                 for (id_it = entry.ids.begin(); id_it != entry.ids.end(); ++id_it) {
                     T dx = derivatives_logdet[(*id_it)];
+//                    std::cout<<(*id_it)->id<<" "<<dx<<"\n";
                     entry.first[in] = dx;
                     in++;
                 }
-
+//                exit(0);
 
                 //push adjoint entry for objective function
                 atl::StackEntry<T>& entry2 = atl::Variable<T>::tape.NextEntry();

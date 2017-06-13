@@ -15,10 +15,8 @@ Variable b = 0.03423
 f = a + b
 
 Number of Parameters: 2
-evaluating...Resizing Stack Entry vector at size 0.
-computing exact gradient...done!
-evaluating...Resizing Stack Entry vector at size 2.
-computing exact hessian...done!
+evaluating...computing exact gradient...done!
+evaluating...computing exact hessian...done!
 estimating hessian...done
 evaluating...computing exact third order mixed...done.
 estimating third order mixed...done.
@@ -30,18 +28,18 @@ Function value: 6.857000e-02
 Gradient mse = 1.503895e-25, Error Range{3.878009e-13 - 3.878009e-13}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000031 sec
-Time to evaluate objective function with Hessian info: 0.000014 sec
-Time to evaluate objective function with Third-Order info: 0.000006 sec
-Time to compute exact gradient: 0.000116 sec
-Time to compute exact gradient and Hessian: 0.000019 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000051 sec
-Time to estimate Third-Order: 0.000087 sec
-Gradient Speed up = 0.008956
-Hessain Speed up = 2.730422
-Third-Order Speed up = 10.286896
+Time to evaluate objective function with only gradient info: 0.000007 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000004 sec
+Time to compute exact gradient: 0.000155 sec
+Time to compute exact gradient and Hessian: 0.000025 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000013 sec
+Time to estimate gradient: 0.000003 sec
+Time to estimate Hessian: 0.000017 sec
+Time to estimate Third-Order: 0.000053 sec
+Gradient Speed up = 0.019384
+Hessain Speed up = 0.680086
+Third-Order Speed up = 3.980600
 
 Estimated gradient:
 1.000000 1.000000 
@@ -111,18 +109,18 @@ Function value: 3.180240e+00
 Gradient mse = 2.450279e-22, Error Range{1.565337e-11 - 1.565337e-11}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000010 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
-Time to compute exact gradient: 0.000000 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
+Time to compute exact gradient: 0.000001 sec
 Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000018 sec
-Time to estimate Third-Order: 0.000033 sec
-Gradient Speed up = 2.204846
-Hessain Speed up = 11.220669
-Third-Order Speed up = 11.316707
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000020 sec
+Gradient Speed up = 2.246032
+Hessain Speed up = 2.383169
+Third-Order Speed up = 4.922299
 
 Estimated gradient:
 1.000000 
@@ -178,18 +176,18 @@ Function value: 3.180130e+00
 Gradient mse = 4.291827e-23, Error Range{-6.551204e-12 - -6.551204e-12}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000006 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000004 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000001 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient and Hessian: 0.000002 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000019 sec
-Time to estimate Third-Order: 0.000033 sec
-Gradient Speed up = 2.629834
-Hessain Speed up = 13.661349
-Third-Order Speed up = 12.348864
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000019 sec
+Gradient Speed up = 2.437352
+Hessain Speed up = 2.340727
+Third-Order Speed up = 4.980501
 
 Estimated gradient:
 1.000000 
@@ -247,18 +245,18 @@ Function value: 1.100000e-04
 Gradient mse = 1.669230e-27, Error Range{-4.085621e-14 - 4.085621e-14}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000010 sec
-Time to evaluate objective function with Hessian info: 0.000006 sec
-Time to evaluate objective function with Third-Order info: 0.000006 sec
-Time to compute exact gradient: 0.000000 sec
+Time to evaluate objective function with only gradient info: 0.000006 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
+Time to compute exact gradient: 0.000001 sec
 Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000044 sec
-Time to estimate Third-Order: 0.000072 sec
-Gradient Speed up = 1.918534
-Hessain Speed up = 26.062275
-Third-Order Speed up = 21.157008
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000036 sec
+Gradient Speed up = 2.061483
+Hessain Speed up = 4.152784
+Third-Order Speed up = 7.609512
 
 Estimated gradient:
 1.000000 -1.000000 
@@ -328,18 +326,18 @@ Function value: -3.111560e+00
 Gradient mse = 2.450279e-22, Error Range{1.565337e-11 - 1.565337e-11}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000007 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000001 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient and Hessian: 0.000002 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000018 sec
-Time to estimate Third-Order: 0.000032 sec
-Gradient Speed up = 2.250608
-Hessain Speed up = 12.350877
-Third-Order Speed up = 12.320921
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000019 sec
+Gradient Speed up = 2.530184
+Hessain Speed up = 2.343674
+Third-Order Speed up = 5.188538
 
 Estimated gradient:
 1.000000 
@@ -397,18 +395,18 @@ Function value: 3.111670e+00
 Gradient mse = 4.291827e-23, Error Range{6.551204e-12 - 6.551204e-12}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000001 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient and Hessian: 0.000002 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000019 sec
-Time to estimate Third-Order: 0.000033 sec
-Gradient Speed up = 2.156479
-Hessain Speed up = 12.811218
-Third-Order Speed up = 12.876680
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000019 sec
+Gradient Speed up = 2.545024
+Hessain Speed up = 2.349140
+Third-Order Speed up = 4.942636
 
 Estimated gradient:
 -1.000000 
@@ -440,16 +438,16 @@ Third-Order difference:
 
 Test Problem:
 Parameters:
-Variable a = 0.03434
-Variable b = 0.03423
+Variable a{50} = 0.03434
+Variable b{51}  = 0.03423
 f = a * b
 
 
 
 Test Problem:
 Parameters:
-Variable a = 0.03434
-Variable b = 0.03423
+Variable a{50} = 0.03434
+Variable b{51}  = 0.03423
 f = a * b
 
 Number of Parameters: 2
@@ -466,18 +464,18 @@ Function value: 1.175458e-03
 Gradient mse = 9.214660e-30, Error Range{-7.563394e-16 - 4.225786e-15}
 Hessian mse = 4.166172e-28, Error Range{-2.886580e-14 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000009 sec
-Time to evaluate objective function with Hessian info: 0.000006 sec
-Time to evaluate objective function with Third-Order info: 0.000007 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
 Time to compute exact gradient and Hessian: 0.000019 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000006 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000046 sec
-Time to estimate Third-Order: 0.000079 sec
-Gradient Speed up = 2.295943
-Hessain Speed up = 2.342213
-Third-Order Speed up = 21.720892
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000040 sec
+Gradient Speed up = 2.234818
+Hessain Speed up = 0.507474
+Third-Order Speed up = 7.104043
 
 Estimated gradient:
 0.034230 0.034340 
@@ -547,18 +545,18 @@ Function value: 1.080302e-01
 Gradient mse = 2.031761e-25, Error Range{-4.507505e-13 - -4.507505e-13}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000011 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
 Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000018 sec
-Time to estimate Third-Order: 0.000033 sec
-Gradient Speed up = 1.976596
-Hessain Speed up = 11.109309
-Third-Order Speed up = 12.266792
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000019 sec
+Gradient Speed up = 2.278761
+Hessain Speed up = 2.167785
+Third-Order Speed up = 4.967817
 
 Estimated gradient:
 3.145900 
@@ -616,18 +614,18 @@ Function value: 1.076842e-01
 Gradient mse = 5.922452e-26, Error Range{2.433609e-13 - 2.433609e-13}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000001 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient and Hessian: 0.000002 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000019 sec
-Time to estimate Third-Order: 0.000032 sec
-Gradient Speed up = 2.155172
-Hessain Speed up = 12.887344
-Third-Order Speed up = 12.784658
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000018 sec
+Gradient Speed up = 2.487923
+Hessain Speed up = 2.269420
+Third-Order Speed up = 4.902465
 
 Estimated gradient:
 3.145900 
@@ -685,18 +683,18 @@ Function value: 4.840000e-08
 Gradient mse = 8.120857e-33, Error Range{-8.131516e-18 - 1.556609e-16}
 Hessian mse = 2.370172e-26, Error Range{-2.309264e-13 - 2.309264e-13}
 Third-Order mse = -7.567455e-19
-Time to evaluate objective function with only gradient info: 0.000023 sec
-Time to evaluate objective function with Hessian info: 0.000018 sec
-Time to evaluate objective function with Third-Order info: 0.000044 sec
+Time to evaluate objective function with only gradient info: 0.000005 sec
+Time to evaluate objective function with Hessian info: 0.000003 sec
+Time to evaluate objective function with Third-Order info: 0.000039 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000004 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
+Time to compute exact gradient and Hessian: 0.000005 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000012 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000193 sec
-Time to estimate Third-Order: 0.000270 sec
-Gradient Speed up = 1.833962
-Hessain Speed up = 46.772969
-Third-Order Speed up = 34.987811
+Time to estimate Hessian: 0.000018 sec
+Time to estimate Third-Order: 0.000118 sec
+Gradient Speed up = 2.454713
+Hessain Speed up = 3.345733
+Third-Order Speed up = 9.923135
 
 Estimated gradient:
 0.000880 -0.000880 -0.000000 
@@ -784,18 +782,18 @@ Function value: 1.091580e-02
 Gradient mse = 3.410295e-27, Error Range{-5.839773e-14 - -5.839773e-14}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000006 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
 Time to compute exact gradient: 0.000000 sec
 Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000019 sec
-Time to estimate Third-Order: 0.000032 sec
-Gradient Speed up = 1.925764
-Hessain Speed up = 11.304878
-Third-Order Speed up = 11.976969
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000019 sec
+Gradient Speed up = 2.074380
+Hessain Speed up = 2.290205
+Third-Order Speed up = 4.906369
 
 Estimated gradient:
 0.317874 
@@ -853,18 +851,18 @@ Function value: 3.041780e+00
 Gradient mse = 6.977055e-20, Error Range{2.641412e-10 - 2.641412e-10}
 Hessian mse = 5.473819e-25, Error Range{7.398526e-13 - 7.398526e-13}
 Third-Order mse = -4.089173e-12
-Time to evaluate objective function with only gradient info: 0.000006 sec
-Time to evaluate objective function with Hessian info: 0.000005 sec
-Time to evaluate objective function with Third-Order info: 0.000005 sec
+Time to evaluate objective function with only gradient info: 0.000001 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000019 sec
-Time to estimate Third-Order: 0.000034 sec
-Gradient Speed up = 2.187952
-Hessain Speed up = 10.615084
-Third-Order Speed up = 10.330675
+Time to estimate Hessian: 0.000005 sec
+Time to estimate Third-Order: 0.000020 sec
+Gradient Speed up = 2.477387
+Hessain Speed up = 1.836097
+Third-Order Speed up = 3.660943
 
 Estimated gradient:
 -2.941106 
@@ -922,18 +920,18 @@ Function value: 9.999993e-01
 Gradient mse = 3.517283e-24, Error Range{7.820254e-13 - 2.534364e-12}
 Hessian mse = 1.744492e-33, Error Range{-1.713039e-17 - 7.546047e-17}
 Third-Order mse = 2.482359e-15
-Time to evaluate objective function with only gradient info: 0.000028 sec
-Time to evaluate objective function with Hessian info: 0.000017 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
+Time to evaluate objective function with only gradient info: 0.000032 sec
+Time to evaluate objective function with Hessian info: 0.000016 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000087 sec
-Gradient Speed up = 1.879562
-Hessain Speed up = 22.515244
-Third-Order Speed up = 17.807496
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000045 sec
+Gradient Speed up = 1.787728
+Hessain Speed up = 2.995067
+Third-Order Speed up = 5.561506
 
 Estimated gradient:
 -0.000040 -0.000040 
@@ -1003,18 +1001,18 @@ Function value: 1.569621e+00
 Gradient mse = 8.138353e-25, Error Range{7.518500e-13 - 1.030724e-12}
 Hessian mse = 1.595124e-27, Error Range{-4.837526e-16 - 5.528911e-14}
 Third-Order mse = 1.321901e-13
-Time to evaluate objective function with only gradient info: 0.000016 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to evaluate objective function with only gradient info: 0.000014 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000003 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000086 sec
-Gradient Speed up = 2.092050
-Hessain Speed up = 23.564384
-Third-Order Speed up = 19.250389
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000044 sec
+Gradient Speed up = 1.994350
+Hessain Speed up = 3.143093
+Third-Order Speed up = 5.892367
 
 Estimated gradient:
 -0.034230 -0.034340 
@@ -1084,18 +1082,18 @@ Function value: 1.175458e-03
 Gradient mse = 1.190581e-29, Error Range{-2.969847e-15 - 3.871903e-15}
 Hessian mse = 1.474909e-27, Error Range{-5.329071e-14 - -1.029556e-14}
 Third-Order mse = -2.826105e-14
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
+Time to evaluate objective function with only gradient info: 0.000004 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
 Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000086 sec
-Gradient Speed up = 2.016427
-Hessain Speed up = 23.598372
-Third-Order Speed up = 19.180098
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000043 sec
+Gradient Speed up = 2.090000
+Hessain Speed up = 3.106740
+Third-Order Speed up = 5.833039
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1165,18 +1163,18 @@ Function value: 1.175458e-03
 Gradient mse = 2.541045e-29, Error Range{-7.285839e-16 - 7.091550e-15}
 Hessian mse = 1.595124e-27, Error Range{-5.528911e-14 - 4.837526e-16}
 Third-Order mse = -1.321901e-13
-Time to evaluate objective function with only gradient info: 0.000016 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to evaluate objective function with only gradient info: 0.000018 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000003 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000086 sec
-Gradient Speed up = 2.189011
-Hessain Speed up = 23.606528
-Third-Order Speed up = 20.195652
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000045 sec
+Gradient Speed up = 2.177239
+Hessain Speed up = 3.163299
+Third-Order Speed up = 6.149327
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1246,18 +1244,18 @@ Function value: 1.175459e-03
 Gradient mse = 7.461447e-29, Error Range{-1.221245e-14 - -2.914335e-16}
 Hessian mse = 3.904737e-28, Error Range{-2.802369e-14 - 2.607550e-14}
 Third-Order mse = -3.628240e-14
-Time to evaluate objective function with only gradient info: 0.000017 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
+Time to evaluate objective function with only gradient info: 0.000013 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000003 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000085 sec
-Gradient Speed up = 1.870787
-Hessain Speed up = 24.341635
-Third-Order Speed up = 19.498969
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000044 sec
+Gradient Speed up = 2.057514
+Hessain Speed up = 2.983103
+Third-Order Speed up = 5.963780
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1327,18 +1325,18 @@ Function value: 1.175458e-03
 Gradient mse = 1.552540e-30, Error Range{-1.616762e-15 - 7.008283e-16}
 Hessian mse = 5.326082e-28, Error Range{-3.519407e-14 - -2.649486e-15}
 Third-Order mse = -4.768212e-14
-Time to evaluate objective function with only gradient info: 0.000016 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to evaluate objective function with only gradient info: 0.000014 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000083 sec
-Gradient Speed up = 2.252610
-Hessain Speed up = 24.596866
-Third-Order Speed up = 19.402625
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000042 sec
+Gradient Speed up = 2.241843
+Hessain Speed up = 3.100717
+Third-Order Speed up = 5.901642
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1408,18 +1406,18 @@ Function value: 1.000001e+00
 Gradient mse = 1.010217e-23, Error Range{-4.455129e-12 - -5.968013e-13}
 Hessian mse = 5.483564e-34, Error Range{-3.686287e-17 - 6.071532e-18}
 Third-Order mse = -9.576571e-16
-Time to evaluate objective function with only gradient info: 0.000024 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
+Time to evaluate objective function with only gradient info: 0.000026 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000050 sec
-Time to estimate Third-Order: 0.000085 sec
-Gradient Speed up = 1.934363
-Hessain Speed up = 22.460885
-Third-Order Speed up = 19.651389
+Time to estimate Hessian: 0.000011 sec
+Time to estimate Third-Order: 0.000044 sec
+Gradient Speed up = 2.082552
+Hessain Speed up = 3.223952
+Third-Order Speed up = 6.141331
 
 Estimated gradient:
 0.000040 0.000040 
@@ -1489,18 +1487,18 @@ Function value: 1.175458e-03
 Gradient mse = 8.025976e-30, Error Range{-3.920475e-15 - -8.257284e-16}
 Hessian mse = 9.905884e-28, Error Range{-4.529710e-14 - -4.208322e-15}
 Third-Order mse = -6.005715e-14
-Time to evaluate objective function with only gradient info: 0.000010 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to evaluate objective function with only gradient info: 0.000004 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000052 sec
-Time to estimate Third-Order: 0.000084 sec
-Gradient Speed up = 1.991684
-Hessain Speed up = 24.547789
-Third-Order Speed up = 19.709172
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000043 sec
+Gradient Speed up = 2.123772
+Hessain Speed up = 3.199331
+Third-Order Speed up = 5.868978
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1570,18 +1568,18 @@ Function value: 1.175458e-03
 Gradient mse = 1.603337e-30, Error Range{-1.706968e-15 - 5.412337e-16}
 Hessian mse = 4.443884e-28, Error Range{-2.737123e-14 - -7.326836e-15}
 Third-Order mse = 2.581787e-14
-Time to evaluate objective function with only gradient info: 0.000017 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
+Time to evaluate objective function with only gradient info: 0.000018 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000003 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000053 sec
-Time to estimate Third-Order: 0.000085 sec
-Gradient Speed up = 1.874525
-Hessain Speed up = 22.671558
-Third-Order Speed up = 19.650650
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000044 sec
+Gradient Speed up = 2.109689
+Hessain Speed up = 3.150269
+Third-Order Speed up = 5.911066
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1651,18 +1649,18 @@ Function value: 2.727031e+00
 Gradient mse = 1.102890e-10, Error Range{-1.133233e-06 - 1.480857e-05}
 Hessian mse = 9.552295e-08, Error Range{-2.199340e-04 - 5.776851e-04}
 Third-Order mse = -7.844216e-03
-Time to evaluate objective function with only gradient info: 0.000016 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000016 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
+Time to evaluate objective function with only gradient info: 0.000012 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000004 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
 Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
-Time to estimate gradient: 0.000002 sec
-Time to estimate Hessian: 0.000135 sec
-Time to estimate Third-Order: 0.000093 sec
-Gradient Speed up = 3.442623
-Hessain Speed up = 61.596708
-Third-Order Speed up = 12.942805
+Time to estimate gradient: 0.000001 sec
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000043 sec
+Gradient Speed up = 2.174484
+Hessain Speed up = 3.260351
+Third-Order Speed up = 5.849845
 
 Estimated gradient:
 79.667872 -79.923903 
@@ -1732,18 +1730,18 @@ Function value: -3.773151e-01
 Gradient mse = 1.250915e-20, Error Range{-1.118443e-10 - -1.118443e-10}
 Hessian mse = 3.077051e-26, Error Range{-1.754152e-13 - -1.754152e-13}
 Third-Order mse = 1.601386e-12
-Time to evaluate objective function with only gradient info: 0.000030 sec
-Time to evaluate objective function with Hessian info: 0.000009 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
-Time to compute exact gradient: 0.000001 sec
+Time to evaluate objective function with only gradient info: 0.000016 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
+Time to compute exact gradient: 0.000000 sec
 Time to compute exact gradient and Hessian: 0.000003 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000051 sec
-Time to estimate Third-Order: 0.000085 sec
-Gradient Speed up = 1.438571
-Hessain Speed up = 18.968773
-Third-Order Speed up = 17.997261
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000042 sec
+Gradient Speed up = 2.381048
+Hessain Speed up = 3.017691
+Third-Order Speed up = 5.515423
 
 Estimated gradient:
 1.458364 1.458364 
@@ -1813,18 +1811,18 @@ Function value: -9.297928e-01
 Gradient mse = 1.309661e-19, Error Range{-3.634870e-10 - -3.602907e-10}
 Hessian mse = 3.659019e-24, Error Range{-3.090861e-12 - 1.121437e-12}
 Third-Order mse = 1.487043e-11
-Time to evaluate objective function with only gradient info: 0.000017 sec
-Time to evaluate objective function with Hessian info: 0.000008 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
+Time to evaluate objective function with only gradient info: 0.000015 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000004 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000063 sec
-Time to estimate Third-Order: 0.000084 sec
-Gradient Speed up = 1.895911
-Hessain Speed up = 28.094154
-Third-Order Speed up = 19.411506
+Time to compute exact gradient and Hessian: 0.000006 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000012 sec
+Time to estimate gradient: 0.000002 sec
+Time to estimate Hessian: 0.000016 sec
+Time to estimate Third-Order: 0.000075 sec
+Gradient Speed up = 1.389466
+Hessain Speed up = 2.859680
+Third-Order Speed up = 6.155554
 
 Estimated gradient:
 1.264690 1.268754 
@@ -1894,18 +1892,18 @@ Function value: 1.175458e-03
 Gradient mse = 9.214660e-30, Error Range{-7.563394e-16 - 4.225786e-15}
 Hessian mse = 4.166172e-28, Error Range{-2.886580e-14 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000010 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000007 sec
+Time to evaluate objective function with only gradient info: 0.000002 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000002 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000051 sec
-Time to estimate Third-Order: 0.000090 sec
-Gradient Speed up = 1.495098
-Hessain Speed up = 21.158199
-Third-Order Speed up = 24.870869
+Time to compute exact gradient and Hessian: 0.000005 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000009 sec
+Time to estimate gradient: 0.000002 sec
+Time to estimate Hessian: 0.000016 sec
+Time to estimate Third-Order: 0.000063 sec
+Gradient Speed up = 1.768563
+Hessain Speed up = 3.414845
+Third-Order Speed up = 7.082247
 
 Estimated gradient:
 0.034230 0.034340 
@@ -1975,18 +1973,18 @@ Function value: 3.428496e-02
 Gradient mse = 2.827407e-17, Error Range{-5.342947e-09 - -5.291603e-09}
 Hessian mse = 3.420699e-16, Error Range{-2.624500e-08 - 2.905823e-09}
 Third-Order mse = 8.427524e-07
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000009 sec
+Time to evaluate objective function with only gradient info: 0.000006 sec
+Time to evaluate objective function with Hessian info: 0.000002 sec
+Time to evaluate objective function with Third-Order info: 0.000004 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000050 sec
-Time to estimate Third-Order: 0.000086 sec
-Gradient Speed up = 1.664966
-Hessain Speed up = 22.352993
-Third-Order Speed up = 19.829280
+Time to compute exact gradient and Hessian: 0.000004 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000012 sec
+Time to estimate gradient: 0.000002 sec
+Time to estimate Hessian: 0.000016 sec
+Time to estimate Third-Order: 0.000071 sec
+Gradient Speed up = 2.072879
+Hessain Speed up = 3.461333
+Third-Order Speed up = 5.821880
 
 Estimated gradient:
 0.499199 0.500803 
@@ -2056,18 +2054,18 @@ Function value: 1.002706e+00
 Gradient mse = 1.063500e-21, Error Range{-5.623813e-11 - 4.890643e-12}
 Hessian mse = 1.404176e-24, Error Range{-2.952083e-12 - 1.553424e-12}
 Third-Order mse = -2.525747e-13
-Time to evaluate objective function with only gradient info: 0.000015 sec
-Time to evaluate objective function with Hessian info: 0.000017 sec
-Time to evaluate objective function with Third-Order info: 0.000022 sec
+Time to evaluate objective function with only gradient info: 0.000007 sec
+Time to evaluate objective function with Hessian info: 0.000004 sec
+Time to evaluate objective function with Third-Order info: 0.000015 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000004 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000130 sec
-Time to estimate Third-Order: 0.000203 sec
-Gradient Speed up = 2.081699
-Hessain Speed up = 36.466592
-Third-Order Speed up = 27.326701
+Time to compute exact gradient and Hessian: 0.000007 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000020 sec
+Time to estimate gradient: 0.000003 sec
+Time to estimate Hessian: 0.000034 sec
+Time to estimate Third-Order: 0.000161 sec
+Gradient Speed up = 2.273703
+Hessain Speed up = 5.101646
+Third-Order Speed up = 7.972752
 
 Estimated gradient:
 1.006414 1.004147 0.002707 
@@ -2155,18 +2153,18 @@ Function value: 1.180608e-03
 Gradient mse = 9.375790e-23, Error Range{-1.369364e-11 - 9.339751e-15}
 Hessian mse = 8.332937e-28, Error Range{-5.773160e-14 - 0.000000e+00}
 Third-Order mse = -3.622103e-15
-Time to evaluate objective function with only gradient info: 0.000019 sec
-Time to evaluate objective function with Hessian info: 0.000019 sec
-Time to evaluate objective function with Third-Order info: 0.000021 sec
+Time to evaluate objective function with only gradient info: 0.000013 sec
+Time to evaluate objective function with Hessian info: 0.000017 sec
+Time to evaluate objective function with Third-Order info: 0.000012 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000005 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
-Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000109 sec
-Time to estimate Third-Order: 0.000157 sec
-Gradient Speed up = 1.577670
-Hessain Speed up = 22.868183
-Third-Order Speed up = 19.153509
+Time to compute exact gradient and Hessian: 0.000007 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000014 sec
+Time to estimate gradient: 0.000003 sec
+Time to estimate Hessian: 0.000026 sec
+Time to estimate Third-Order: 0.000088 sec
+Gradient Speed up = 2.104121
+Hessain Speed up = 3.678353
+Third-Order Speed up = 6.162223
 
 Estimated gradient:
 0.068680 0.000160 
@@ -2236,18 +2234,18 @@ Function value: 1.000815e+00
 Gradient mse = 7.915212e-24, Error Range{2.542782e-12 - 3.060177e-12}
 Hessian mse = 1.135614e-06, Error Range{1.062233e-03 - 1.069071e-03}
 Third-Order mse = -3.110741e-02
-Time to evaluate objective function with only gradient info: 0.000010 sec
-Time to evaluate objective function with Hessian info: 0.000009 sec
-Time to evaluate objective function with Third-Order info: 0.000010 sec
+Time to evaluate objective function with only gradient info: 0.000022 sec
+Time to evaluate objective function with Hessian info: 0.000004 sec
+Time to evaluate objective function with Third-Order info: 0.000005 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
-Time to estimate gradient: 0.000012 sec
-Time to estimate Hessian: 0.000060 sec
-Time to estimate Third-Order: 0.000095 sec
-Gradient Speed up = 19.393388
-Hessain Speed up = 24.140429
-Third-Order Speed up = 18.116717
+Time to compute exact gradient and Hessian: 0.000006 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000014 sec
+Time to estimate gradient: 0.000026 sec
+Time to estimate Hessian: 0.000019 sec
+Time to estimate Third-Order: 0.000080 sec
+Gradient Speed up = 22.353293
+Hessain Speed up = 3.099062
+Third-Order Speed up = 5.887441
 
 Estimated gradient:
 0.023746 0.023822 
@@ -2317,18 +2315,18 @@ Function value: 1.000000e+00
 Gradient mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000008 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000008 sec
+Time to evaluate objective function with only gradient info: 0.000019 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000004 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000051 sec
-Time to estimate Third-Order: 0.000079 sec
-Gradient Speed up = 1.605634
-Hessain Speed up = 27.584875
-Third-Order Speed up = 21.795014
+Time to estimate Hessian: 0.000010 sec
+Time to estimate Third-Order: 0.000038 sec
+Gradient Speed up = 1.373576
+Hessain Speed up = 3.267308
+Third-Order Speed up = 5.199671
 
 Estimated gradient:
 0.000000 0.000000 
@@ -2398,18 +2396,18 @@ Function value: 0.000000e+00
 Gradient mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Hessian mse = 0.000000e+00, Error Range{0.000000e+00 - 0.000000e+00}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000009 sec
-Time to evaluate objective function with Hessian info: 0.000007 sec
-Time to evaluate objective function with Third-Order info: 0.000007 sec
-Time to compute exact gradient: 0.000000 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000003 sec
+Time to evaluate objective function with only gradient info: 0.000006 sec
+Time to evaluate objective function with Hessian info: 0.000001 sec
+Time to evaluate objective function with Third-Order info: 0.000001 sec
+Time to compute exact gradient: 0.000001 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000005 sec
 Time to estimate gradient: 0.000001 sec
-Time to estimate Hessian: 0.000051 sec
-Time to estimate Third-Order: 0.000077 sec
-Gradient Speed up = 1.880597
-Hessain Speed up = 29.927485
-Third-Order Speed up = 24.867416
+Time to estimate Hessian: 0.000009 sec
+Time to estimate Third-Order: 0.000036 sec
+Gradient Speed up = 1.954704
+Hessain Speed up = 3.753566
+Third-Order Speed up = 7.064440
 
 Estimated gradient:
 0.000000 0.000000 
@@ -2449,14 +2447,15 @@ Third-Order difference:
 [0] 0.000000 0.000000 
 [1] 0.000000 0.000000 
 [1] 0.000000 0.000000 
+Cid = 254
 
 
 Test Problem:
 Parameters:
 Variable a = 20;
 Variable b = 0.2;
-Variable c = 254;
-Variable x[1311];
+Variable c = 6.28319;
+Variable x[12];
 f = 0;
 variable sum1;;
 variable sum2;;
@@ -2479,8 +2478,8 @@ Test Problem:
 Parameters:
 Variable a = 20;
 Variable b = 0.2;
-Variable c = 254;
-Variable x[1311];
+Variable c = 6.28319;
+Variable x[12];
 f = 0;
 variable sum1;;
 variable sum2;;
@@ -2498,16 +2497,7 @@ term2 = -1.0 * atl::exp(sum2 / d);
 f = term1 + term2 + a + exp(1);
 
 Number of Parameters: 3
-evaluating...Resizing Stack Entry vector at size 6.
-Resizing Stack Entry vector at size 14.
-Resizing Stack Entry vector at size 30.
-Resizing Stack Entry vector at size 62.
-Resizing Stack Entry vector at size 126.
-Resizing Stack Entry vector at size 254.
-Resizing Stack Entry vector at size 510.
-Resizing Stack Entry vector at size 1022.
-Resizing Stack Entry vector at size 2046.
-computing exact gradient...done!
+evaluating...computing exact gradient...done!
 evaluating...computing exact hessian...done!
 estimating hessian...done
 evaluating...computing exact third order mixed...done.
@@ -2516,75 +2506,75 @@ Gradient Test Passed.
 Gradient  Test Passed.
 Hessian Test Passed.
 Hessian  Test Passed.
-Function value: 2.126867e+01
-Gradient mse = 8.799070e-16, Error Range{-5.137589e-08 - -1.121278e-10}
-Hessian mse = 3.643139e-19, Error Range{-1.748020e-09 - 6.994849e-12}
-Third-Order mse = 1.299919e-09
-Time to evaluate objective function with only gradient info: 0.019202 sec
-Time to evaluate objective function with Hessian info: 0.018822 sec
-Time to evaluate objective function with Third-Order info: 0.020118 sec
-Time to compute exact gradient: 0.000398 sec
-Time to compute exact gradient and Hessian: 0.006111 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.009847 sec
-Time to estimate gradient: 0.000261 sec
-Time to estimate Hessian: 0.221386 sec
-Time to estimate Third-Order: 0.267471 sec
-Gradient Speed up = 0.655533
-Hessain Speed up = 36.226849
-Third-Order Speed up = 27.163606
+Function value: 8.430725e+04
+Gradient mse = 7.498960e-14, Error Range{-4.743088e-07 - 0.000000e+00}
+Hessian mse = 2.017585e-20, Error Range{0.000000e+00 - 4.261251e-10}
+Third-Order mse = 1.054433e-08
+Time to evaluate objective function with only gradient info: 0.000038 sec
+Time to evaluate objective function with Hessian info: 0.000034 sec
+Time to evaluate objective function with Third-Order info: 0.000077 sec
+Time to compute exact gradient: 0.000025 sec
+Time to compute exact gradient and Hessian: 0.000156 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000926 sec
+Time to estimate gradient: 0.000021 sec
+Time to estimate Hessian: 0.000317 sec
+Time to estimate Third-Order: 0.002787 sec
+Gradient Speed up = 0.833113
+Hessain Speed up = 2.028524
+Third-Order Speed up = 3.010025
 
 Estimated gradient:
-0.977280 8.598268 -0.025500 
+0.000000 0.000000 -2.734327 
 
 Exact gradient:
-0.977280 8.598268 -0.025500 
+0.000000 0.000000 -2.734327 
 
 Gradient difference:
--0.000000 -0.000000 -0.000000 
+0.000000 0.000000 -0.000000 
 
 Estimated Hessian: 
--0.000000 0.429913 -0.000000 
-0.429913 -162.702085 -0.000000 
--0.000000 -0.000000 -5.111785 
+-0.000000 -0.000000 -0.000000 
+-0.000000 -0.000000 -0.000000 
+-0.000000 -0.000000 1.475872 
 
 Exact Hessian:
-0.000000 0.429913 0.000000 
-0.429913 -162.702085 0.000000 
-0.000000 0.000000 -5.111785 
+0.000000 0.000000 0.000000 
+0.000000 0.000000 0.000000 
+0.000000 0.000000 1.475872 
 
 Hessian difference:
 0.000000 0.000000 0.000000 
-0.000000 -0.000000 0.000000 
-0.000000 0.000000 -0.000000 
+0.000000 0.000000 0.000000 
+0.000000 0.000000 0.000000 
 
 Estimated Third-Order:
 [0] -0.000000 -0.000000 -0.000000 
-[0] -0.000000 -8.135104 -0.000000 
 [0] -0.000000 -0.000000 -0.000000 
-[1] -0.000000 -8.135104 -0.000000 
-[1] -8.135104 3078.755779 -0.000000 
+[0] -0.000000 -0.000000 -0.000000 
+[1] -0.000000 -0.000000 -0.000000 
+[1] -0.000000 -0.000000 -0.000000 
 [1] -0.000000 -0.000000 -0.000000 
 [2] -0.000000 -0.000000 -0.000000 
 [2] -0.000000 -0.000000 -0.000000 
-[2] -0.000000 -0.000000 28.629765 
+[2] -0.000000 -0.000000 2967.615503 
 
 Exact Third-Order:
 [0] 0.000000 0.000000 0.000000 
-[0] 0.000000 -8.135104 0.000000 
 [0] 0.000000 0.000000 0.000000 
-[1] 0.000000 -8.135104 0.000000 
-[1] -8.135104 3078.755779 0.000000 
+[0] 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 
 [1] 0.000000 0.000000 0.000000 
 [2] 0.000000 0.000000 0.000000 
 [2] 0.000000 0.000000 0.000000 
-[2] 0.000000 0.000000 28.629765 
+[2] 0.000000 0.000000 2967.615503 
 
 Third-Order difference:
 [0] 0.000000 0.000000 0.000000 
 [0] 0.000000 0.000000 0.000000 
 [0] 0.000000 0.000000 0.000000 
-[1] 0.000000 -0.000000 0.000000 
-[1] -0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 
 [1] 0.000000 0.000000 0.000000 
 [2] 0.000000 0.000000 0.000000 
 [2] 0.000000 0.000000 0.000000 
@@ -2607,133 +2597,133 @@ Gradient Test Passed.
 Gradient  Test Passed.
 Hessian Test Passed.
 Hessian  Test Passed.
-Function value: 5.339523e+01
-Gradient mse = 1.551614e-16, Error Range{-2.570589e-08 - 9.718676e-09}
-Hessian mse = 1.753679e-20, Error Range{-2.905267e-10 - 4.225171e-10}
-Third-Order mse = 1.370647e-11
-Time to evaluate objective function with only gradient info: 0.000290 sec
-Time to evaluate objective function with Hessian info: 0.000306 sec
-Time to evaluate objective function with Third-Order info: 0.000749 sec
-Time to compute exact gradient: 0.000006 sec
-Time to compute exact gradient and Hessian: 0.000103 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000352 sec
-Time to estimate gradient: 0.000092 sec
-Time to estimate Hessian: 0.005301 sec
-Time to estimate Third-Order: 0.008280 sec
-Gradient Speed up = 15.723066
-Hessain Speed up = 51.633572
-Third-Order Speed up = 23.491761
+Function value: 6.903330e+04
+Gradient mse = 4.427894e-07, Error Range{-1.487933e-03 - 1.039938e-06}
+Hessian mse = 7.770331e-07, Error Range{-2.975225e-03 - 2.891516e-03}
+Third-Order mse = -1.012413e-05
+Time to evaluate objective function with only gradient info: 0.001755 sec
+Time to evaluate objective function with Hessian info: 0.002840 sec
+Time to evaluate objective function with Third-Order info: 0.014997 sec
+Time to compute exact gradient: 0.000325 sec
+Time to compute exact gradient and Hessian: 0.006922 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.077699 sec
+Time to estimate gradient: 0.003634 sec
+Time to estimate Hessian: 0.033765 sec
+Time to estimate Third-Order: 0.137077 sec
+Gradient Speed up = 11.193673
+Hessain Speed up = 4.877653
+Third-Order Speed up = 1.764205
 
 Estimated gradient:
-67.934606 107.470965 -107.470965 -31.967303 -12.156679 
+6.273113 0.001488 0.000298 96.363443 -69056.488628 
 
 Exact gradient:
-67.934606 107.470965 -107.470965 -31.967303 -12.156679 
+6.273113 0.000000 0.000298 96.363444 -69056.488627 
 
 Gradient difference:
--0.000000 -0.000000 0.000000 0.000000 0.000000 
+-0.000000 -0.001488 -0.000000 0.000000 0.000001 
 
 Estimated Hessian: 
-135.869213 214.941929 -214.941929 -67.934606 -0.000000 
-214.941929 384.958492 -384.958492 -107.470965 -0.000000 
--214.941929 -384.958492 277.487528 107.470965 -0.000000 
--67.934606 -107.470965 107.470965 33.967303 -0.000000 
--0.000000 -0.000000 -0.000000 -0.000000 14.656679 
+12.546225 -0.000000 0.000595 -6.273113 -0.000000 
+0.002975 -0.000000 -0.002892 -0.001488 -0.000000 
+0.000595 -0.000000 -0.000638 -0.000298 -0.000000 
+-6.273113 -0.000000 -0.000298 3.136556 -0.000000 
+-0.000000 -0.000000 -0.000000 -0.000000 69156.488627 
 
 Exact Hessian:
-135.869213 214.941929 -214.941929 -67.934606 0.000000 
-214.941929 384.958492 -384.958492 -107.470965 0.000000 
--214.941929 -384.958492 277.487528 107.470965 0.000000 
--67.934606 -107.470965 107.470965 33.967303 0.000000 
-0.000000 0.000000 0.000000 0.000000 14.656679 
+12.546225 0.000000 0.000595 -6.273113 0.000000 
+0.000000 0.000000 0.000000 0.000000 0.000000 
+0.000595 0.000000 -0.000638 -0.000298 0.000000 
+-6.273113 0.000000 -0.000298 3.136556 0.000000 
+0.000000 0.000000 0.000000 0.000000 69156.488627 
 
 Hessian difference:
--0.000000 0.000000 -0.000000 0.000000 0.000000 
-0.000000 0.000000 -0.000000 -0.000000 0.000000 
-0.000000 0.000000 -0.000000 -0.000000 0.000000 
--0.000000 -0.000000 0.000000 0.000000 0.000000 
+0.000000 0.000000 0.000000 -0.000000 0.000000 
+-0.002975 0.000000 0.002892 0.001488 0.000000 
+0.000000 0.000000 0.000000 -0.000000 0.000000 
+-0.000000 0.000000 0.000000 0.000000 0.000000 
 0.000000 0.000000 0.000000 0.000000 -0.000000 
 
 Estimated Third-Order:
-[0] 271.738425 429.883859 -429.883859 -135.869213 -0.000000 
-[0] 429.883859 769.916985 -769.916985 -214.941929 -0.000000 
-[0] -429.883859 -769.916985 554.975055 214.941929 -0.000000 
-[0] -135.869213 -214.941929 214.941929 67.934606 -0.000000 
+[0] 25.092451 -0.000000 0.001190 -12.546225 -0.000000 
 [0] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
-[1] 429.883859 769.916985 -769.916985 -214.941929 -0.000000 
-[1] 769.916985 1557.454201 -1557.454201 -384.958492 -0.000000 
-[1] -769.916985 -1557.454201 1172.495709 384.958492 -0.000000 
-[1] -214.941929 -384.958492 384.958492 107.470965 -0.000000 
+[0] 0.001190 -0.000000 -0.001276 -0.000595 -0.000000 
+[0] -12.546225 -0.000000 -0.000595 6.273113 -0.000000 
+[0] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
+[1] 0.005950 -0.000000 -0.005783 -0.002975 -0.000000 
 [1] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
-[2] -429.883859 -769.916985 554.975055 214.941929 -0.000000 
-[2] -769.916985 -1557.454201 1172.495709 384.958492 -0.000000 
-[2] 554.975055 1172.495709 -617.520653 -277.487528 -0.000000 
-[2] 214.941929 384.958492 -277.487528 -107.470965 -0.000000 
+[1] -0.005783 -0.000000 0.005561 0.002892 -0.000000 
+[1] -0.002975 -0.000000 0.002892 0.001488 -0.000000 
+[1] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
+[2] 0.001190 -0.000000 -0.001276 -0.000595 -0.000000 
 [2] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
-[3] -135.869213 -214.941929 214.941929 67.934606 -0.000000 
-[3] -214.941929 -384.958492 384.958492 107.470965 -0.000000 
-[3] 214.941929 384.958492 -277.487528 -107.470965 -0.000000 
-[3] 67.934606 107.470965 -107.470965 -33.967303 -0.000000 
+[2] -0.001276 -0.000000 0.001367 0.000638 -0.000000 
+[2] -0.000595 -0.000000 0.000638 0.000298 -0.000000 
+[2] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
+[3] -12.546225 -0.000000 -0.000595 6.273113 -0.000000 
+[3] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
+[3] -0.000595 -0.000000 0.000638 0.000298 -0.000000 
+[3] 6.273113 -0.000000 0.000298 -3.136556 -0.000000 
 [3] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
 [4] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
 [4] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
 [4] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
 [4] -0.000000 -0.000000 -0.000000 -0.000000 -0.000000 
-[4] -0.000000 -0.000000 -0.000000 -0.000000 -14.656679 
+[4] -0.000000 -0.000000 -0.000000 -0.000000 -69156.488627 
 
 Exact Third-Order:
-[0] 271.738425 429.883859 -429.883859 -135.869213 0.000000 
-[0] 429.883859 769.916985 -769.916985 -214.941929 0.000000 
-[0] -429.883859 -769.916985 554.975055 214.941929 0.000000 
-[0] -135.869213 -214.941929 214.941929 67.934606 0.000000 
+[0] 25.092451 0.000000 0.001190 -12.546225 0.000000 
 [0] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[1] 429.883859 769.916985 -769.916985 -214.941929 0.000000 
-[1] 769.916985 1557.454201 -1557.454201 -384.958492 0.000000 
-[1] -769.916985 -1557.454201 1172.495709 384.958492 0.000000 
-[1] -214.941929 -384.958492 384.958492 107.470965 0.000000 
+[0] 0.001190 0.000000 -0.001276 -0.000595 0.000000 
+[0] -12.546225 0.000000 -0.000595 6.273113 0.000000 
+[0] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [1] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[2] -429.883859 -769.916985 554.975055 214.941929 0.000000 
-[2] -769.916985 -1557.454201 1172.495709 384.958492 0.000000 
-[2] 554.975055 1172.495709 -617.520653 -277.487528 0.000000 
-[2] 214.941929 384.958492 -277.487528 -107.470965 0.000000 
+[1] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[1] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[2] 0.001190 0.000000 -0.001276 -0.000595 0.000000 
 [2] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[3] -135.869213 -214.941929 214.941929 67.934606 0.000000 
-[3] -214.941929 -384.958492 384.958492 107.470965 0.000000 
-[3] 214.941929 384.958492 -277.487528 -107.470965 0.000000 
-[3] 67.934606 107.470965 -107.470965 -33.967303 0.000000 
+[2] -0.001276 0.000000 0.001367 0.000638 0.000000 
+[2] -0.000595 0.000000 0.000638 0.000298 0.000000 
+[2] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[3] -12.546225 0.000000 -0.000595 6.273113 0.000000 
+[3] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[3] -0.000595 0.000000 0.000638 0.000298 0.000000 
+[3] 6.273113 0.000000 0.000298 -3.136556 0.000000 
 [3] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[4] 0.000000 0.000000 0.000000 0.000000 -14.656679 
+[4] 0.000000 0.000000 0.000000 0.000000 -69156.488627 
 
 Third-Order difference:
-[0] -0.000000 0.000000 -0.000000 0.000000 0.000000 
-[0] 0.000000 -0.000000 0.000000 0.000000 0.000000 
-[0] -0.000000 0.000000 0.000000 -0.000000 0.000000 
-[0] 0.000000 0.000000 -0.000000 0.000000 0.000000 
+[0] 0.000000 0.000000 -0.000000 -0.000000 0.000000 
 [0] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[1] 0.000000 0.000000 -0.000000 -0.000000 0.000000 
-[1] 0.000000 -0.000000 -0.000000 -0.000000 0.000000 
-[1] -0.000000 -0.000000 0.000000 0.000000 0.000000 
-[1] -0.000000 -0.000000 0.000000 0.000000 0.000000 
+[0] -0.000000 0.000000 0.000000 0.000000 0.000000 
+[0] -0.000000 0.000000 0.000000 -0.000000 0.000000 
+[0] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[1] -0.005950 0.000000 0.005783 0.002975 0.000000 
 [1] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[2] 0.000000 0.000000 -0.000000 -0.000000 0.000000 
-[2] 0.000000 0.000000 -0.000000 -0.000000 0.000000 
-[2] -0.000000 -0.000000 0.000000 0.000000 0.000000 
-[2] -0.000000 -0.000000 0.000000 0.000000 0.000000 
+[1] 0.005783 0.000000 -0.005561 -0.002892 0.000000 
+[1] 0.002975 0.000000 -0.002892 -0.001488 0.000000 
+[1] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[2] 0.000000 0.000000 0.000000 -0.000000 0.000000 
 [2] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[3] 0.000000 0.000000 -0.000000 0.000000 0.000000 
-[3] 0.000000 0.000000 -0.000000 0.000000 0.000000 
-[3] -0.000000 -0.000000 0.000000 -0.000000 0.000000 
+[2] 0.000000 0.000000 -0.000000 0.000000 0.000000 
+[2] -0.000000 0.000000 0.000000 -0.000000 0.000000 
+[2] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[3] -0.000000 0.000000 0.000000 0.000000 0.000000 
+[3] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[3] 0.000000 0.000000 0.000000 -0.000000 0.000000 
 [3] 0.000000 0.000000 -0.000000 -0.000000 0.000000 
 [3] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
 [4] 0.000000 0.000000 0.000000 0.000000 0.000000 
-[4] 0.000000 0.000000 0.000000 0.000000 0.000000 
+[4] 0.000000 0.000000 0.000000 0.000000 -0.000000 
 
 
 Test Problem:
@@ -2776,18 +2766,18 @@ Function value: 1.051983e+02
 Gradient mse = 5.610493e-16, Error Range{-2.437074e-08 - -2.231481e-08}
 Hessian mse = 3.076783e-20, Error Range{-5.310312e-10 - 1.336957e-09}
 Third-Order mse = 7.347580e-12
-Time to evaluate objective function with only gradient info: 0.000143 sec
-Time to evaluate objective function with Hessian info: 0.000132 sec
-Time to evaluate objective function with Third-Order info: 0.000203 sec
-Time to compute exact gradient: 0.000002 sec
-Time to compute exact gradient and Hessian: 0.000030 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000142 sec
-Time to estimate gradient: 0.000014 sec
-Time to estimate Hessian: 0.005070 sec
-Time to estimate Third-Order: 0.006865 sec
-Gradient Speed up = 6.664313
-Hessain Speed up = 166.946226
-Third-Order Speed up = 48.208437
+Time to evaluate objective function with only gradient info: 0.000020 sec
+Time to evaluate objective function with Hessian info: 0.000019 sec
+Time to evaluate objective function with Third-Order info: 0.000060 sec
+Time to compute exact gradient: 0.000009 sec
+Time to compute exact gradient and Hessian: 0.000016 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000054 sec
+Time to estimate gradient: 0.000039 sec
+Time to estimate Hessian: 0.000568 sec
+Time to estimate Third-Order: 0.001659 sec
+Gradient Speed up = 4.208904
+Hessain Speed up = 34.470745
+Third-Order Speed up = 30.703678
 
 Estimated gradient:
 -47.131637 -45.131637 -43.131637 -41.131637 -39.131637 -37.131637 -35.131637 -33.131637 -31.131637 -29.131637 
@@ -3173,18 +3163,18 @@ Function value: 9.781540e+00
 Gradient mse = 1.899454e-21, Error Range{-5.887224e-11 - 7.014367e-11}
 Hessian mse = 4.950122e-27, Error Range{0.000000e+00 - 2.224887e-13}
 Third-Order mse = 0.000000e+00
-Time to evaluate objective function with only gradient info: 0.000058 sec
-Time to evaluate objective function with Hessian info: 0.000057 sec
-Time to evaluate objective function with Third-Order info: 0.000079 sec
+Time to evaluate objective function with only gradient info: 0.000006 sec
+Time to evaluate objective function with Hessian info: 0.000006 sec
+Time to evaluate objective function with Third-Order info: 0.000013 sec
 Time to compute exact gradient: 0.000002 sec
-Time to compute exact gradient and Hessian: 0.000024 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000076 sec
-Time to estimate gradient: 0.000005 sec
-Time to estimate Hessian: 0.002198 sec
-Time to estimate Third-Order: 0.003462 sec
-Gradient Speed up = 3.135423
-Hessain Speed up = 90.484210
-Third-Order Speed up = 45.776911
+Time to compute exact gradient and Hessian: 0.000010 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000028 sec
+Time to estimate gradient: 0.000021 sec
+Time to estimate Hessian: 0.000339 sec
+Time to estimate Third-Order: 0.000998 sec
+Gradient Speed up = 12.323854
+Hessain Speed up = 33.255545
+Third-Order Speed up = 35.295312
 
 Estimated gradient:
 -1.996000 -1.992000 -1.988000 -1.984000 -1.980000 -1.976000 -1.972000 -1.968000 -1.964000 -1.960000 
@@ -3570,18 +3560,18 @@ Function value: 3.522025e+03
 Gradient mse = 2.592646e-15, Error Range{-7.083827e-09 - 7.540075e-08}
 Hessian mse = 1.388402e-19, Error Range{-1.045009e-09 - 1.546368e-09}
 Third-Order mse = -4.853518e-12
-Time to evaluate objective function with only gradient info: 0.000173 sec
-Time to evaluate objective function with Hessian info: 0.000191 sec
-Time to evaluate objective function with Third-Order info: 0.000433 sec
+Time to evaluate objective function with only gradient info: 0.000019 sec
+Time to evaluate objective function with Hessian info: 0.000050 sec
+Time to evaluate objective function with Third-Order info: 0.000347 sec
 Time to compute exact gradient: 0.000002 sec
-Time to compute exact gradient and Hessian: 0.000027 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000093 sec
-Time to estimate gradient: 0.000004 sec
-Time to estimate Hessian: 0.006167 sec
-Time to estimate Third-Order: 0.014980 sec
-Gradient Speed up = 1.798469
-Hessain Speed up = 230.583234
-Third-Order Speed up = 161.131112
+Time to compute exact gradient and Hessian: 0.000014 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000038 sec
+Time to estimate gradient: 0.000046 sec
+Time to estimate Hessian: 0.000732 sec
+Time to estimate Third-Order: 0.002570 sec
+Gradient Speed up = 21.180856
+Hessain Speed up = 54.138971
+Third-Order Speed up = 67.226213
 
 Estimated gradient:
 -799.203997 -1193.621574 -1188.453514 -1183.299795 -1178.160400 -1173.035309 -1167.924502 -1162.827962 -1157.745667 -388.864800 
@@ -3967,18 +3957,18 @@ Function value: 9.816779e+02
 Gradient mse = 4.782589e-18, Error Range{-3.049479e-09 - 4.696659e-09}
 Hessian mse = 9.269500e-21, Error Range{0.000000e+00 - 4.063452e-10}
 Third-Order mse = -1.781117e-12
-Time to evaluate objective function with only gradient info: 0.000170 sec
-Time to evaluate objective function with Hessian info: 0.000173 sec
-Time to evaluate objective function with Third-Order info: 0.000243 sec
+Time to evaluate objective function with only gradient info: 0.000012 sec
+Time to evaluate objective function with Hessian info: 0.000028 sec
+Time to evaluate objective function with Third-Order info: 0.000050 sec
 Time to compute exact gradient: 0.000002 sec
-Time to compute exact gradient and Hessian: 0.000025 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000117 sec
-Time to estimate gradient: 0.000023 sec
-Time to estimate Hessian: 0.006246 sec
-Time to estimate Third-Order: 0.008055 sec
-Gradient Speed up = 13.908871
-Hessain Speed up = 251.673261
-Third-Order Speed up = 68.893348
+Time to compute exact gradient and Hessian: 0.000011 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000036 sec
+Time to estimate gradient: 0.000046 sec
+Time to estimate Hessian: 0.000511 sec
+Time to estimate Third-Order: 0.001502 sec
+Gradient Speed up = 23.295305
+Hessain Speed up = 45.047875
+Third-Order Speed up = 41.817207
 
 Estimated gradient:
 -167.232120 -166.964480 -166.697080 -166.429919 -166.162998 -165.896317 -165.629875 -165.363672 -165.097708 -164.831984 
@@ -4356,59 +4346,59 @@ Gradient Test Passed.
 Gradient  Test Passed.
 Hessian Test Passed.
 Hessian  Test Passed.
-Function value: 1.000000e+02
-Gradient mse = 5.636703e-19, Error Range{-6.025047e-10 - 8.742589e-10}
-Hessian mse = 1.055162e-04, Error Range{4.694911e-12 - 2.054422e-02}
-Third-Order mse = 1.570463e-11
-Time to evaluate objective function with only gradient info: 0.000049 sec
-Time to evaluate objective function with Hessian info: 0.000054 sec
-Time to evaluate objective function with Third-Order info: 0.000133 sec
+Function value: 1.000026e+02
+Gradient mse = 3.534258e-18, Error Range{-2.819007e-10 - 2.643681e-09}
+Hessian mse = 3.457194e-14, Error Range{-2.229239e-11 - 3.718706e-07}
+Third-Order mse = 3.952977e-12
+Time to evaluate objective function with only gradient info: 0.000013 sec
+Time to evaluate objective function with Hessian info: 0.000016 sec
+Time to evaluate objective function with Third-Order info: 0.000139 sec
 Time to compute exact gradient: 0.000001 sec
 Time to compute exact gradient and Hessian: 0.000009 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000021 sec
-Time to estimate gradient: 0.000007 sec
-Time to estimate Hessian: 0.000379 sec
-Time to estimate Third-Order: 0.000529 sec
-Gradient Speed up = 6.538387
-Hessain Speed up = 43.522644
-Third-Order Speed up = 25.668446
+Time to compute exact gradient, Hessian, and Third-Order: 0.000025 sec
+Time to estimate gradient: 0.000006 sec
+Time to estimate Hessian: 0.000046 sec
+Time to estimate Third-Order: 0.000201 sec
+Gradient Speed up = 4.515812
+Hessain Speed up = 5.063716
+Third-Order Speed up = 8.095509
 
 Estimated gradient:
-9.999992 49.999963 
+9.999250 49.996250 
 
 Exact gradient:
-9.999993 49.999963 
+9.999250 49.996250 
 
 Gradient difference:
 0.000000 -0.000000 
 
 Estimated Hessian: 
-7.979460 -4.999981 
--4.999981 -24.999906 
+-0.999550 -4.998125 
+-4.998125 -24.990626 
 
 Exact Hessian:
-8.000004 -4.999981 
--4.999981 -24.999906 
+-0.999550 -4.998125 
+-4.998125 -24.990626 
 
 Hessian difference:
-0.020544 0.000000 
-0.000000 0.000000 
+0.000000 -0.000000 
+0.000000 -0.000000 
 
 Estimated Third-Order:
-[0] 0.599996 1.999985 
-[0] 1.999985 7.499934 
-[1] 1.999985 7.499934 
-[1] 7.499934 37.499672 
+[0] 0.599625 1.998500 
+[0] 1.998500 7.493439 
+[1] 1.998500 7.493439 
+[1] 7.493439 37.467196 
 
 Exact Third-Order:
-[0] 0.599996 1.999985 
-[0] 1.999985 7.499934 
-[1] 1.999985 7.499934 
-[1] 7.499934 37.499672 
+[0] 0.599625 1.998500 
+[0] 1.998500 7.493439 
+[1] 1.998500 7.493439 
+[1] 7.493439 37.467196 
 
 Third-Order difference:
-[0] 0.000000 0.000000 
-[0] 0.000000 0.000000 
+[0] -0.000000 -0.000000 
+[0] -0.000000 -0.000000 
 [1] 0.000000 0.000000 
 [1] 0.000000 0.000000 
 
@@ -4441,18 +4431,18 @@ Function value: -9.997000e-01
 Gradient mse = 8.605711e-24, Error Range{2.933549e-12 - 2.933549e-12}
 Hessian mse = 2.026876e-23, Error Range{-6.366907e-12 - 2.620517e-15}
 Third-Order mse = 9.420242e-14
-Time to evaluate objective function with only gradient info: 0.000033 sec
-Time to evaluate objective function with Hessian info: 0.000029 sec
-Time to evaluate objective function with Third-Order info: 0.000068 sec
+Time to evaluate objective function with only gradient info: 0.000008 sec
+Time to evaluate objective function with Hessian info: 0.000015 sec
+Time to evaluate objective function with Third-Order info: 0.000081 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000003 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000009 sec
+Time to compute exact gradient and Hessian: 0.000004 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000002 sec
-Time to estimate Hessian: 0.000244 sec
-Time to estimate Third-Order: 0.000345 sec
-Gradient Speed up = 3.499232
-Hessain Speed up = 93.270011
-Third-Order Speed up = 40.454343
+Time to estimate Hessian: 0.000028 sec
+Time to estimate Third-Order: 0.000138 sec
+Gradient Speed up = 3.404100
+Hessain Speed up = 7.551904
+Third-Order Speed up = 16.603295
 
 Estimated gradient:
 0.029991 0.029991 
@@ -4524,18 +4514,18 @@ Function value: 2.022464e+01
 Gradient mse = 8.721447e-21, Error Range{-2.033040e-11 - 1.304974e-10}
 Hessian mse = 3.591414e-23, Error Range{-5.395684e-14 - 8.477219e-12}
 Third-Order mse = 7.626400e-13
-Time to evaluate objective function with only gradient info: 0.000029 sec
-Time to evaluate objective function with Hessian info: 0.000024 sec
-Time to evaluate objective function with Third-Order info: 0.000025 sec
+Time to evaluate objective function with only gradient info: 0.000007 sec
+Time to evaluate objective function with Hessian info: 0.000003 sec
+Time to evaluate objective function with Third-Order info: 0.000004 sec
 Time to compute exact gradient: 0.000001 sec
-Time to compute exact gradient and Hessian: 0.000002 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000006 sec
+Time to compute exact gradient and Hessian: 0.000003 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000002 sec
-Time to estimate Hessian: 0.000187 sec
-Time to estimate Third-Order: 0.000233 sec
-Gradient Speed up = 2.563492
-Hessain Speed up = 86.292301
-Third-Order Speed up = 41.057601
+Time to estimate Hessian: 0.000019 sec
+Time to estimate Third-Order: 0.000066 sec
+Gradient Speed up = 3.186170
+Hessain Speed up = 6.308420
+Third-Order Speed up = 8.473759
 
 Estimated gradient:
 -7.474664 10.125336 
@@ -4607,18 +4597,18 @@ Function value: 7.247799e-01
 Gradient mse = 2.400181e-19, Error Range{-1.214208e-11 - 6.927401e-10}
 Hessian mse = 5.008042e-24, Error Range{-4.202111e-12 - -2.886580e-15}
 Third-Order mse = -3.815490e-13
-Time to evaluate objective function with only gradient info: 0.000040 sec
-Time to evaluate objective function with Hessian info: 0.000043 sec
-Time to evaluate objective function with Third-Order info: 0.000132 sec
+Time to evaluate objective function with only gradient info: 0.000009 sec
+Time to evaluate objective function with Hessian info: 0.000022 sec
+Time to evaluate objective function with Third-Order info: 0.000212 sec
 Time to compute exact gradient: 0.000001 sec
 Time to compute exact gradient and Hessian: 0.000003 sec
-Time to compute exact gradient, Hessian, and Third-Order: 0.000007 sec
+Time to compute exact gradient, Hessian, and Third-Order: 0.000008 sec
 Time to estimate gradient: 0.000003 sec
-Time to estimate Hessian: 0.000359 sec
-Time to estimate Third-Order: 0.000450 sec
-Gradient Speed up = 6.400735
-Hessain Speed up = 105.964581
-Third-Order Speed up = 64.841787
+Time to estimate Hessian: 0.000042 sec
+Time to estimate Third-Order: 0.000212 sec
+Gradient Speed up = 6.150909
+Hessain Speed up = 13.101785
+Third-Order Speed up = 25.816673
 
 Estimated gradient:
 0.057805 1.798846 
@@ -4659,417 +4649,4 @@ Third-Order difference:
 [1] 0.000000 0.000000 
 [1] 0.000000 -0.000000 
 Test complete.
-All tests passed.Iteration: 10
-Phase: 1
-F = 52.075445
-Max Gradient Component: 71.624086
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   | -3.7584e-01| -1.6287e+00|                  x_1                   |  1.4873e-01| -1.2099e+00|
-|                  x_2                   |  3.8950e-02|  1.2686e+00|                  x_3                   |  1.2770e-02|  2.2381e-01|
-|                  x_4                   |  1.0402e-02|  2.9440e-02|                  x_5                   |  9.5307e-03| -2.7949e-01|
-|                  x_6                   |  4.8108e-02|  1.7208e+01|                  x_7                   | -4.9179e-01| -5.9440e+01|
-|                  x_8                   |  4.5721e-01| -2.3509e+01|                   -                    |     -      |     -      |
-|                  *x_9                  |  5.6716e-01|  7.1624e+01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 20
-Phase: 1
-F = 9.4533e+00
-Max Gradient Component: 1.7119e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  *x_0                  | -3.1527e-01| -1.7119e+00|                  x_1                   |  1.0668e-01| -8.4488e-01|
-|                  x_2                   |  2.3454e-02|  2.9498e-01|                  x_3                   |  1.8308e-02|  1.4623e+00|
-|                  x_4                   |  1.7517e-02|  1.4221e+00|                  x_5                   |  7.3438e-03| -6.1483e-01|
-|                  x_6                   |  1.2619e-02|  4.8404e-01|                  x_7                   |  1.0915e-02|  1.1691e-01|
-|                  x_8                   |  1.2974e-02|  5.9116e-01|                   -                    |     -      |     -      |
-|                  x_9                   |  1.2591e-03|  2.1817e-01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 30
-Phase: 1
-F = 8.4682e+00
-Max Gradient Component: 3.0785e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  2.3202e-01| -2.1101e+00|                  x_1                   |  6.0018e-02| -6.9763e-01|
-|                  x_2                   |  5.8916e-03| -1.5171e+00|                  *x_3                  | -5.5769e-03| -3.0785e+00|
-|                  x_4                   |  2.4664e-02|  2.8587e+00|                  x_5                   |  1.2486e-02|  3.3402e-01|
-|                  x_6                   |  1.3456e-02|  5.6469e-01|                  x_7                   |  2.2904e-02|  2.5012e+00|
-|                  x_8                   |  1.0260e-02| -3.8628e-02|                   -                    |     -      |     -      |
-|                  x_9                   |  1.6036e-03|  2.9967e-01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 40
-Phase: 1
-F = 7.0554e+00
-Max Gradient Component: 6.6714e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  6.8847e-01|  4.0407e+00|                  x_1                   |  4.5706e-01| -3.6092e-02|
-|                  *x_2                  |  1.8464e-01| -6.6714e+00|                  x_3                   |  3.6624e-02| -1.7610e+00|
-|                  x_4                   |  2.4605e-02|  2.6578e+00|                  x_5                   |  5.0921e-03| -1.1184e+00|
-|                  x_6                   |  1.2774e-02|  5.4508e-01|                  x_7                   |  6.0511e-03| -8.3780e-01|
-|                  x_8                   |  1.1396e-02|  3.4587e-01|                   -                    |     -      |     -      |
-|                  x_9                   | -1.1090e-02| -2.2439e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 50
-Phase: 1
-F = 5.4908e+00
-Max Gradient Component: 5.2714e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  8.8967e-01|  5.0707e+00|                  x_1                   |  7.7664e-01| -4.4312e+00|
-|                  x_2                   |  6.0642e-01|  4.3892e+00|                  x_3                   |  3.4909e-01| -3.3460e+00|
-|                  *x_4                  |  1.0978e-01| -5.2714e+00|                  x_5                   |  3.6516e-02|  2.7094e+00|
-|                  x_6                   |  1.8892e-02|  1.5123e+00|                  x_7                   |  5.2716e-03| -1.0580e+00|
-|                  x_8                   |  2.4465e-02|  2.9200e+00|                   -                    |     -      |     -      |
-|                  x_9                   |  2.2711e-03|  3.3452e-01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 60
-Phase: 1
-F = 2.5787e+00
-Max Gradient Component: 5.0855e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  9.8275e-01| -3.2860e+00|                  x_1                   |  9.7407e-01|  2.1565e+00|
-|                  x_2                   |  9.4739e-01|  4.1753e-01|                  *x_3                  |  8.9542e-01|  5.0855e+00|
-|                  x_4                   |  7.8580e-01|  3.6567e-01|                  x_5                   |  6.0480e-01|  2.3137e+00|
-|                  x_6                   |  3.4246e-01| -4.2438e+00|                  x_7                   |  1.0461e-01| -4.8465e+00|
-|                  x_8                   |  2.3415e-02|  3.5601e-01|                   -                    |     -      |     -      |
-|                  x_9                   |  2.0308e-02|  3.9520e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 70
-Phase: 1
-F = 5.2662e-01
-Max Gradient Component: 7.4022e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  9.9831e-01| -8.9311e-01|                  x_1                   |  9.9885e-01|  6.4975e-01|
-|                  x_2                   |  9.9718e-01|  3.3613e+00|                  x_3                   |  9.8567e-01| -2.5749e+00|
-|                  x_4                   |  9.7359e-01|  2.9331e+00|                  x_5                   |  9.4127e-01|  8.6347e-01|
-|                  x_6                   |  8.7986e-01|  3.9697e+00|                  x_7                   |  7.5871e-01|  4.4057e+00|
-|                  x_8                   |  5.4936e-01|  1.9752e+00|                   -                    |     -      |     -      |
-|                  *x_9                  |  2.6479e-01| -7.4022e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 80
-Phase: 1
-F = 5.1567e-03
-Max Gradient Component: 1.0954e+00
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  9.9969e-01|  5.2588e-02|                  x_1                   |  9.9925e-01| -2.9207e-01|
-|                  x_2                   |  9.9917e-01|  5.2471e-02|                  x_3                   |  9.9853e-01|  3.0701e-04|
-|                  x_4                   |  9.9715e-01|  1.6293e-01|                  x_5                   |  9.9393e-01| -1.2528e-01|
-|                  x_6                   |  9.8800e-01|  2.9222e-01|                  x_7                   |  9.7539e-01|  3.6201e-01|
-|                  *x_8                  |  9.4995e-01|  1.0954e+00|                   -                    |     -      |     -      |
-|                  x_9                   |  8.9849e-01| -7.8079e-01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 89
-Phase: 1
-F = 2.6969e-11
-Max Gradient Component: 9.8874e-05
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   |  1.0000e+00|  2.3265e-05|                  x_1                   |  1.0000e+00| -3.9588e-05|
-|                  x_2                   |  1.0000e+00| -6.1602e-05|                  x_3                   |  1.0000e+00| -2.1162e-05|
-|                  x_4                   |  1.0000e+00| -2.7402e-05|                  x_5                   |  1.0000e+00| -9.7803e-05|
-|                  x_6                   |  1.0000e+00|  2.7810e-05|                  *x_7                  |  1.0000e+00|  9.8874e-05|
-|                  x_8                   |  1.0000e+00|  3.4017e-05|                   -                    |     -      |     -      |
-|                  x_9                   |  1.0000e+00| -3.6699e-05|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-Rosenbrock test passed.
-Iteration: 7
-Phase: 1
-F = 5.5767e-07
-Max Gradient Component: 5.1085e-05
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   *x                   | -1.8779e-02| -5.1085e-05|                   -                    |     -      |     -      |
-|                   y                    |  1.3137e-02|  1.6811e-05|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-Shaefer test passed.
-Iteration: 7
-Phase: 1
-F = -1.9132e+00
-Max Gradient Component: 1.5816e-05
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   *x                   | -5.4720e-01| -1.5816e-05|                   -                    |     -      |     -      |
-|                   y                    | -1.5472e+00|  1.0657e-05|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-McCormick test passed.
-Iteration: 5
-Phase: 1
-F = -7.8410e-05
-Max Gradient Component: 5.3364e-05
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   *x                   |  1.2576e+00| -5.3364e-05|                   -                    |     -      |     -      |
-|                   *y                   |  1.2576e+00| -5.3364e-05|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-Easom test failed.
-Iteration: 10
-Phase: 1
-F = 1.0048e+01
-Max Gradient Component: 8.1970e-01
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.4828e+01| -2.5308e-01|                   -                    |     -      |     -      |
-|                   *y                   |  2.1986e+00| -8.1970e-01|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 20
-Phase: 1
-F = 1.0041e+01
-Max Gradient Component: 4.0660e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.4096e+01| -1.1563e+00|                   -                    |     -      |     -      |
-|                   *y                   |  1.9870e+00| -4.0660e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 30
-Phase: 1
-F = 1.0037e+01
-Max Gradient Component: 2.6192e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.3687e+01| -7.2697e-01|                   -                    |     -      |     -      |
-|                   *y                   |  1.8733e+00| -2.6192e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 40
-Phase: 1
-F = 1.0032e+01
-Max Gradient Component: 8.3524e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.3158e+01| -2.2080e+00|                   -                    |     -      |     -      |
-|                   *y                   |  1.7312e+00| -8.3524e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 50
-Phase: 1
-F = 1.0027e+01
-Max Gradient Component: 2.9117e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.2666e+01| -7.4761e-01|                   -                    |     -      |     -      |
-|                   *y                   |  1.6043e+00| -2.9117e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 60
-Phase: 1
-F = 1.0022e+01
-Max Gradient Component: 6.4074e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.2138e+01| -1.5655e+00|                   -                    |     -      |     -      |
-|                   *y                   |  1.4732e+00| -6.4074e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 70
-Phase: 1
-F = 1.0015e+01
-Max Gradient Component: 5.4397e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.1511e+01|  1.2424e+00|                   -                    |     -      |     -      |
-|                   *y                   |  1.3253e+00|  5.4397e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 80
-Phase: 1
-F = 1.0010e+01
-Max Gradient Component: 1.9120e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.1010e+01| -4.3102e-01|                   -                    |     -      |     -      |
-|                   *y                   |  1.2122e+00| -1.9120e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 90
-Phase: 1
-F = 1.0005e+01
-Max Gradient Component: 6.3923e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.0455e+01| -1.3466e+00|                   -                    |     -      |     -      |
-|                   *y                   |  1.0928e+00| -6.3923e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 100
-Phase: 1
-F = 1.0000e+01
-Max Gradient Component: 5.2588e+00
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -9.9972e+00| -1.0488e+00|                   -                    |     -      |     -      |
-|                   *y                   |  9.9934e-01| -5.2588e+00|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 105
-Phase: 1
-F = 1.0000e+01
-Max Gradient Component: 5.1457e-05
-Floating-Point Type: Float64
-Number of Parameters: 2
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                   x                    | -1.0000e+01|  1.0473e-05|                   -                    |     -      |     -      |
-|                   *y                   |  1.0000e+00|  5.1457e-05|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-Bukin test passed.
-Iteration: 10
-Phase: 1
-F = -3.9166e+02
-Max Gradient Component: 7.3536e-08
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   | -2.9035e+00|  1.0428e-08|                  *x_1                  | -2.9035e+00|  7.3536e-08|
-|                  x_2                   | -2.9035e+00|  7.1475e-08|                  x_3                   | -2.9035e+00|  1.0619e-09|
-|                  x_4                   | -2.9035e+00|  3.2028e-08|                  x_5                   | -2.9035e+00| -8.6118e-12|
-|                  x_6                   | -2.9035e+00|  8.4751e-09|                  x_7                   | -2.9035e+00|  7.6356e-09|
-|                  x_8                   | -2.9035e+00|  1.9474e-08|                   -                    |     -      |     -      |
-|                  x_9                   | -2.9035e+00|  5.1413e-09|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-Iteration: 10
-Phase: 1
-F = -3.9166e+02
-Max Gradient Component: 7.3536e-08
-Floating-Point Type: Float64
-Number of Parameters: 10
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  Name                  |   Value    |  Gradient  |                  Name                  |   Value    |  Gradient  |
- -------------------------------------------------------------------------------------------------------------------------------------
-|                  x_0                   | -2.9035e+00|  1.0428e-08|                  *x_1                  | -2.9035e+00|  7.3536e-08|
-|                  x_2                   | -2.9035e+00|  7.1475e-08|                  x_3                   | -2.9035e+00|  1.0619e-09|
-|                  x_4                   | -2.9035e+00|  3.2028e-08|                  x_5                   | -2.9035e+00| -8.6118e-12|
-|                  x_6                   | -2.9035e+00|  8.4751e-09|                  x_7                   | -2.9035e+00|  7.6356e-09|
-|                  x_8                   | -2.9035e+00|  1.9474e-08|                   -                    |     -      |     -      |
-|                  x_9                   | -2.9035e+00|  5.1413e-09|                   -                    |     -      |     -      |
- -------------------------------------------------------------------------------------------------------------------------------------
-
-
-port return =2
-Styblinski Tang test passed.
-Rosenbrock test passed.
-Shaefer test passed.
-McCormick test passed.
-Easom test failed.
-Bukin test passed.
-Styblinski Tang test passed.
-Destructing tape 
-Destructing tape 
+All tests passed.Destructing tape 
