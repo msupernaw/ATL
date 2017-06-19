@@ -967,7 +967,7 @@ namespace atl {
 #endif
 
 
-                struct cs_sparse<T>* fuu = cs_spalloc<T>(0, 0, 1, 1, 1);
+//                struct cs_sparse<T>* fuu = cs_spalloc<T>(0, 0, 1, 1, 1);
                 //                struct cs_sparse<T>* h_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
                 //                struct cs_sparse<T>* fu_theta = cs_spalloc<T>(0, 0, 1, 1, 1);
                 //                for (int j = 0; j < this->parameters_m.size(); j++) {
@@ -993,36 +993,23 @@ namespace atl {
 
                 //                int fuu_nonzeros = 0;
                 //                std::vector<T> hu(this->random_variables_m.size());
-                for (int i = 0; i < this->random_variables_m.size(); i++) {
-                    //                    hu[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
-                    //
-                    //                    cs_entry<T>(h_u, 0, i, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id));
-                    for (int j = 0; j < this->random_variables_m.size(); j++) {
-                        cs_entry<T>(fuu, i, j, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
-                                this->random_variables_m[j]->info->id));
-                        if (atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
-                                this->random_variables_m[j]->info->id) != 0.0) {
-                            //                            fuu_nonzeros++;
-                        }
-                    }
-                }
-                //                for (int i = 0; i < this->random_variables_m.size(); i++) {
-                //
-                //                    for (int j = 0; j < this->parameters_m.size(); j++) {
-                //                        cs_entry<T>(fu_theta, i, j, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id,
-                //                                this->parameters_m[j]->info->id));
-                //                    }
-                //                }
-
-
-
-
-                struct cs_sparse<T>* fuu_ = cs_compress<T>(fuu);
-                //                struct cs_sparse<T>* hu_ = cs_compress<T>(h_u);
-                //                struct cs_sparse<T>* fu_theta_ = cs_compress<T>(fu_theta);
-                //                struct cs_sparse<T>* h_theta_ = cs_compress<T>(h_theta);
-                SCResult<T> ret = this->sparse_cholesky.Analyze(fuu_);
-
+//                for (int i = 0; i < this->all_variables_m.size(); i++) {
+//                    for (int j = 0; j < this->all_variables_m.size(); j++) {
+//                        cs_entry<T>(fuu, i, j, atl::Variable<T>::tape.Value(this->all_variables_m[i]->info->id,
+//                                this->all_variables_m[j]->info->id));
+//                    }
+//                }
+//             
+//
+//
+//                struct cs_sparse<T>* fuu_ = cs_compress<T>(fuu);
+//                //                struct cs_sparse<T>* hu_ = cs_compress<T>(h_u);
+//                //                struct cs_sparse<T>* fu_theta_ = cs_compress<T>(fu_theta);
+//                //                struct cs_sparse<T>* h_theta_ = cs_compress<T>(h_theta);
+//                SCResult<T> ret = this->sparse_cholesky.Analyze(fuu_);
+//                atl::Variable<T>::tape.Reset();
+//                
+//                
                 //                std::cout << "start\nlog det actual with mult:     ";
 //                struct cs_sparse<T>* Fuu = this->sparse_cholesky.clone(hessian);
 //                //                 

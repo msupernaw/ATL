@@ -24,7 +24,6 @@
 namespace atl {
 
 
-
     template<typename REAL_T>
     struct Variable;
 
@@ -268,17 +267,8 @@ namespace atl {
 
             if (tape.recording) {
 
-
-                //                if(this->info->index == -999){
-                //                    this->info->index = index;
-                //                }
-
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
-
-                //                entry.exp = exp.ToExpressionTemplateString();
-
-//                 entry.w = std::shared_ptr<atl::VariableInfo<REAL_T> >(new atl::VariableInfo<REAL_T>());
 
                 entry.w = this->info;
                 entry.w->count++;
@@ -306,7 +296,6 @@ namespace atl {
                         entry.w->is_nl = exp.IsNonlinear();
                         entry.is_nl = exp.IsNonlinear();
 
-                        //                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
@@ -327,7 +316,6 @@ namespace atl {
                         entry.w->is_nl = exp.IsNonlinear();
                         entry.is_nl = exp.IsNonlinear();
 
-                        //                                                exp.PushNLIds(entry.nl_ids);
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
@@ -369,7 +357,6 @@ namespace atl {
                         break;
 
                     case DYNAMIC_RECORD:
-//                this->info = std::shared_ptr<atl::VariableInfo<REAL_T> >(new atl::VariableInfo<REAL_T>());
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                             entry.min_id = std::min((*it)->id, entry.min_id);
