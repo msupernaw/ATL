@@ -244,6 +244,11 @@ namespace atl {
         atl::Variable<T>& operator()(size_t j) {
             return this->data_m[j];
         }
+        
+       const atl::Variable<T>& operator()(size_t j) const{
+            return this->data_m[j];
+        }
+
 
         /**
          * Returns the size of this vector.

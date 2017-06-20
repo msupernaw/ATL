@@ -302,9 +302,8 @@ namespace atl {
 
 
     };
-    
-    
-     /**
+
+    /**
      * VariableVector is a 1 x M VariableMatrix.
      */
     template<typename T>
@@ -318,11 +317,9 @@ namespace atl {
         rows_m(rows_m), columns_m(columns_m), col(col), data_m(data_m) {
         }
 
-        
         VariableColumnVector(const VariableColumnVector<T>& other) :
         rows_m(other.rows_m), columns_m(other.columns_m), col(other.col), data_m(other.data_m) {
         }
-
 
         /**
          * Sets the size of this vector.
@@ -417,7 +414,6 @@ namespace atl {
 
 
     };
-
 
     /**
      * Matrix of \ref Variable types.
@@ -696,9 +692,21 @@ namespace atl {
         atl::VariableRowVector<T> Row(size_t i) {
             return atl::VariableRowVector<T>(i, this->columns, this->data_m);
         }
-        
+
+        void RowFill(size_t i, const atl::VariableVector<T>& v) {
+            for (size_t j = 0; j < this->columns; j++) {
+                this->data_m[i * this->columns + j] = v(j);
+            }
+        }
+
+        void ColumnFill(size_t i, const atl::VariableVector<T>& v) {
+            for (size_t j = 0; j < this->rows; j++) {
+                this->data_m[j * this->columns + i] = v(j);
+            }
+        }
+
         atl::VariableColumnVector<T> Column(size_t i) {
-            return atl::VariableColumnVector<T>(this->rows,this->columns, i, this->data_m);
+            return atl::VariableColumnVector<T>(this->rows, this->columns, i, this->data_m);
         }
 
         /**
@@ -996,18 +1004,18 @@ namespace atl {
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableRowVector<REAL_T>& m) {
         for (int j = 0; j < m.GetColumns(); j++) {
-            out << m.data_m[m.rows_m*m.GetColumns()+j].GetValue() << " ";
+            out << m.data_m[m.rows_m * m.GetColumns() + j].GetValue() << " ";
         }
         std::cout << std::endl;
 
 
         return out;
     }
-    
-     template<typename REAL_T>
+
+    template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableColumnVector<REAL_T>& m) {
         for (int j = 0; j < m.rows_m; j++) {
-            out << m.data_m[j*m.columns_m+m.col].GetValue() << "\n";
+            out << m.data_m[j * m.columns_m + m.col].GetValue() << "\n";
         }
         std::cout << std::endl;
 
