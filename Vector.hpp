@@ -25,7 +25,7 @@ namespace atl {
      */
     template<typename T>
     struct VariableVector : atl::ExpressionBase<T, VariableVector<T > > {
-        //        using VariableMatrix<T>::operator=;
+       
 
         size_t columns_m;
         std::vector<atl::Variable<T> > data_m;
@@ -337,47 +337,47 @@ namespace atl {
         return out;
     }
 
-    /**
-     * RealVector is a 1 x M RealMatrix.
-     */
-    template<typename T>
-    struct RealVector : RealMatrix<T> {
-        using RealMatrix<T>::operator=;
-
-        /**
-         * Constructor. 
-         * @param columns
-         */
-        RealVector(size_t columns = 0) :
-        RealMatrix<T>(1, columns) {
-        }
-
-        /**
-         * Sets the size of this vector.
-         * 
-         * @param size
-         */
-        void SetSize(size_t size) {
-            this->columns = size;
-            this->data_m.resize(size);
-        }
-
-        /**
-         * Returns the size of this vector.
-         * @return 
-         */
-        size_t GetSize() {
-            return this->columns;
-        }
-
-        const std::string ToExpressionTemplateString() const {
-            std::stringstream ss;
-            ss << "atl::RealVector<T>";
-            return ss.str();
-        }
-
-
-    };
+//    /**
+//     * RealVector is a 1 x M RealMatrix.
+//     */
+//    template<typename T>
+//    struct RealVector : RealMatrix<T> {
+//        using RealMatrix<T>::operator=;
+//
+//        /**
+//         * Constructor. 
+//         * @param columns
+//         */
+//        RealVector(size_t columns = 0) :
+//        RealMatrix<T>(1, columns) {
+//        }
+//
+//        /**
+//         * Sets the size of this vector.
+//         * 
+//         * @param size
+//         */
+//        void SetSize(size_t size) {
+//            this->columns = size;
+//            this->data_m.resize(size);
+//        }
+//
+//        /**
+//         * Returns the size of this vector.
+//         * @return 
+//         */
+//        size_t GetSize() {
+//            return this->columns;
+//        }
+//
+//        const std::string ToExpressionTemplateString() const {
+//            std::stringstream ss;
+//            ss << "atl::RealVector<T>";
+//            return ss.str();
+//        }
+//
+//
+//    };
 
 }
 

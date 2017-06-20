@@ -47,21 +47,27 @@ namespace atl {
          * @param lhs
          * @param rhs
          */
-        Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs)
+        Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs, bool element_product = false)
         : lhs_m(lhs.Cast()), rhs_m(rhs.Cast()) {
+
+
             if (!lhs_m.IsScalar() && !rhs_m.IsScalar()) {
-                if (lhs_m.GetRows() != rhs_m.GetColumns()) {//check for vector element multiply
-                    assert(lhs_m.GetRows() == 1);
-                    assert(rhs_m.GetRows() == 1);
-                      mm_multiply = false;
+
+                if (element_product == true) {
+                    this->mm_multiply = false;
                 } else {
-                    assert(lhs_m.GetRows() == rhs_m.GetColumns());
-                    mm_multiply = true;
+
+                    if (lhs_m.GetRows() != rhs_m.GetColumns()) {//check for vector element multiply
+                        assert(lhs_m.GetRows() == 1);
+                        assert(rhs_m.GetRows() == 1);
+                        mm_multiply = false;
+                    } else {
+                        assert(lhs_m.GetRows() == rhs_m.GetColumns());
+                        mm_multiply = true;
+                    }
+
                 }
-                
             }
-
-
         }
 
         /**
@@ -81,7 +87,7 @@ namespace atl {
          * @param lhs
          * @param rhs
          */
-        Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const REAL_T& rhs)
+        Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const REAL_T & rhs)
         : lhs_m(lhs.Cast()), rhs_m(real_m) {
             real_m.value = rhs;
         }
@@ -136,7 +142,7 @@ namespace atl {
          * 
          * @param ids
          */
-        inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage & ids)const {
             lhs_m.PushIds(ids);
             rhs_m.PushIds(ids);
         }
@@ -502,7 +508,7 @@ namespace atl {
     };
 
     /**
-     * Operator for addition of two expression templates.
+     * Operator for multiplication of two expression templates.
      * @param a
      * @param b
      * @return 
@@ -511,6 +517,19 @@ namespace atl {
     inline const Multiply<REAL_T, LHS, RHS> operator*(const ExpressionBase<REAL_T, LHS>& a,
             const ExpressionBase<REAL_T, RHS>& b) {
         return Multiply<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
+    }
+
+    /**
+     * element product.
+     * 
+     * @param a
+     * @param b
+     * @return 
+     */
+    template <class REAL_T, class LHS, class RHS>
+    inline const Multiply<REAL_T, LHS, RHS> ElementProduct(const ExpressionBase<REAL_T, LHS>& a,
+            const ExpressionBase<REAL_T, RHS>& b) {
+        return Multiply<REAL_T, LHS, RHS > (a.Cast(), b.Cast(), true);
     }
 
     /**
