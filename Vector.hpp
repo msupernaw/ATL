@@ -14,8 +14,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "Matrix.hpp"
-
+#include "Expression.hpp"
+#include "Variable.hpp"
+#include <cassert>
 
 namespace atl {
 
@@ -36,6 +37,11 @@ namespace atl {
         VariableVector(size_t columns = 0) :
         columns_m(columns) {
             this->data_m.resize(columns);
+        }
+
+        template<class A>
+        VariableVector(const atl::ExpressionBase<T, A>& exp) {
+            this->Assign(exp, atl::Variable<T>::tape);
         }
 
         /**
@@ -64,31 +70,165 @@ namespace atl {
             return *this;
         }
 
-     
-
         template<class A>
         VariableVector& operator=(const atl::ExpressionBase<T, A>& exp) {
 
-            if (exp.IsScalar()) {
-                if (this->data_m.size() == 0) {
-                    this->data_m.resize(1);
-                }
-                for (int i = 0; i < this->columns_m; i++) {
-                    this->data_m[i] = exp;
-                }
-            } else {
-                if (exp.GetRows() > 1) {
-                    throw std::invalid_argument("VariableVector& operator=(const atl::ExpressionBase<T,A>& exp) with rows > 0 called on vector template.");
-                } else {
-                    for (int i = 0; i < this->columns_m; i++) {
-                        this->data_m[i] = exp;
-                    }
-
-                }
-            }
+            this->Assign(exp, atl::Variable<T>::tape);
+            //            if (exp.IsScalar()) {
+            //                if (this->data_m.size() == 0) {
+            //                    this->data_m.resize(1);
+            //                }
+            //                for (int i = 0; i < this->columns_m; i++) {
+            //                    this->data_m[i] = exp;
+            //                }
+            //            } else {
+            //                if (exp.GetRows() > 1) {
+            //                    throw std::invalid_argument("VariableVector& operator=(const atl::ExpressionBase<T,A>& exp) with rows > 0 called on vector template.");
+            //                } else {
+            //                    for (int i = 0; i < this->columns_m; i++) {
+            //                        this->data_m[i] = exp;
+            //                    }
+            //
+            //                }
+            //            }
 
 
             return *this;
+        }
+
+        template<class A>
+        inline void Assign(const ExpressionBase<T, A>& exp, atl::Tape<T>& tape) {
+            this->columns_m = exp.GetColumns();
+
+            //            assert(exp.GetRows() <= 1);
+            if (exp.GetRows() > 1) {
+                throw std::invalid_argument("VariableVector& operator=(const atl::ExpressionBase<T,A>& exp) with rows > 1 called on vector template.");
+            }
+
+            std::vector<T > temp(this->columns_m);
+            this->data_m.resize(temp.size());
+            size_t index = tape.GetBlock(temp.size());
+
+            size_t i = 0;
+            for (size_t j = 0; j < this->columns_m; j++) {
+
+                temp[j] = exp.GetValue(i, j);
+                typename atl::StackEntry<T>& entry = tape.stack[index++];
+
+                exp.PushIds(entry.ids, i, j);
+
+                entry.w = this->data_m[j].info;
+                entry.w->count++;
+                entry.w->is_nl = true;
+                entry.first.resize(entry.ids.size(), static_cast<T> (0.0));
+                typename atl::StackEntry<T>::vi_iterator it;
+                typename atl::StackEntry<T>::vi_iterator jt;
+                typename atl::StackEntry<T>::vi_iterator kt;
+                size_t ii = 0;
+                size_t jj = 0;
+                size_t kk = 0;
+                entry.wv = exp.GetValue(i, j);
+                switch (tape.derivative_trace_level) {
+
+                    case FIRST_ORDER_REVERSE:
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            entry.first[ii] = exp.EvaluateDerivative((*it)->id, i, j);
+                            ii++;
+                        }
+                        break;
+
+                    case SECOND_ORDER_REVERSE:
+                        entry.w->is_nl = exp.IsNonlinear();
+                        entry.is_nl = exp.IsNonlinear();
+
+                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
+
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            entry.first[ii] = exp.EvaluateDerivative((*it)->id);
+                            jj = 0;
+                            for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                                entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id, i, j);
+                                jj++;
+                            }
+                            i++;
+                        }
+                        break;
+
+                    case THIRD_ORDER_REVERSE:
+                        entry.w->is_nl = exp.IsNonlinear();
+                        entry.is_nl = exp.IsNonlinear();
+
+                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
+                        entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            (*it)->live++;
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            entry.first[i] = exp.EvaluateDerivative((*it)->id, i, j);
+                            jj = 0;
+                            for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                                entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
+                                kk = 0;
+                                for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
+
+                                    entry.third[ii * entry.ids.size() * entry.ids.size() + jj * entry.ids.size() + kk] =
+                                            exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id, i, j);
+                                    kk++;
+                                }
+                                jj++;
+                            }
+                            ii++;
+                        }
+                        break;
+                    case atl::UTPM_REVERSE:
+                        throw std::invalid_argument("UTPM not yet implemented for VariableVector.");
+
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            (*it)->tayor_coefficients.resize(tape.taylor_order + 1);
+                            (*it)->tayor_coefficients[0] = (*it)->value;
+                        }
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            (*it)->tayor_coefficients[1] = static_cast<T> (1.0);
+                            for (ii = 0; i <= tape.taylor_order; i++) {
+                                entry.taylor_coeff[(*it)->id].push_back(exp.Taylor(ii));
+                            }
+                            (*it)->tayor_coefficients[1] = static_cast<T> (0.0);
+                        }
+
+                        break;
+
+                    case DYNAMIC_RECORD:
+
+                        throw std::invalid_argument("DYNAMIC_RECORD not yet implemented for VariableVector.");
+
+
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                        }
+                        entry.exp = exp.ToDynamic();
+
+                        break;
+                    default:
+                        std::cout << "Unknown Derivative Trace Level.\n";
+                        exit(0);
+                }
+
+            }
+
+            //in case there is aliasing
+            for (int i = 0; i < data_m.size(); i++) {
+                data_m[i] = temp[i];
+            }
+
+
         }
 
         /**
@@ -184,6 +324,18 @@ namespace atl {
 
 
     };
+
+    template<typename REAL_T>
+    std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
+        for (int i = 0; i < m.GetRows(); i++) {
+            for (int j = 0; j < m.GetColumns(); j++) {
+                out << m.data_m[i * m.GetColumns() + j].GetValue() << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        return out;
+    }
 
     /**
      * RealVector is a 1 x M RealMatrix.

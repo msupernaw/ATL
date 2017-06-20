@@ -23,8 +23,6 @@
 
 namespace atl {
 
-  
-
     /**
      * Expression template to handle multiplication.
      * 
@@ -52,8 +50,15 @@ namespace atl {
         Multiply(const ExpressionBase<REAL_T, LHS>& lhs, const ExpressionBase<REAL_T, RHS>& rhs)
         : lhs_m(lhs.Cast()), rhs_m(rhs.Cast()) {
             if (!lhs_m.IsScalar() && !rhs_m.IsScalar()) {
-                assert(lhs_m.GetRows() == rhs_m.GetColumns());
-                mm_multiply = true;
+                if (lhs_m.GetRows() != rhs_m.GetColumns()) {//check for vector element multiply
+                    assert(lhs_m.GetRows() == 1);
+                    assert(rhs_m.GetRows() == 1);
+                      mm_multiply = false;
+                } else {
+                    assert(lhs_m.GetRows() == rhs_m.GetColumns());
+                    mm_multiply = true;
+                }
+                
             }
 
 
