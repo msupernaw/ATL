@@ -1303,7 +1303,7 @@ namespace atl {
         void Print() {
             std::cout << "Iteration: " << this->outer_iteration << "\n";
             std::cout << "Phase: " << this->phase_m << "\n";
-            std::cout << "F = " << this->function_value << "\n";
+            std::cout << "Function Value = " << this->function_value << "\n";
             std::cout << "Max Gradient Component: " << this->maxgc << "\n";
             std::cout << "Floating-Point Type: Float" << (sizeof (T)*8) << "\n";
             std::cout << "Number of Parameters: " << this->parameters_m.size() << "\n";
