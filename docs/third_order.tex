@@ -1,0 +1,218 @@
+\documentclass[oneside]{article}
+
+
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+
+
+\usepackage[printwatermark]{xwatermark}
+\newwatermark[allpages,color=red!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+\usepackage{makecell}
+\usepackage{pgfplots}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linktoc=all,
+    citecolor=blue,
+    filecolor=blue,
+    linkcolor=blue,
+    urlcolor=blue
+}
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset { %
+    language=C++,
+    backgroundcolor=\color{black!5}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+}
+
+\usepackage{amsmath}
+\usepackage{graphicx} 
+\usepackage{wrapfig}
+\usepackage{forest}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usepackage{adjustbox}
+
+\newsavebox{\mysavebox}
+\newlength{\myrest}
+\usepackage{fix-cm}
+\usepackage{algorithm,algpseudocode,float}
+\usepackage{lipsum}
+\newcommand{\Code}[1]{%
+\lstinline{#1}}
+\usepackage[T1]{fontenc}
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{listings}
+
+\newcommand{\Out}[1]{%
+\begin{lstlisting}[language=bash]
+#1
+\end{lstlisting}
+}
+\newtcblisting{cppsource}{
+  colback=white,
+  boxrule=0pt,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  colframe=white,
+  listing only,
+ left=15.5pt,
+  enhanced,
+  listing options={
+    columns=flexible,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    backgroundcolor=\color{black!4}, % set backgroundcolor
+    language=C++,
+    showstringspaces=false,
+    tabsize=2,
+  }
+}
+\newtcblisting{smallcppsource}{
+  colback=white,
+  boxrule=0pt,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  colframe=white,
+  listing only,
+ left=15.5pt,
+  enhanced,
+  listing options={
+    columns=flexible,
+    basicstyle=\tiny\ttfamily,
+    keywordstyle=\color{blue},
+    backgroundcolor=\color{black!4}, % set backgroundcolor
+    language=C++,
+    showstringspaces=false,
+    tabsize=2,
+  }
+}
+
+\newtcblisting{myoutput}{
+  colback=white,
+  boxrule=0pt,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  colframe=white,
+  listing only,
+  listing options={
+    basicstyle=\scriptsize\ttfamily\color{red},
+    breaklines=false,
+    columns=flexible,
+     backgroundcolor=\color{white}, % set backgroundcolor
+%    language=bash,
+  }
+}
+
+
+\newtcblisting{editnote}{
+  colback=white,
+  boxrule=0pt,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  colframe=white,
+  listing only,
+  listing options={
+    basicstyle=\scriptsize\ttfamily,
+    breaklines=false,
+    columns=flexible,
+     backgroundcolor=\color{white}, % set backgroundcolor
+    language=bash,
+  }
+}
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=5mm,columnsep=20pt]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+
+
+\begin{document}
+
+\begin{algorithm*}[!htb]
+  \caption{Third-Order Reverse Mode Accumulation}
+  \begin{algorithmic}[1]
+\State \textbf{Input:} \textit{Tape} 
+\State $\nabla f = \bar{w}[m] = 0$ 
+\State $\nabla^2 f =  \bar{h}[m][m] = 0$ 
+\State $\nabla^3 f =  \bar{d}[m][m][m] = 0$ \\
+
+\State $S = \{w_m\}$
+\State $\bar{w}[m] = 1$
+\For{$i = m$ to ${1}$}
+\State $w_i \cup S_i$
+\State $S_i = \{ \}$
+\State $\bar{w_i}=\bar{w}[i]$
+\State $\bar{w}[i] = 0$
+\State $\bar{h}_{ii}=\bar{h}[i][i]$
+\State $\bar{h}[i][i] = 0$
+\State $\bar{d}_{iii}=\bar{d}[i][i][i]$
+\State $\bar{d}[i][i][i] = 0$
+\State n = size(variable set) \\
+\For{$j = 1$ to ${n}$}
+\State $\bar{H}[i][j] = \bar{h}[i][j]$
+\State $\bar{h}[i][j] = 0$
+\For{$k = 1$ to ${n}$}
+\State $\bar{D}[i][j][k] = \bar{d}[i][j][k]$
+\State $\bar{d}[i][j][k] = 0$
+\EndFor
+\EndFor \\
+\For{$j = 1$ to ${n}$}
+\State $\bar{w}[j] +=  \frac{\partial \phi_i}{\partial x_i}\bar{w}[i]$
+\For{$k = 1$ to ${n}$}
+\State  $temp =  \bar{h}[i][k]  \frac{\partial f}{\partial x_j} + \bar{h}[i][j]  \frac{\partial f}{\partial x_k}+\bar{h}[i][i]  \frac{\partial f}{\partial x_k} \frac{\partial f}{\partial x_j} + w\frac{\partial^2 f}{\partial x_j \partial x_k}$
+\If{$temp \neq 0$} 
+\State  $\bar{h}[j][k] += temp$
+\State  $j \in S_i$
+\State  $k \in S_i$
+\EndIf
+\For{$l = 1$ to ${n}$}
+\State  \begin{varwidth}[t]{\linewidth}  $temp =  \frac{\partial \phi_i}{\partial x_j}\bar{D}[i][k][l] + \frac{\partial \phi_i}{\partial x_k}\bar{D}[i][j][l]+ \frac{\partial \phi_i}{\partial x_l}\bar{D}[i][j][k]+$ \par \hskip\algorithmicindent  $\frac{\partial \phi_i}{\partial x_j} \frac{\partial \phi_i}{\partial x_k}\bar{D}[i][i][l] + \frac{\partial \phi_i}{\partial x_j} \frac{\partial \phi_i}{\partial x_l}\bar{D}[i][i][k]+ \frac{\partial \phi_i}{\partial x_k} \frac{\partial \phi_i}{\partial x_l}\bar{D}[i][i][j]+$ \par \hskip\algorithmicindent $ \frac{\partial \phi_i}{\partial x_j} \frac{\partial \phi_i}{\partial x_k} \frac{\partial \phi_i}{\partial x_l}\bar{d}_{iii}+$ \par \hskip\algorithmicindent $\frac{\partial \phi_i}{\partial x_j} \frac{\partial \phi_i}{\partial x_k}\bar{H}[i][l] + \frac{\partial \phi_i}{\partial x_j} \frac{\partial \phi_i}{\partial x_l}\bar{H}[i][k]+\frac{\partial \phi_i}{\partial x_k} \frac{\partial \phi_i}{\partial x_l}\bar{H}[i][j] +$\par \hskip\algorithmicindent $ [\frac{\partial \phi_i}{\partial x_j}\frac{\partial^2 \phi_i}{\partial x_k \partial x_l} +\frac{\partial^2 \phi_i}{\partial x_k}\frac{\partial^2 \phi_i}{\partial x_j \partial x_l} + \frac{\partial^2 \phi_i}{\partial x_l}\frac{\partial^2 \phi_i}{\partial x_j \partial x_k}]\bar{h}_{ii} +$\par \hskip\algorithmicindent $\bar{w_i}\frac{\partial^3 \phi_i}{\partial x_j \partial x_k \partial x_l}$ 
+\end{varwidth}
+\If{$temp \neq 0$} 
+\State  $\bar{d}[j][k][l] += temp$
+\State  $j \in S_i$
+\State  $k \in S_i$
+\State  $l \in S_i$
+\EndIf
+
+
+\EndFor
+\EndFor
+\EndFor
+\If i > 1
+\State Push statement level variables to entry[i-1].
+\EndIf
+\EndFor
+%\State  \\
+%\State \textbf{Output:}  \\ 
+%\State $\nabla f = \bar{w}[m] $ 
+%\State $\nabla^2 f =  \bar{h}[m][m]$ 
+%\State $\nabla^3 f =  \bar{d}[m][m][m] $ 
+  
+\end{algorithmic}
+ \end{algorithm*} 
+ \end{document}

@@ -1,0 +1,67 @@
+\documentclass[letterpaper, 10 pt]{report}
+
+
+\usepackage{amsmath}
+\usepackage{graphicx} 
+\usepackage{wrapfig}
+\usepackage{forest}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usepackage{fix-cm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{lipsum}
+
+\begin{document}
+
+\begin{algorithm*}
+  \caption{Reverse Mode With Hessian Accumulation}
+  \begin{algorithmic}[1]
+\State \textbf{Input:} \textit{Tape} 
+\State $\bar{w} = [\bar{ x_1},\bar{x_2},\bar{x_3}...\bar{x_{m-1}}] = 0$ \\
+\State  $\bar{h} = \left| \begin{array}{ccccc}
+\frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1 \partial x_2} & \frac{\partial^2 f}{\partial x_1 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_1 \partial x_m} \\
+\frac{\partial^2 f}{\partial x_2^2} & \frac{\partial^2 f}{\partial x_2 \partial x_2} & \frac{\partial^2 f}{\partial x_2 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_2 \partial x_m}  \\
+\frac{\partial^2 f}{\partial x_3^2} & \frac{\partial^2 f}{\partial x_3 \partial x_2} & \frac{\partial^2 f}{\partial x_3 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_3 \partial x_m} \\
+. & . & . & ... & . \\
+. & . & . & ... & . \\
+. & . & . & ... & . \\
+\frac{\partial^2 f}{\partial x_m^2} & \frac{\partial^2 f}{\partial x_m \partial x_2} & \frac{\partial^2 f}{\partial x_m \partial x_3} & ... & \frac{\partial^2 f}{\partial x_m \partial x_m} \\
+
+  \end{array} \right| = 0$ \\
+\State $S = \{w_m\}$
+\State $\bar{w}[m] = 1$
+\For{$i = m$ to ${1}$}
+\State $\frac{df}{dx_i}=\bar{w}[i]$
+\State $\bar{w}[i] = 0$
+\State $w_i \cup S_i$
+\State $S_i = \{ \}$
+\For{$j = 1$ to ${i}$}
+\State $\bar{w}[j] +=  \frac{\partial f}{\partial x_i}\bar{w}[i]$
+\For{$k = 1$ to ${i}$}
+\State  $temp =  \bar{h}[i][k]  \frac{\partial f}{\partial x_j} + \bar{h}[i][j]  \frac{\partial f}{\partial x_k}+\bar{h}[i][i]  \frac{\partial f}{\partial x_k} \frac{\partial f}{\partial x_j} + w\frac{\partial^2 f}{\partial x_j \partial x_k}$
+\If{$temp \neq 0$} 
+\State  $\bar{h}[j][k] += temp$
+\State  $j \in S_i$
+\State  $k \in S_i$
+\EndIf
+\EndFor
+\EndFor
+\EndFor
+\State \textbf{Output:}  \\ \\ $\nabla f = \bar{w} =  [\bar{ x_1},\bar{x_2},\bar{x_3}...\bar{x_{m}}]$\\
+\State  $\nabla f^2 =\bar{h} = \left| \begin{array}{ccccc}
+\frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1 \partial x_2} & \frac{\partial^2 f}{\partial x_1 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_1 \partial x_m} \\ \\
+\frac{\partial^2 f}{\partial x_2^2} & \frac{\partial^2 f}{\partial x_2 \partial x_2} & \frac{\partial^2 f}{\partial x_2 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_2 \partial x_m}  \\
+\frac{\partial^2 f} {\partial x_3^2} & \frac{\partial^2 f}{\partial x_3 \partial x_2} & \frac{\partial^2 f}{\partial x_3 \partial x_3} & ... & \frac{\partial^2 f}{\partial x_3 \partial x_m} \\
+. & . & . & ... & . \\
+. & . & . & ... & . \\
+. & . & . & ... & . \\
+\frac{\partial^2 f}{\partial x_m^2} & \frac{\partial^2 f}{\partial x_m \partial x_2} & \frac{\partial^2 f}{\partial x_m \partial x_3} & ... & \frac{\partial^2 f}{\partial x_m \partial x_m} \\
+
+  \end{array} \right|$
+
+
+\end{algorithmic}
+ \end{algorithm*}
+ 
+ \end{document}
