@@ -6,6 +6,7 @@
 
 
 #include <vector>
+#include <algorithm>
 //#include "../AutoDiff/AlignedAllocator.hpp"
 
 
