@@ -1437,7 +1437,7 @@ namespace atl {
                         c += a*b;
                     }
 
-                    c = _mm_hadd_pd(c, c);
+                    c = _mm_add_pd(c, c);
                     c.store_u(&result(i, j));
                     double temp = 0.0;
                     while (k < size) {
