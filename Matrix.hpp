@@ -1413,10 +1413,10 @@ namespace atl {
             return false;
         }
 
-        static inline void MatrixMultiplySIMD(atl::RealMatrix<double>& m1, 
-                atl::RealMatrix<double>& m2, 
+        static inline void MatrixMultiplySIMD(atl::RealMatrix<double>& m1,
+                atl::RealMatrix<double>& m2,
                 atl::RealMatrix<double>& result) {
-            
+
             size_t size = m1.GetRows();
             size_t lrows = size;
             size_t lcols = size;
@@ -1463,12 +1463,41 @@ namespace atl {
 
     };
 
-    
-        template<typename REAL_T>
+    /**
+     * Sum the elements of a VariableMatrix.
+     * 
+     * @param matrix
+     * @return 
+     */
+    template<typename T>
+    const atl::Variable<T> Sum(const atl::VariableMatrix<T>& matrix) {
+        atl::Variable<T> sum;
+        for (int i = 0; i < matrix.data_m.size(); i++) {
+            sum += matrix.data_m[i];
+        }
+        return sum;
+    }
+
+    /**
+     * Sum the elements of a RealMatrix.
+     * 
+     * @param matrix
+     * @return 
+     */
+    template<typename T>
+    const T Sum(const atl::RealMatrix<T>& matrix) {
+        T sum;
+        for (int i = 0; i < matrix.data_m.size(); i++) {
+            sum += matrix.data_m[i];
+        }
+        return sum;
+    }
+
+    template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const RealMatrix<REAL_T>& m) {
         for (int i = 0; i < m.rows; i++) {
             for (int j = 0; j < m.columns; j++) {
-                out << m.data_m[i * m.columns + j]<< " ";
+                out << m.data_m[i * m.columns + j] << " ";
             }
             std::cout << std::endl;
         }
