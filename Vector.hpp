@@ -391,8 +391,8 @@ namespace atl {
         }
         return ret;
     }
-    
-     template<class T>
+
+    template<class T>
     inline const atl::VariableVector<T> Norm2(const atl::VariableVector<T> &expr) {
         atl::Variable<T> ret;
         size_t n = expr.GetSize();
@@ -402,7 +402,16 @@ namespace atl {
         return ret;
     }
 
-    
+    template<class T>
+    inline const atl::VariableVector<T> Sum(const atl::VariableVector<T> &expr) {
+        atl::Variable<T> ret;
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret += expr(i);
+        }
+        return ret;
+    }
+
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
         for (int i = 0; i < m.GetRows(); i++) {
