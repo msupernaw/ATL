@@ -259,6 +259,13 @@ namespace atl {
 
         }
 
+        
+        void SetBounds(const T& min, const T& max){
+            for(int i =0; i<this->data_m.size(); i++){
+                this->data_m[i].SetBounds(min, max);
+            }
+        }
+        
         /**
          * Sets the size of this vector.
          * 

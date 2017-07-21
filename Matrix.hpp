@@ -716,14 +716,18 @@ namespace atl {
             }
         }
 
-        
-        void Resize(size_t rows, size_t columns){
-            this->rows =rows;
+        void Resize(size_t rows, size_t columns) {
+            this->rows = rows;
             this->columns = columns;
-            this->data_m.resize(rows*columns);
+            this->data_m.resize(rows * columns);
         }
-        
-        
+
+        void SetBounds(const T& min, const T& max) {
+            for (int i = 0; i<this->data_m.size(); i++) {
+                this->data_m[i].SetBounds(min, max);
+            }
+        }
+
         /**
          * Push variable info into a set for index {0,0}..
          *  
