@@ -36,10 +36,10 @@
 #define FABS_HPP
 
 #include "Expression.hpp"
-//#include "Pow.hpp" // for ad_fabs
-//#include "Sqrt.hpp"
-//#include "Variable.hpp"
-//#include "Multiply.hpp"
+#include "Pow.hpp" // for ad_fabs
+#include "Sqrt.hpp"
+#include "Variable.hpp"
+#include "Multiply.hpp"
 namespace atl {
 
     /**
