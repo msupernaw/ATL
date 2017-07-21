@@ -640,6 +640,21 @@ namespace atl {
         bool IsBounded() const {
             return this->bounded_m;
         }
+        
+               /**
+         * Sets the boundary values for this variable. 
+         * 
+         * @param min_boundary
+         * @param max_boundary
+         */
+        inline void SetBounds(REAL_T min_boundary, REAL_T max_boundary) {
+            this->bounded_m = true;
+            this->SetMinBoundary(min_boundary);
+            this->SetMaxBoundary(max_boundary);
+            if (this->GetValue()<this->GetMinBoundary() || this->GetValue()>this->GetMaxBoundary() || this->GetValue() == 0.0) {
+                this->SetValue((min_boundary + max_boundary) / 2.0);
+            }
+        }
 
         inline void SetValue(const REAL_T& val) {
             this->info->value = val;
