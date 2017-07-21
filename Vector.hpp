@@ -375,6 +375,21 @@ namespace atl {
 
 
     };
+    
+    /**
+     * Sum the elements of a VariableMatrix.
+     * 
+     * @param matrix
+     * @return 
+     */
+    template<typename T>
+    const atl::Variable<T> Sum(const atl::VariableVector<T>& vec) {
+        atl::Variable<T> sum;
+        for (int i = 0; i < vec.data_m.size(); i++) {
+            sum += vec.data_m[i];
+        }
+        return sum;
+    }
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
