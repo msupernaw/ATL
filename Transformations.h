@@ -128,13 +128,13 @@ namespace atl{
         }
 
         virtual REAL_T Internal2External(REAL_T val, REAL_T min_, REAL_T max_) const {
-            REAL_T p = ::exp(val) / (1.0 + ::exp(val));
+            REAL_T p = stdstd::exp(val) / (1.0 + std::exp(val));
             return p * (max_ - min_) + min_;
         }
 
         virtual REAL_T DerivativeInternal2External(REAL_T val, REAL_T min_, REAL_T max_)const {
-            return (::exp(val) * ::log(M_E)*(max_ - min_)) / (::exp(val) + 1.0)-
-                    (::exp(static_cast<REAL_T> (2.0 * val)) * ::log(M_E)*(max_ - min_)) / ::pow((::exp(val) + 1), 2.0);
+            return (std::exp(val) * ::log(M_E)*(max_ - min_)) / (std::exp(val) + 1.0)-
+                    (std::exp(static_cast<REAL_T> (2.0 * val)) * ::log(M_E)*(max_ - min_)) / ::pow((std::exp(val) + 1), 2.0);
         }
     };
 
