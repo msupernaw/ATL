@@ -718,6 +718,8 @@ namespace atl {
 
         
         void Resize(size_t rows, size_t columns){
+            this->rows =rows;
+            this->columns = columns;
             this->data_m.resize(rows*columns);
         }
         
