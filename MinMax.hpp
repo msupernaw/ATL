@@ -13,13 +13,14 @@
 
 #ifndef MINMAX_HPP
 #define MINMAX_HPP
+#include "Expression.hpp"
 
-#include "Add.hpp"
-#include "Divide.hpp"
-#include "Subtract.hpp"
-#include "Fabs.hpp"
-#include "Multiply.hpp"
-#include "Matrix.hpp"
+//#include "Add.hpp"
+//#include "Divide.hpp"
+//#include "Subtract.hpp"
+//#include "Fabs.hpp"
+//#include "Multiply.hpp"
+//#include "Matrix.hpp"
 
 namespace atl {
 
