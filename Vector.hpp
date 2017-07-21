@@ -42,7 +42,6 @@ namespace atl {
             this->Assign(exp, atl::Variable<T>::tape);
         }
 
-    
         VariableVector(const std::initializer_list<T>& l) {
             this->columns_m = l.size();
 
@@ -259,13 +258,12 @@ namespace atl {
 
         }
 
-        
-        void SetBounds(const T& min, const T& max){
-            for(int i =0; i<this->data_m.size(); i++){
+        void SetBounds(const T& min, const T& max) {
+            for (int i = 0; i<this->data_m.size(); i++) {
                 this->data_m[i].SetBounds(min, max);
             }
         }
-        
+
         /**
          * Sets the size of this vector.
          * 
@@ -276,7 +274,7 @@ namespace atl {
             this->data_m.resize(size);
         }
 
-            /**
+        /**
          * Sets the size of this vector.
          * 
          * @param size
@@ -285,7 +283,7 @@ namespace atl {
             this->columns_m = size;
             this->data_m.resize(size);
         }
-        
+
         atl::Variable<T>& operator()(size_t j) {
             return this->data_m[j];
         }
@@ -382,22 +380,29 @@ namespace atl {
 
 
     };
-    
-    /**
-     * Sum the elements of a VariableMatrix.
-     * 
-     * @param matrix
-     * @return 
-     */
-    template<typename T>
-    const atl::Variable<T> Sum(const atl::VariableVector<T>& vec) {
-        atl::Variable<T> sum;
-        for (int i = 0; i < vec.data_m.size(); i++) {
-            sum += vec.data_m[i];
+
+    template<class T>
+    inline const atl::VariableVector<T> FirstDifference(const atl::VariableVector<T> &expr) {
+        atl::VariableVector<T> ret;
+        size_t n = expr.GetSize() - 1;
+        ret.Resize(n);
+        for (size_t i = 0; i < n; i++) {
+            ret(i) = expr(i + 1) - expr(i);
         }
-        return sum;
+        return ret;
+    }
+    
+     template<class T>
+    inline const atl::VariableVector<T> Norm2(const atl::VariableVector<T> &expr) {
+        atl::Variable<T> ret;
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret += expr(i) * expr(i);
+        }
+        return ret;
     }
 
+    
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
         for (int i = 0; i < m.GetRows(); i++) {
