@@ -36,10 +36,10 @@
 #define FABS_HPP
 
 #include "Expression.hpp"
-#include "Pow.hpp" // for ad_fabs
-#include "Sqrt.hpp"
-#include "Variable.hpp"
-#include "Multiply.hpp"
+//#include "Pow.hpp" // for ad_fabs
+//#include "Sqrt.hpp"
+//#include "Variable.hpp"
+//#include "Multiply.hpp"
 namespace atl {
 
     /**
@@ -300,20 +300,7 @@ namespace atl {
         return atl::Fabs<REAL_T, EXPR > (expr.Cast());
     }
 
-    template<class REAL_T, class EXPR>
-    const atl::Variable<REAL_T> sqrt12(const atl::ExpressionBase<REAL_T, EXPR>& expr) {
-        // double a = (eventually the main method will plug values into a)
-        atl::Variable<REAL_T> a = expr;
-        atl::Variable<REAL_T> x = 1;
 
-        // For loop to get the square root value of the entered number.
-        for (int i = 0; i < std::ceil(a.GetValue()) + 20; i++) {
-
-            x = REAL_T(0.5) * (x + a / x);
-        }
-
-        return x;
-    }
 
     /**
      * 
@@ -325,15 +312,15 @@ namespace atl {
      * \f$ (expr^2+C)^.5 \f$
      * 
      * @param expr
-     * @param C default = 1e-50
+     * @param C default = 1e-5
      * @return 
      */
     template<class REAL_T, class EXPR>
-    const atl::Variable<REAL_T> ad_fabs(const atl::ExpressionBase<REAL_T, EXPR>& expr, atl::Variable<REAL_T> C = 1e-4) {
+    const atl::Variable<REAL_T> ad_fabs(const atl::ExpressionBase<REAL_T, EXPR>& expr, atl::Variable<REAL_T> C = 1e-5) {
         return atl::sqrt((expr * expr) + C); //, .5);
     }
 
-#define AD_FABS(x) atl::sqrt((x * x) +1e-50)
+#define AD_FABS(x) atl::sqrt((x * x) +1e-5)
 
 
 
