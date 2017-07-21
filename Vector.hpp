@@ -308,6 +308,14 @@ namespace atl {
         size_t GetSize() {
             return this->columns_m;
         }
+        
+        /**
+         * Returns the size of this vector.
+         * @return 
+         */
+        size_t GetSize() const{
+            return this->columns_m;
+        }
 
         inline const T GetValue() const {
             throw std::invalid_argument("GetValue() called on vector template.");
