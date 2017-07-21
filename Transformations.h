@@ -17,7 +17,7 @@
 #include <cmath>
 
 namespace atl{
-    
+    /*
      /**
      * Base class for parameter transformations. Used in optimization
      * problems involving bounded parameters.
@@ -137,7 +137,7 @@ namespace atl{
                     (std::exp(static_cast<REAL_T> (2.0 * val)) * std::log(M_E)*(max_ - min_)) / std::pow((std::exp(val) + 1), 2.0);
         }
     };
-
+*/
     
 }
 
