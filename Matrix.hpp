@@ -716,6 +716,12 @@ namespace atl {
             }
         }
 
+        
+        void Resize(size_t rows, size_t columns){
+            this->data_m.resize(rows*columns);
+        }
+        
+        
         /**
          * Push variable info into a set for index {0,0}..
          *  
