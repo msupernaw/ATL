@@ -26,8 +26,8 @@
 
 namespace atl {
 
-    template<typename T>
-    struct VariableVector;
+    //    template<typename T>
+    //    struct VariableVector;
 
     template<typename T>
     struct VariableMatrix;
@@ -77,7 +77,7 @@ namespace atl {
                 for (size_t j = 0; j < m.columns; j++) {
                     atl::StackEntry<T>& entry = atl::Variable<T>::tape.stack[index_start++];
 
-                    exp.PushIds(entry.ids);
+                    exp.PushIds(entry.ids,i,j);
 
                     entry.w = m.data_m[i * m.columns + j].info;
                     entry.w->count++;
@@ -194,239 +194,6 @@ namespace atl {
             }
 
         }
-    };
-
-    /**
-     * VariableVector is a 1 x M VariableMatrix.
-     * 
-     * This object references values from a row in a VariableMatrix. Therfore,
-     * if a value is modified, it is also modified in the VariableMatrix of
-     * its origin.
-     * 
-     */
-    template<typename T>
-    struct VariableRowVector : atl::ExpressionBase<T, VariableRowVector<T > > {
-        size_t rows_m = 0;
-        size_t columns_m = 0;
-        std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m;
-
-        VariableRowVector(size_t rows_m, size_t columns_m, std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m) :
-        rows_m(rows_m), columns_m(columns_m), data_m(data_m) {
-        }
-
-        VariableRowVector(const VariableVector<T>& other) :
-        rows_m(other.rows_m), columns_m(other.columns_m), data_m(other.data_m) {
-        }
-
-        /**
-         * Sets the size of this vector.
-         * 
-         * @param size
-         */
-        void SetSize(size_t size) {
-            this->columns_m = size;
-            this->data_m.resize(size);
-        }
-
-        atl::Variable<T>& operator()(size_t j) {
-            return this->data_m[rows_m * this->columns_m + j];
-        }
-
-        /**
-         * Returns the size of this vector.
-         * @return 
-         */
-        size_t GetSize() {
-            return this->columns_m;
-        }
-
-        inline const T GetValue() const {
-            throw std::invalid_argument("GetValue() called on vector template.");
-        }
-
-        inline const T GetValue(size_t i, size_t j = 0) const {
-            return this->data_m[rows_m * this->columns_m + j].GetValue();
-        }
-
-        inline bool IsNonlinear() const {
-            return false;
-        }
-
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
-            throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
-        }
-
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
-            data_m[rows_m * this->columns_m + j].PushIds(ids);
-        }
-
-        std::shared_ptr<DynamicExpressionBase<T> > ToDynamic() const {
-            throw std::invalid_argument("Not yet implemented. ToDynamic() called on vector template.");
-        }
-
-        inline T EvaluateDerivative(uint32_t x) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x,uint32_t y) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x, y);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x, y, z);
-        }
-
-        size_t GetColumns() const {
-            return this->columns_m;
-        }
-
-        size_t GetRows() const {
-            return 1;
-        }
-
-        bool IsScalar()const {
-            return false;
-        }
-
-        const std::string ToExpressionTemplateString() const {
-            std::stringstream ss;
-            ss << "atl::VariableVector<T>";
-            return ss.str();
-        }
-
-
-    };
-
-    /**
-     * VariableVector is a N x 1 VariableMatrix.
-     * 
-     * This object references values from a column in a VariableMatrix. Therfore,
-     * if a value is modified, it is also modified in the VariableMatrix of
-     * its origin.
-     * 
-     */
-    template<typename T>
-    struct VariableColumnVector : atl::ExpressionBase<T, VariableColumnVector<T > > {
-        size_t rows_m = 0;
-        size_t columns_m = 0;
-        size_t col = 0;
-        std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m;
-
-        VariableColumnVector(size_t rows_m, size_t columns_m, size_t col, std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m) :
-        rows_m(rows_m), columns_m(columns_m), col(col), data_m(data_m) {
-        }
-
-        VariableColumnVector(const VariableColumnVector<T>& other) :
-        rows_m(other.rows_m), columns_m(other.columns_m), col(other.col), data_m(other.data_m) {
-        }
-
-        /**
-         * Sets the size of this vector.
-         * 
-         * @param size
-         */
-        void SetSize(size_t size) {
-            this->columns_m = size;
-            this->data_m.resize(size);
-        }
-
-        atl::Variable<T>& operator()(size_t i) {
-            return this->data_m[i * this->columns_m + col];
-        }
-
-        /**
-         * Returns the size of this vector.
-         * @return 
-         */
-        size_t GetSize() {
-            return this->rows_m;
-        }
-
-        inline const T GetValue() const {
-            throw std::invalid_argument("GetValue() called on vector template.");
-        }
-
-        inline const T GetValue(size_t i, size_t j = 0) const {
-            return this->data_m[i * this->columns_m + col].GetValue();
-        }
-
-        inline bool IsNonlinear() const {
-            return false;
-        }
-
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
-            throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
-        }
-
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
-            data_m[i * this->columns_m + col].PushIds(ids);
-        }
-
-        std::shared_ptr<DynamicExpressionBase<T> > ToDynamic() const {
-            throw std::invalid_argument("Not yet implemented. ToDynamic() called on vector template.");
-        }
-
-        inline T EvaluateDerivative(uint32_t x) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x,uint32_t y) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) called on vector template.");
-            return static_cast<T> (0.0);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return this->data_m[i * this->columns_m + col].EvaluateDerivative(x);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            return this->data_m[i * this->columns_m + col].EvaluateDerivative(x, y);
-        }
-
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            return this->data_m[i * this->columns_m + col].EvaluateDerivative(x, y, z);
-        }
-
-        size_t GetColumns() const {
-            return 1;
-        }
-
-        size_t GetRows() const {
-            return this->rows_m;
-        }
-
-        bool IsScalar()const {
-            return false;
-        }
-
-        const std::string ToExpressionTemplateString() const {
-            std::stringstream ss;
-            ss << "atl::VariableVector<T>";
-            return ss.str();
-        }
-
-
     };
 
     /**
@@ -773,7 +540,7 @@ namespace atl {
          * @param i
          * @return 
          */
-        atl::VariableRowVector<T> Row(size_t i) {
+        const atl::VariableRowVector<T> Row(size_t i)  {
             return atl::VariableRowVector<T>(i, this->columns, this->data_m);
         }
 
@@ -1384,6 +1151,52 @@ namespace atl {
          */
         inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
+        }
+
+        /**
+         * Returns a vector of references to the corresponding row of
+         * this variable matrix.
+         * 
+         * @param i
+         * @return 
+         */
+        const atl::RealRowVector<T> Row(size_t i)  {
+            return atl::RealRowVector<T>(i, this->columns, this->data_m);
+        }
+
+        /**
+         * Fills a row with the values of v.
+         * 
+         * @param i
+         * @param v
+         */
+        void RowFill(size_t i, const atl::RealVector<T>& v) {
+            for (size_t j = 0; j < this->columns; j++) {
+                this->data_m[i * this->columns + j] = v(j);
+            }
+        }
+
+        /**
+         * Fills a column with the values of v.
+         * 
+         * @param i
+         * @param v
+         */
+        void ColumnFill(size_t i, const atl::RealVector<T>& v) {
+            for (size_t j = 0; j < this->rows; j++) {
+                this->data_m[j * this->columns + i] = v(j);
+            }
+        }
+
+        /**
+         * Returns a vector of references to the corresponding column of
+         * this variable matrix.
+         * 
+         * @param i
+         * @return 
+         */
+        atl::RealColumnVector<T> Column(size_t i) {
+            return atl::RealColumnVector<T>(this->rows, this->columns, i, this->data_m);
         }
 
         /**
