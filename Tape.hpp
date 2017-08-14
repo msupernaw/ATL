@@ -705,7 +705,7 @@ namespace atl {
 
         inline void PushLive(std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage >& live_set,
                 typename atl::StackEntry<REAL_T>::VariableInfoPtr a, typename atl::StackEntry<REAL_T>::VariableInfoPtr b) {
-            if (a->count > 1 && (b->id != a->id)) {
+            if (a->count > 1 && (b->id != a->id) && a->is_nl) {
                 live_set[a->id].insert(b);
             }
         }
@@ -817,7 +817,7 @@ namespace atl {
 
 
 
-                            if (FP_ZERO != std::fpclassify(entry)) {//h[j][k] needs to be updated
+                            if (static_cast<REAL_T>(0.0) != entry) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
                                 this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
@@ -847,7 +847,7 @@ namespace atl {
                             }
 
 
-                            if (FP_ZERO != std::fpclassify(entry)) {//h[j][k] needs to be updated
+                            if (static_cast<REAL_T>(0.0) != entry) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
                                 this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
