@@ -138,6 +138,7 @@ namespace atl {
          */
         const SCResult<Type> Analyze(cs_sparse<Type>* A) {
 
+      
             SCResult<Type> ret;
             ret.A = A;
 
@@ -150,12 +151,29 @@ namespace atl {
             //2. do numeric factorization
             if (S != NULL) {
                 ret.factor = cs_chol<Type>(ret.A, S);
+                if(ret.factor == NULL){
+                    std::cout<<"Cholesky factorization error. "<<std::endl;
+                }
             }
+            
+
 
             //cholesky failed
             if (ret.factor == NULL) {
                 ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
+                if(ret.factor == NULL){
+                    std::cout<<"LU factorization error. "<<std::endl;
+                }
             }
+            
+            if (ret.factor == NULL) {
+                ret.factor = cs_qr<Type>(ret.A, S);
+                if(ret.factor == NULL){
+                    std::cout<<"QR factorization error. "<<std::endl;
+                }
+            }
+            
+            
 
             //3. compute the inverse subset
             if (ret.factor != NULL) {
@@ -164,9 +182,9 @@ namespace atl {
             }
 
             //4. compute the log determinant
-
-            ret.log_det = cs_log_det<Type>(ret.factor->L);
-
+            if (ret.factor != NULL) {
+                ret.log_det = cs_log_det<Type>(ret.factor->L);
+            }
             return ret;
         }
 
@@ -593,7 +611,7 @@ namespace atl {
             return stats;
         }
 
-        const atl::RealMatrix<T> GetVarianceCovariance() {
+         const atl::RealMatrix<T> GetVarianceCovariance() {
 
             atl::Variable<T>::tape.Reset();
             struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
@@ -611,14 +629,16 @@ namespace atl {
                 for (int j = 0; j < this->parameters_m.size(); j++) {
                     T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id,
                             this->parameters_m[j]->info->id);
-                    if (dxx != 0.0) {
+                    if(dxx != dxx){//this is a big hack
+                        dxx = std::numeric_limits<T>::min();
+                    }
+                    if (dxx != static_cast<T>(0.0)) {
                         cs_entry<T>(RHessian, i, j, dxx);
                     }
                 }
             }
 
             struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
-
             SparseCholesky<T> sparse_cholesky;
 
             SCResult<T> ret = sparse_cholesky.Analyze(hessian);
