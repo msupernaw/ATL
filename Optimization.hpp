@@ -158,7 +158,7 @@ namespace atl {
          * @param factor  - output
          * @param log_det - output
          */
-       
+       const SCResult<Type> Analyze(cs_sparse<Type>* A) {
             SCResult<Type> ret;
             ret.A = A;
 
