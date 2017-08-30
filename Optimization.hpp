@@ -25,7 +25,26 @@
 #include "Tape.hpp"
 #include "ThreadPool.hpp"
 #include "Variable.hpp"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/meta.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/problem.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/lbfgssolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/bfgssolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/conjugatedgradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/neldermeadsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/newtondescentsolver.h"
 
+
+#define ATL_HAS_EIGEN
+
+
+#ifdef ATL_HAS_EIGEN
+
+#define EIGEN_DONT_VECTORIZE 
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+
+#endif
 
 namespace atl {
 
@@ -138,7 +157,11 @@ namespace atl {
          */
         const SCResult<Type> Analyze(cs_sparse<Type>* A) {
 
+<<<<<<< HEAD
+
+=======
       
+>>>>>>> origin/master
             SCResult<Type> ret;
             ret.A = A;
 
@@ -151,16 +174,34 @@ namespace atl {
             //2. do numeric factorization
             if (S != NULL) {
                 ret.factor = cs_chol<Type>(ret.A, S);
+<<<<<<< HEAD
+                if (ret.factor == NULL) {
+                    std::cout << "Cholesky factorization error. " << std::endl;
+=======
                 if(ret.factor == NULL){
                     std::cout<<"Cholesky factorization error. "<<std::endl;
+>>>>>>> origin/master
                 }
             }
             
 
 
+
+
             //cholesky failed
             if (ret.factor == NULL) {
                 ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
+<<<<<<< HEAD
+                if (ret.factor == NULL) {
+                    std::cout << "LU factorization error. " << std::endl;
+                }
+            }
+
+            if (ret.factor == NULL) {
+                ret.factor = cs_qr<Type>(ret.A, S);
+                if (ret.factor == NULL) {
+                    std::cout << "QR factorization error. " << std::endl;
+=======
                 if(ret.factor == NULL){
                     std::cout<<"LU factorization error. "<<std::endl;
                 }
@@ -170,10 +211,13 @@ namespace atl {
                 ret.factor = cs_qr<Type>(ret.A, S);
                 if(ret.factor == NULL){
                     std::cout<<"QR factorization error. "<<std::endl;
+>>>>>>> origin/master
                 }
             }
             
             
+
+
 
             //3. compute the inverse subset
             if (ret.factor != NULL) {
@@ -629,10 +673,17 @@ namespace atl {
                 for (int j = 0; j < this->parameters_m.size(); j++) {
                     T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id,
                             this->parameters_m[j]->info->id);
+<<<<<<< HEAD
+                    if (dxx != dxx) {//this is a big hack
+                        dxx = std::numeric_limits<T>::min();
+                    }
+                    if (dxx != static_cast<T> (0.0)) {
+=======
                     if(dxx != dxx){//this is a big hack
                         dxx = std::numeric_limits<T>::min();
                     }
                     if (dxx != static_cast<T>(0.0)) {
+>>>>>>> origin/master
                         cs_entry<T>(RHessian, i, j, dxx);
                     }
                 }
@@ -729,10 +780,15 @@ namespace atl {
         }
     };
 
+
+    template<typename T>
+    class Objective_Function2;
+
     template<class T>
     class OptimizationRoutine {
     protected:
 
+        friend class Objective_Function2<T>;
 
 
         SparseCholesky<T> sparse_cholesky;
@@ -1792,7 +1848,7 @@ namespace atl {
                     wg[j] = this->parameters_m[j]->GetScaledGradient(this->parameters_m[j]->GetInternalValue()) * this->gradient[j];
                 }
 
-                if ((i % 1) == 0 || i == 0) {
+                if ((i % 10) == 0 || i == 0) {
                     std::cout << "Iteration " << i << "\n";
                     std::cout << "Phase = " << this->phase_m << "\n";
 
@@ -2088,6 +2144,208 @@ namespace atl {
         }
 
     };
+
+#ifdef ATL_HAS_EIGEN 
+
+    template<typename T>
+    class Objective_Function2 : public cppoptlib::Problem<T> {
+    public:
+        using typename cppoptlib::Problem<T>::TVector; // Inherit the Vector typedef
+        atl::OptimizationRoutine<T>* OR;
+
+        int iprint = 10;
+        T maxgc;
+        atl::Variable<T> f;
+
+        // this is just the objective (NOT optional)
+
+        T value(const TVector &x) {
+            f = static_cast<T> (0.0);
+            atl::Variable<T>::tape.recording = false;
+            for (int i = 0; i < x.size(); i++) {
+                this->OR->parameters_m[i]->UpdateValue(x[i]);
+                this->OR->x[i] = this->OR->parameters_m[i]->GetValue();
+            }
+            OR->CallObjectiveFunction(f);
+            return f.GetValue();
+        }
+
+        // if you calculated the derivative by hand
+        // you can implement it here (OPTIONAL)
+        // otherwise it will fall back to (bad) numerical finite differences
+
+        void gradient(const TVector &x, TVector &grad) {
+            f = static_cast<T> (0.0);
+            atl::Variable<T>::tape.recording = true;
+            atl::Variable<T>::tape.Reset();
+            for (int i = 0; i < x.size(); i++) {
+                this->OR->parameters_m[i]->UpdateValue(x[i]);
+                this->OR->x[i] = this->OR->parameters_m[i]->GetValue();
+            }
+            OR->CallObjectiveFunction(f);
+            //            atl::Variable<T>.tape.AccumulateFirstOrder();
+            std::valarray<T> ng(x.size());
+            OR->ComputeGradient(OR->parameters_m, ng, OR->maxgc);
+            for (int i = 0; i < x.size(); i++) {
+                grad[i] = OR->parameters_m[i]->GetScaledGradient(OR->parameters_m[i]->GetInternalValue()) * ng[i];
+                OR->gradient[i] = ng[i];
+            }
+
+        }
+
+        bool callback(const cppoptlib::Criteria<T> &state, const TVector &x) {
+            this->OR->outer_iteration = state.iterations - 1;
+            if (((state.iterations - 1) % 10) == 0 || (state.iterations - 1) == 1) {
+                this->OR->Print();
+            }
+
+            return true;
+        }
+    };
+
+    template<typename T>
+    class LBFGS2 : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::LbfgsSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+
+     template<typename T>
+    class BFGS : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::BfgsSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+    
+    
+    template<typename T>
+    class GradientDescent : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::GradientDescentSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+    
+    template<typename T>
+    class ConjugatedGradientDescent : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::ConjugatedGradientDescentSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+    
+    template<typename T>
+    class NelderMead : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::NelderMeadSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+    
+    
+#endif
 
     template<class T>
     class MCMC {
