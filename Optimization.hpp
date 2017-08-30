@@ -726,7 +726,7 @@ namespace atl {
             //
             //            std::cout << "\nVariance-covariance matrix\n" << var_covar << std::endl;
         }
-
+    };
 
     template<typename T>
     std::ostream& operator<<(std::ostream& out, const ObjectiveFunctionStatistics<T>& stats) {
