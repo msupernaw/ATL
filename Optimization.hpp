@@ -158,13 +158,7 @@ namespace atl {
          * @param factor  - output
          * @param log_det - output
          */
-        const SCResult<Type> Analyze(cs_sparse<Type>* A) {
-
-<<<<<<< HEAD
-
-=======
-      
->>>>>>> origin/master
+       
             SCResult<Type> ret;
             ret.A = A;
 
@@ -177,24 +171,16 @@ namespace atl {
             //2. do numeric factorization
             if (S != NULL) {
                 ret.factor = cs_chol<Type>(ret.A, S);
-<<<<<<< HEAD
                 if (ret.factor == NULL) {
                     std::cout << "Cholesky factorization error. " << std::endl;
-=======
-                if(ret.factor == NULL){
-                    std::cout<<"Cholesky factorization error. "<<std::endl;
->>>>>>> origin/master
                 }
             }
-            
-
 
 
 
             //cholesky failed
             if (ret.factor == NULL) {
                 ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
-<<<<<<< HEAD
                 if (ret.factor == NULL) {
                     std::cout << "LU factorization error. " << std::endl;
                 }
@@ -204,21 +190,8 @@ namespace atl {
                 ret.factor = cs_qr<Type>(ret.A, S);
                 if (ret.factor == NULL) {
                     std::cout << "QR factorization error. " << std::endl;
-=======
-                if(ret.factor == NULL){
-                    std::cout<<"LU factorization error. "<<std::endl;
                 }
             }
-            
-            if (ret.factor == NULL) {
-                ret.factor = cs_qr<Type>(ret.A, S);
-                if(ret.factor == NULL){
-                    std::cout<<"QR factorization error. "<<std::endl;
->>>>>>> origin/master
-                }
-            }
-            
-            
 
 
 
@@ -233,7 +206,7 @@ namespace atl {
                 ret.log_det = cs_log_det<Type>(ret.factor->L);
             }
             return ret;
-        }
+       }
 
         Type trace(struct cs_sparse<Type>* A) {
             csi p, j, m, n, nzmax, nz, *Ap, *Ai;
@@ -658,7 +631,7 @@ namespace atl {
             return stats;
         }
 
-         const atl::RealMatrix<T> GetVarianceCovariance() {
+        const atl::RealMatrix<T> GetVarianceCovariance() {
 
             atl::Variable<T>::tape.Reset();
             struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
@@ -676,17 +649,10 @@ namespace atl {
                 for (int j = 0; j < this->parameters_m.size(); j++) {
                     T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id,
                             this->parameters_m[j]->info->id);
-<<<<<<< HEAD
                     if (dxx != dxx) {//this is a big hack
                         dxx = std::numeric_limits<T>::min();
                     }
                     if (dxx != static_cast<T> (0.0)) {
-=======
-                    if(dxx != dxx){//this is a big hack
-                        dxx = std::numeric_limits<T>::min();
-                    }
-                    if (dxx != static_cast<T>(0.0)) {
->>>>>>> origin/master
                         cs_entry<T>(RHessian, i, j, dxx);
                     }
                 }
@@ -761,8 +727,6 @@ namespace atl {
             //            std::cout << "\nVariance-covariance matrix\n" << var_covar << std::endl;
         }
 
-
-    };
 
     template<typename T>
     std::ostream& operator<<(std::ostream& out, const ObjectiveFunctionStatistics<T>& stats) {
