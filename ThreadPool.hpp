@@ -22,6 +22,7 @@
 #include <vector>
 #include <future>
 #include <cstdlib>
+#include <functional>
 
 #if defined(linux) || defined(__linux) || defined(__linux__)
 #define NOAA_TP_LINUX
