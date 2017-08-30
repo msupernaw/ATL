@@ -25,15 +25,7 @@
 #include "Tape.hpp"
 #include "ThreadPool.hpp"
 #include "Variable.hpp"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/meta.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/problem.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/lbfgssolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/bfgssolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/conjugatedgradientdescentsolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/neldermeadsolver.h"
-#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/newtondescentsolver.h"
+
 
 
 #define ATL_HAS_EIGEN
@@ -43,6 +35,17 @@
 
 #define EIGEN_DONT_VECTORIZE 
 #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+
+
+#include "third_party/CppNumericalSolvers/include/cppoptlib/meta.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/problem.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/lbfgssolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/bfgssolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/conjugatedgradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/neldermeadsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/newtondescentsolver.h"
 
 #endif
 
