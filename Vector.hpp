@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   Vector.hpp
  * Author: matthewsupernaw
  *
@@ -23,11 +23,11 @@ namespace atl {
 
     /**
      * VariableVector is a 1 x M VariableMatrix.
-     * 
+     *
      * This object references values from a row in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
      * its origin.
-     * 
+     *
      */
     template<typename T>
     struct VariableRowVector : atl::ExpressionBase<T, VariableRowVector<T > > {
@@ -45,7 +45,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -59,7 +59,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->columns_m;
@@ -139,11 +139,11 @@ namespace atl {
 
     /**
      * VariableVector is a 1 x M VariableMatrix.
-     * 
+     *
      * This object references values from a row in a RealMatrix. Therfore,
      * if a value is modified, it is also modified in the RealMatrix of
      * its origin.
-     * 
+     *
      */
     template<typename T>
     struct RealRowVector : atl::ExpressionBase<T, RealRowVector<T > > {
@@ -161,7 +161,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -175,7 +175,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->columns_m;
@@ -252,11 +252,11 @@ namespace atl {
 
     /**
      * VariableVector is a N x 1 VariableMatrix.
-     * 
+     *
      * This object references values from a column in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
      * its origin.
-     * 
+     *
      */
     template<typename T>
     struct VariableColumnVector : atl::ExpressionBase<T, VariableColumnVector<T > > {
@@ -275,7 +275,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -289,7 +289,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->rows_m;
@@ -369,11 +369,11 @@ namespace atl {
 
     /**
      * VariableVector is a N x 1 VariableMatrix.
-     * 
+     *
      * This object references values from a column in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
      * its origin.
-     * 
+     *
      */
     template<typename T>
     struct RealColumnVector : atl::ExpressionBase<T, RealColumnVector<T > > {
@@ -392,7 +392,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -406,7 +406,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->rows_m;
@@ -429,7 +429,7 @@ namespace atl {
         }
 
         inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
-   
+
         }
 
         std::shared_ptr<DynamicExpressionBase<T> > ToDynamic() const {
@@ -497,7 +497,7 @@ namespace atl {
         }
 
         /**
-         * Constructor. 
+         * Constructor.
          * @param columns
          */
         VariableVector(size_t columns = 0) :
@@ -525,10 +525,10 @@ namespace atl {
         }
 
         /**
-         * Assignment operator. Sets all entries to 
-         * value. 
+         * Assignment operator. Sets all entries to
+         * value.
          * @param value
-         * @return 
+         * @return
          */
         inline VariableVector& operator=(const T& value) {
             for (int i = 0; i < data_m.size(); i++) {
@@ -554,9 +554,9 @@ namespace atl {
 
         //        /**
         //         * Assignment operator for variable scalar types.
-        //         * 
+        //         *
         //         * @param exp
-        //         * @return 
+        //         * @return
         //         */
         //        VariableVector& operator=(const atl::Variable<T>& v) const {
         //            for (int i = 0; i < this->columns_m; i++) {
@@ -764,7 +764,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -774,7 +774,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void Resize(size_t size) {
@@ -801,7 +801,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->columns_m;
@@ -809,7 +809,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() const {
             return this->columns_m;
@@ -900,7 +900,7 @@ namespace atl {
         }
 
         /**
-         * Constructor. 
+         * Constructor.
          * @param columns
          */
         RealVector(size_t columns = 0) :
@@ -928,10 +928,10 @@ namespace atl {
         }
 
         /**
-         * Assignment operator. Sets all entries to 
-         * value. 
+         * Assignment operator. Sets all entries to
+         * value.
          * @param value
-         * @return 
+         * @return
          */
         inline RealVector& operator=(const T& value) {
             for (int i = 0; i < data_m.size(); i++) {
@@ -957,9 +957,9 @@ namespace atl {
 
         /**
          * Assignment operator for variable scalar types.
-         * 
+         *
          * @param exp
-         * @return 
+         * @return
          */
         RealVector& operator=(const T& v) const {
             for (int i = 0; i < this->columns_m; i++) {
@@ -1004,7 +1004,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void SetSize(size_t size) {
@@ -1014,7 +1014,7 @@ namespace atl {
 
         /**
          * Sets the size of this vector.
-         * 
+         *
          * @param size
          */
         void Resize(size_t size) {
@@ -1032,7 +1032,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() {
             return this->columns_m;
@@ -1040,7 +1040,7 @@ namespace atl {
 
         /**
          * Returns the size of this vector.
-         * @return 
+         * @return
          */
         size_t GetSize() const {
             return this->columns_m;
@@ -1130,7 +1130,7 @@ namespace atl {
 
     template<class T>
     inline const atl::Variable<T> Norm2(const atl::VariableVector<T> &expr) {
-        atl::Variable<T> ret;
+        atl::Variable<T> ret = T(0.0);
         size_t n = expr.GetSize();
         for (size_t i = 0; i < n; i++) {
             ret += expr(i) * expr(i);
@@ -1140,12 +1140,22 @@ namespace atl {
 
     template<class T>
     inline const atl::Variable<T> Sum(const atl::VariableVector<T> &expr) {
-        atl::Variable<T> ret;
+        atl::Variable<T> ret = T(0.0);
         size_t n = expr.GetSize();
         for (size_t i = 0; i < n; i++) {
             ret += expr(i);
         }
         return ret;
+    }
+
+    template<class T>
+    inline const atl::Variable<T> Average(const atl::VariableVector<T> &expr) {
+        atl::Variable<T> ret = T(0.0);
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret += expr(i);
+        }
+        return (ret / T(n));
     }
 
     template<typename REAL_T>
@@ -1168,7 +1178,7 @@ namespace atl {
     //        using RealMatrix<T>::operator=;
     //
     //        /**
-    //         * Constructor. 
+    //         * Constructor.
     //         * @param columns
     //         */
     //        RealVector(size_t columns = 0) :
@@ -1177,7 +1187,7 @@ namespace atl {
     //
     //        /**
     //         * Sets the size of this vector.
-    //         * 
+    //         *
     //         * @param size
     //         */
     //        void SetSize(size_t size) {
@@ -1187,7 +1197,7 @@ namespace atl {
     //
     //        /**
     //         * Returns the size of this vector.
-    //         * @return 
+    //         * @return
     //         */
     //        size_t GetSize() {
     //            return this->columns;
