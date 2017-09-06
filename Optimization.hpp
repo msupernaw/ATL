@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/*
+/* 
  * File:   FunctionMinimizer.hpp
  * Author: matthewsupernaw
  *
@@ -29,11 +29,12 @@
 
 
 
+#define ATL_HAS_EIGEN
 
 
 #ifdef ATL_HAS_EIGEN
 
-#define EIGEN_DONT_VECTORIZE
+#define EIGEN_DONT_VECTORIZE 
 #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 
 
@@ -46,6 +47,7 @@
 #include "third_party/CppNumericalSolvers/include/cppoptlib/solver/gradientdescentsolver.h"
 #include "third_party/CppNumericalSolvers/include/cppoptlib/solver/neldermeadsolver.h"
 #include "third_party/CppNumericalSolvers/include/cppoptlib/solver/newtondescentsolver.h"
+#include "third_party/CppNumericalSolvers/include/cppoptlib/solver/cmaessolver.h"
 
 #endif
 
@@ -143,7 +145,7 @@ namespace atl {
 
         /**
          * Constructor.
-         *
+         * 
          * @param A in compressed format
          */
         SparseCholesky(struct cs_sparse<Type>* A) {
@@ -152,13 +154,14 @@ namespace atl {
         }
 
         /**
-         *
+         * 
          * @param A       - input
          * @param A_inv   - output
          * @param factor  - output
          * @param log_det - output
          */
-       const SCResult<Type> Analyze(cs_sparse<Type>* A) {
+        const SCResult<Type> Analyze(cs_sparse<Type>* A) {
+
             SCResult<Type> ret;
             ret.A = A;
 
@@ -206,7 +209,7 @@ namespace atl {
                 ret.log_det = cs_log_det<Type>(ret.factor->L);
             }
             return ret;
-       }
+        }
 
         Type trace(struct cs_sparse<Type>* A) {
             csi p, j, m, n, nzmax, nz, *Ap, *Ai;
@@ -507,7 +510,7 @@ namespace atl {
             std::vector<Type> z(ret.A->nzmax);
             std::vector<csi> Zdiagp(ret.A->nzmax), Lmunch(ret.A->nzmax);
             //
-            // compute the subset of the inverse
+            // compute the subset of the inverse 
             int flops = sparseinv(
                     n,
                     L_p,
@@ -548,10 +551,11 @@ namespace atl {
         int max_phase_m = 0;
         friend class OptimizationRoutine<T>;
         friend class MCMC<T>;
-       
+
     public:
+
         int phase_m = 1;
-        
+
         inline operator const atl::Variable<T>() {
             return this->Evaluate();
         }
@@ -766,7 +770,7 @@ namespace atl {
         std::vector<atl::Variable<T>* > random_variables_m;
         std::vector<atl::Variable<T>* > all_variables_m;
 
-        //runtime
+        //runtime 
         T function_value;
         T inner_function_value;
         T tolerance = 1e-4;
@@ -1024,7 +1028,7 @@ namespace atl {
                 }
                 struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
                 cs_spfree(RHessian);
-                //
+                //                
                 if (this->S_outer == NULL)
                     this->S_outer = cs_schol<T>(0, hessian);
                 struct cs_numeric<T> *chol = cs_chol<T>(hessian, this->S_outer);
@@ -1053,7 +1057,7 @@ namespace atl {
 
                 /*****************************************************************************************************
                  Notes from Kasper:
-
+                 
                 The first order banded Hessian is a useful test case as it should in theory take just O(RANDOM_SIZE).
 
                 Your code has a nested loop of length PARAMETERS_SIZE * RANDOM_SIZE.
@@ -1067,7 +1071,7 @@ namespace atl {
                 The outer loop can be replaced be a single reverse sweep of tape T3 using the elements of the inverse subset as range weights.
 
                 I admit that this may not be completely obvious from the paper :)
-
+                 
                  *****************************************************************************************************/
 
 
@@ -1140,7 +1144,7 @@ namespace atl {
                 //                                this->all_variables_m[j]->info->id));
                 //                    }
                 //                }
-                //
+                //             
                 //
                 //
                 //                struct cs_sparse<T>* fuu_ = cs_compress<T>(fuu);
@@ -1149,11 +1153,11 @@ namespace atl {
                 //                //                struct cs_sparse<T>* h_theta_ = cs_compress<T>(h_theta);
                 //                SCResult<T> ret = this->sparse_cholesky.Analyze(fuu_);
                 //                atl::Variable<T>::tape.Reset();
-                //
-                //
+                //                
+                //                
                 //                std::cout << "start\nlog det actual with mult:     ";
                 //                struct cs_sparse<T>* Fuu = this->sparse_cholesky.clone(hessian);
-                //                //
+                //                //                 
                 //                for (int p = 0; p < PARAMETERS_SIZE; p++) {
                 //                    T trace = 0;
                 //
@@ -1200,20 +1204,20 @@ namespace atl {
                 //                this->sparse_cholesky.half_diagonal(tril_inv);
                 //                                for (int p = 0; p < PARAMETERS_SIZE; p++) {
                 //                                    struct cs_sparse<T>* ppp = cs_spalloc<T>(0, 0, 1, 1, 1);
-                //
+                //                
                 //                                    T trace = 0;
                 //                                    for (int i = 0; i < RANDOM_SIZE; i++) {
-                //
+                //                
                 //                                        std::vector<int>& hm = this->hessian_pattern_map[i];
                 //                                        for (int j = 0; j < hm.size(); j++) {
-                //
+                //                
                 //                                            cs_entry<T>(ppp, i, hm[j], atl::Variable<T>::tape.Value(
                 //                                                    this->random_variables_m[i]->info->id,
                 //                                                    this->random_variables_m[hm[j]]->info->id,
                 //                                                    this->parameters_m[p]->info->id));
-                //
+                //                
                 //                                        }
-                //
+                //                
                 //                                    }
                 //                                    struct cs_sparse<T>* PPP = cs_compress<T>(ppp);
                 //                                    struct cs_sparse<T>* product = cs_multiply<T>(PPP, ret.A_inv);
@@ -1224,7 +1228,7 @@ namespace atl {
                 //                                    cs_spfree<T>(PPP);
                 //                                    cs_spfree<T>(product);
                 //                                }
-                //
+                //                
                 //                                std::cout << "\n";
 
 
@@ -1293,7 +1297,7 @@ namespace atl {
                 //                //                 for (int i = 0; i < this->random_variables_m.size(); i++) {
                 //                //                    cs_entry<T>(vVV, 0,i, atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id));
                 //                //                 }
-                //                //
+                //                //                
                 //                for (int i = 0; i < this->parameters_m.size(); i++) {
                 //                    //                    cs_entry<T>(vVV, i, 0, atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id));
                 //                    std::cout << "{" << this->parameters_m[i]->info->id << ", " << atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id) << "} ";
@@ -1386,7 +1390,7 @@ namespace atl {
 
                 struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
                 cs_spfree(RHessian);
-                //
+                //                
                 if (this->S_outer == NULL)
                     this->S_outer = cs_schol<T>(0, hessian);
 
@@ -1423,81 +1427,66 @@ namespace atl {
             }
         }
 
-        void ComputeGradient(std::vector<atl::Variable<T>* >& p,
-                std::valarray<T>& g, T& maxgc) {
+        void ComputeGradient(std::vector<atl::Variable<T>* >&p,
+                std::valarray<T>&g, T & maxgc) {
             g.resize(p.size());
             atl::Variable<T>::tape.AccumulateFirstOrder();
 
-            maxgc = T(0.0);
-
             for (int i = 0; i < g.size(); i++) {
                 g[i] = atl::Variable<T>::tape.Value(p[i]->info->id);
-                if (std::fabs(g[i]) > maxgc) {
+                if (i == 0) {
                     maxgc = std::fabs(g[i]);
+                } else {
+                    if (std::fabs(g[i]) > maxgc) {
+
+                        maxgc = std::fabs(g[i]);
+                    }
                 }
             }
         }
 
         void Print() {
-            const int name_width  = 35;
-            const int value_width = 12;
-            const int grad_width  = 12;
-
             std::cout << "Iteration: " << this->outer_iteration << "\n";
             std::cout << "Phase: " << this->phase_m << "\n";
             std::cout << "Function Value = " << this->function_value << "\n";
             std::cout << "Max Gradient Component: " << this->maxgc << "\n";
             std::cout << "Floating-Point Type: Float" << (sizeof (T)*8) << "\n";
             std::cout << "Number of Parameters: " << this->parameters_m.size() << "\n";
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-            std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << std::endl;
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-
+            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
+            std::cout << '|' << util::center("Name", 40) << '|' << util::center("Value", 12) << '|' << util::center("Gradient", 12) << '|'
+                    << util::center("Name", 40) << '|' << util::center("Value", 12) << '|' << util::center("Gradient", 12) << '|' << std::endl;
+            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
             int i = 0;
             std::cout.precision(4);
             std::cout << std::scientific;
-
-            for (i = 0; (i + 3) < this->parameters_m.size(); i += 3) {
+            for (i = 0; (i + 2)< this->parameters_m.size(); i += 2) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
+                    std::cout << "|" << util::center("*" + this->parameters_m[i]->GetName(), 40) << '|';
                 } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
+                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), 40) << '|';
                 }
-                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
-
+                std::cout << std::setw(12) << this->parameters_m[i]->GetValue() << '|' << std::setw(12) << this->gradient[i];
                 if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                    std::cout << "|" << util::center("*" + this->parameters_m[i + 1]->GetName(), 40) << '|';
                 } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), 40) << '|';
                 }
-                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
+                std::cout << std::setw(12) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(12) << this->gradient[i + 1] << "|\n";
 
-                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                }
-                std::cout << std::setw(value_width) << this->parameters_m[i + 2]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 2] << "|\n";
+                //                }
             }
 
             for (; i< this->parameters_m.size(); i++) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
+                    std::cout << "|" << util::center("*" + this->parameters_m[i]->GetName(), 40) << '|';
                 } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
+                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), 40) << '|';
                 }
-                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
-
-                /*
-                std::cout << '|' << util::center("-", name_width) << '|';
-                std::cout << util::center("-", value_width) << '|' << util::center("-", grad_width) << "|\n";
-                */
+                std::cout << std::setw(12) << this->parameters_m[i]->GetValue() << '|' << std::setw(12) << this->gradient[i];
+                std::cout << '|' << util::center("-", 40) << '|';
+                std::cout << util::center("-", 12) << '|' << util::center("-", 12) << "|\n";
             }
-
-            std::cout << "|\n" << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
             std::cout << "\n\n";
         }
 
@@ -1716,9 +1705,9 @@ namespace atl {
 
         /**
          * Compute the Norm of the vector v.
-         *
+         *  
          * @param v
-         * @return
+         * @return 
          */
         const T norm(std::valarray<T> &v) {
 
@@ -1736,7 +1725,7 @@ namespace atl {
          * Compute the dot product of two vectors.
          * @param a
          * @param b
-         * @return
+         * @return 
          */
         const T Dot(const std::valarray<T> &a, const std::valarray<T> &b) {
             T ret = 0;
@@ -1751,7 +1740,7 @@ namespace atl {
          * returns the a column of a matrix as a std::valarray.
          * @param matrix
          * @param column
-         * @return
+         * @return 
          */
         const std::valarray<T> Column(std::valarray<std::valarray<T> > &matrix, size_t column, size_t length) {
 
@@ -1916,7 +1905,7 @@ namespace atl {
          * Compute the dot product of two vectors.
          * @param a
          * @param b
-         * @return
+         * @return 
          */
         const T Dot(const std::valarray<T> &a, const std::valarray<T> &b) {
             T ret = 0;
@@ -1931,7 +1920,7 @@ namespace atl {
          * returns the a column of a matrix as a std::valarray.
          * @param matrix
          * @param column
-         * @return
+         * @return 
          */
         const std::valarray<T> Column(std::valarray<std::valarray<T> > &matrix, size_t column, size_t length) {
 
@@ -2058,7 +2047,7 @@ namespace atl {
                     //                                                for (int i = 0; i < n; i++) {
                     //                                                    this->x[i] = this->best[i];
                     //                                                }
-                    //
+                    //                    
                     //                                            }
                     //                                        }
 
@@ -2128,12 +2117,170 @@ namespace atl {
 
     };
 
-#ifdef ATL_HAS_EIGEN
+    /**
+     * Undefined behavior for bounded  problems.
+     */
+    template<typename T>
+    class NewtonMinimizer : public atl::OptimizationRoutine<T> {
+    public:
+
+        virtual bool Evaluate() {
+
+
+            if (this->random_variables_m.size() > 0) {
+                std::cout << "NewtonMinimizer not available for mixed effects models.\n";
+                return false;
+            }
+
+            this->gradient.resize(this->parameters_m.size());
+            this->hessian_pattern_map.resize(this->parameters_m.size());
+            atl::Variable<T> fx;
+
+            int nops = this->parameters_m.size();
+
+            std::vector<T> gradient_(nops);
+
+            T lambda = 0.1;
+
+
+            T errorTolerance = 0.0;
+
+
+
+
+            T error = std::numeric_limits<T>::max();
+            T error_change = std::numeric_limits<T>::max();
+            T err;
+            T previous;
+
+
+            struct cs_symbolic<T>* S = NULL;
+            for (int iter = 0; iter < this->max_iterations; iter++) {
+
+                this->outer_iteration = iter;
+
+                atl::Variable<T>::tape.Reset();
+                atl::Variable<T>::SetRecording(true);
+                atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
+                //                fx = this->objective_function_m->Evaluate();
+                fx = 0.0;
+                this->objective_function_m->Objective_Function(fx);
+                this->function_value = fx.GetValue();
+
+                if (iter) {
+
+                    err = (this->function_value - previous) / previous;
+
+                    if (err < error) {
+                        error_change = error - err;
+                        lambda *= T(.5);// T(10.0);
+                    } else {
+                        error_change = err - error;
+                        lambda *= T(2.0);//T(10.0);
+                    }
+                    error = err;
+                    previous = this->function_value;
+
+                }
+
+
+                atl::Variable<T>::tape.AccumulateSecondOrder();
+                struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
+
+                this->maxgc = std::numeric_limits<T>::min();
+
+                if (!this->pattern_known) {
+
+                    for (int i = 0; i <this->parameters_m.size(); i++) {
+                        gradient_[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+                        this->gradient[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+                        if (this->parameters_m[i]->bounded_m) {
+                            gradient_[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
+                        } else {
+                            gradient_[i] = this->gradient[i];
+                        }
+                        this->maxgc = std::max(this->maxgc, std::fabs(this->gradient[i]));
+                        int jj = 0;
+                        std::vector<int>& hm = this->hessian_pattern_map[i];
+                        for (int j = 0; j <this->parameters_m.size(); j++) {
+
+                            T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id, this->parameters_m[j]->info->id);
+
+                            if (dxx != static_cast<T> (0.0)) {
+                                hm.push_back(j);
+                                cs_entry(RHessian, i, j, dxx);
+                            }
+                        }
+                    }
+                    this->pattern_known = true;
+                } else {
+
+                    for (int i = 0; i <this->parameters_m.size(); i++) {
+                        this->gradient[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+                        if (this->parameters_m[i]->bounded_m) {
+                            gradient_[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
+                        } else {
+                            gradient_[i] = this->gradient[i];
+                        }
+
+                        this->maxgc = std::max(this->maxgc, std::fabs(this->gradient[i]));
+                        std::vector<int>& hm = this->hessian_pattern_map[i];
+                        for (int j = 0; j < hm.size(); j++) {
+                            T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id, this->parameters_m[hm[j]]->info->id);
+                            cs_entry(RHessian, i, hm[j], dxx);
+                        }
+                    }
+                }
+
+
+
+                struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
+                cs_spfree(RHessian);
+                if (this->S_outer == NULL) {
+                    this->S_outer = cs_schol<T>(0, hessian);
+                }
+
+//                this->this->maxgc = std::fabs(this->gradient[0]);
+//                for (int i = 0; i < gradient_.size(); i++) {
+//                    if (std::fabs(this->gradient[i]) > this->this->maxgc) {
+//                        this->maxgc = std::fabs(this->gradient[i]);
+//                    }
+//
+//                }
+                int error = cs_cholsol(0, hessian, gradient_.data(), this->S_outer);
+
+
+                cs_free(hessian);
+
+                if (this->maxgc <= this->tolerance) {
+                    return true;
+                }
+                if (iter == 1 || (iter % 10) == 0) {
+                    this->Print();
+                }
+
+
+                for (int j = 0; j < this->parameters_m.size(); j++) {
+                    this->parameters_m[j]->UpdateValue(this->parameters_m[j]->GetInternalValue() - lambda*gradient_[j]);
+                }
+            }
+
+
+            return false;
+        }
+
+    };
+
+
+
+
+#ifdef ATL_HAS_EIGEN 
 
     template<typename T>
     class Objective_Function2 : public cppoptlib::Problem<T> {
     public:
         using typename cppoptlib::Problem<T>::TVector; // Inherit the Vector typedef
+        using typename cppoptlib::Problem<T>::THessian;
         atl::OptimizationRoutine<T>* OR;
 
         int iprint = 10;
@@ -2150,6 +2297,7 @@ namespace atl {
                 this->OR->x[i] = this->OR->parameters_m[i]->GetValue();
             }
             OR->CallObjectiveFunction(f);
+            OR->function_value = f.GetValue();
             return f.GetValue();
         }
 
@@ -2159,6 +2307,7 @@ namespace atl {
 
         void gradient(const TVector &x, TVector &grad) {
             f = static_cast<T> (0.0);
+            atl::Variable<T>::tape.derivative_trace_level = atl::FIRST_ORDER_REVERSE;
             atl::Variable<T>::tape.recording = true;
             atl::Variable<T>::tape.Reset();
             for (int i = 0; i < x.size(); i++) {
@@ -2166,6 +2315,7 @@ namespace atl {
                 this->OR->x[i] = this->OR->parameters_m[i]->GetValue();
             }
             OR->CallObjectiveFunction(f);
+            OR->function_value = f.GetValue();
             //            atl::Variable<T>.tape.AccumulateFirstOrder();
             std::valarray<T> ng(x.size());
             OR->ComputeGradient(OR->parameters_m, ng, OR->maxgc);
@@ -2176,7 +2326,33 @@ namespace atl {
 
         }
 
-        bool callback(const cppoptlib::Criteria<T> &state, const TVector &x) {
+        void hessian(const TVector &x, THessian &hessian) {
+            f = static_cast<T> (0.0);
+            atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
+            atl::Variable<T>::tape.recording = true;
+            atl::Variable<T>::tape.Reset();
+            for (int i = 0; i < x.size(); i++) {
+                this->OR->parameters_m[i]->UpdateValue(x[i]);
+                this->OR->x[i] = this->OR->parameters_m[i]->GetValue();
+            }
+            OR->CallObjectiveFunction(f);
+            OR->function_value = f.GetValue();
+            atl::Variable<T>::tape.AccumulateSecondOrder();
+
+
+            for (int i = 0; i < this->OR->parameters_m.size(); i++) {
+                for (int j = 0; j < this->OR->parameters_m.size(); j++) {
+
+                    T dxx = atl::Variable<T>::tape.Value(this->OR->parameters_m[i]->info->id,
+                            this->OR->parameters_m[j]->info->id);
+                    hessian(i, j) = dxx;
+
+                }
+            }
+
+        }
+
+        bool callback(const cppoptlib::Criteria<T> &state, const TVector & x) {
             this->OR->outer_iteration = state.iterations - 1;
             if (((state.iterations - 1) % 10) == 0 || (state.iterations - 1) == 1) {
                 this->OR->Print();
@@ -2214,7 +2390,7 @@ namespace atl {
 
     };
 
-     template<typename T>
+    template<typename T>
     class BFGS : public atl::OptimizationRoutine<T> {
     public:
 
@@ -2241,7 +2417,6 @@ namespace atl {
         }
 
     };
-
 
     template<typename T>
     class GradientDescent : public atl::OptimizationRoutine<T> {
@@ -2307,6 +2482,7 @@ namespace atl {
             this->gradient.resize(this->parameters_m.size());
             this->x.resize(this->parameters_m.size());
             cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            crit.iterations = 1000;
             cppoptlib::NelderMeadSolver<Objective_Function2<T> > min;
             min.setStopCriteria(crit);
             Objective_Function2<T> of;
@@ -2327,7 +2503,63 @@ namespace atl {
 
     };
 
+    template<typename T>
+    class NewtonDescent : public atl::OptimizationRoutine<T> {
+    public:
 
+        virtual bool Evaluate() {
+            this->gradient.resize(this->parameters_m.size());
+            this->x.resize(this->parameters_m.size());
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::NewtonDescentSolver<Objective_Function2<T> > min;
+            min.setStopCriteria(crit);
+            Objective_Function2<T> of;
+            of.OR = this;
+            //            of.iprint = iprint;
+            typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (this->parameters_m[i]->IsBounded()) {
+                    xx[i] = this->parameters_m[i]->GetInternalValue();
+                } else {
+                    xx[i] = this->parameters_m[i]->GetValue();
+                }
+                this->x[i] = this->parameters_m[i]->GetValue();
+            }
+            min.minimize(of, xx);
+        }
+
+    };
+    /*
+        //Covariance Matrix Adaptation
+        template<typename T>
+        class CovarianceMatrixAdaptation : public atl::OptimizationRoutine<T> {
+        public:
+
+            virtual bool Evaluate() {
+                this->gradient.resize(this->parameters_m.size());
+                this->x.resize(this->parameters_m.size());
+                cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+                cppoptlib::CMAesSolver<Objective_Function2<T> > min;
+                min.setStopCriteria(crit);
+                Objective_Function2<T> of;
+                of.OR = this;
+                //            of.iprint = iprint;
+                typename Objective_Function2<T>::TVector xx(this->parameters_m.size());
+
+                for (int i = 0; i < this->parameters_m.size(); i++) {
+                    if (this->parameters_m[i]->IsBounded()) {
+                        xx[i] = this->parameters_m[i]->GetInternalValue();
+                    } else {
+                        xx[i] = this->parameters_m[i]->GetValue();
+                    }
+                    this->x[i] = this->parameters_m[i]->GetValue();
+                }
+                min.minimize(of, xx);
+            }
+
+        };
+     */
 #endif
 
     template<class T>
