@@ -548,9 +548,10 @@ namespace atl {
         int max_phase_m = 0;
         friend class OptimizationRoutine<T>;
         friend class MCMC<T>;
-        int phase_m = 1;
+       
     public:
-
+        int phase_m = 1;
+        
         inline operator const atl::Variable<T>() {
             return this->Evaluate();
         }
