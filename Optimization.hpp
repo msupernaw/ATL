@@ -1444,52 +1444,69 @@ namespace atl {
                 }
             }
         }
+    void Print() {
+            const int name_width  = 35;
+            const int value_width = 12;
+            const int grad_width  = 12;
 
-        void Print() {
             std::cout << "Iteration: " << this->outer_iteration << "\n";
             std::cout << "Phase: " << this->phase_m << "\n";
             std::cout << "Function Value = " << this->function_value << "\n";
             std::cout << "Max Gradient Component: " << this->maxgc << "\n";
             std::cout << "Floating-Point Type: Float" << (sizeof (T)*8) << "\n";
             std::cout << "Number of Parameters: " << this->parameters_m.size() << "\n";
-            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
-            std::cout << '|' << util::center("Name", 40) << '|' << util::center("Value", 12) << '|' << util::center("Gradient", 12) << '|'
-                    << util::center("Name", 40) << '|' << util::center("Value", 12) << '|' << util::center("Gradient", 12) << '|' << std::endl;
-            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
+            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+            std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
+                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
+                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
+                      << '|' << std::endl;
+            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+
             int i = 0;
             std::cout.precision(4);
             std::cout << std::scientific;
-            for (i = 0; (i + 2)< this->parameters_m.size(); i += 2) {
-                if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << "|" << util::center("*" + this->parameters_m[i]->GetName(), 40) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), 40) << '|';
-                }
-                std::cout << std::setw(12) << this->parameters_m[i]->GetValue() << '|' << std::setw(12) << this->gradient[i];
-                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
-                    std::cout << "|" << util::center("*" + this->parameters_m[i + 1]->GetName(), 40) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), 40) << '|';
-                }
-                std::cout << std::setw(12) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(12) << this->gradient[i + 1] << "|\n";
 
-                //                }
+            for (i = 0; (i + 3) < this->parameters_m.size(); i += 3) {
+                if (std::fabs(this->gradient[i]) == this->maxgc) {
+                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
+                } else {
+                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
+                }
+                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
+
+                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
+                    std::cout << '|' << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                } else {
+                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                }
+                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
+
+                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
+                    std::cout << '|' << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << '|';
+                } else {
+                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
+                }
+                std::cout << std::setw(value_width) << this->parameters_m[i + 2]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 2] << "|\n";
             }
 
             for (; i< this->parameters_m.size(); i++) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << "|" << util::center("*" + this->parameters_m[i]->GetName(), 40) << '|';
+                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
                 } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), 40) << '|';
+                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
                 }
-                std::cout << std::setw(12) << this->parameters_m[i]->GetValue() << '|' << std::setw(12) << this->gradient[i];
-                std::cout << '|' << util::center("-", 40) << '|';
-                std::cout << util::center("-", 12) << '|' << util::center("-", 12) << "|\n";
+                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
+
+                /*
+                std::cout << '|' << util::center("-", name_width) << '|';
+                std::cout << util::center("-", value_width) << '|' << util::center("-", grad_width) << "|\n";
+                */
             }
-            std::cout << " -------------------------------------------------------------------------------------------------------------------------------------\n";
+
+            std::cout << "|\n" << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
             std::cout << "\n\n";
         }
-
+        
         virtual bool Evaluate() = 0;
 
         T abs_sum(const std::valarray<T>&array) {
