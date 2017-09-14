@@ -12,3 +12,8 @@ function_minimizer_tests: FunctionMinimizerTests.cpp
 clean:
 	rm auto_diff_tests
 	rm function_minimizer_tests
+
+run:
+	./auto_diff_tests
+	./function_minimizer_tests
+
