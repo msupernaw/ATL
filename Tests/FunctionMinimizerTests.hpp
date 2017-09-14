@@ -54,7 +54,7 @@ namespace atl {
 
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = static_cast<T> (0.0);
                     for (int i = 0; i < x.size() - 1; i++) {
                         f += 100.0 * atl::pow(x[i + 1] - atl::pow(x[i], 2.0), 2.0) + atl::pow(x[i] - 1.0, 2.0);
@@ -97,7 +97,7 @@ namespace atl {
                     this->RegisterParameter(y);
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = 0.5 + (atl::pow(atl::sin(atl::pow(x, 2.0) - atl::pow(y, 2.0)), 2.0) - 0.5) / atl::pow(1.0 + .001 * (atl::pow(x, 2.0) + atl::pow(y, 2.0)), 2.0);
                     f_ = f.GetValue();
                 }
@@ -136,7 +136,7 @@ namespace atl {
                     this->RegisterParameter(y);
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = atl::sin(x + y) + atl::pow(x - y, 2.0) - 1.5 * x + 2.5 * y + 1.0;
                     f_ = f.GetValue();
                 }
@@ -179,7 +179,7 @@ namespace atl {
                     this->RegisterParameter(y);
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = 0.0;
                     f = -1.0 * atl::cos(x) * atl::cos(y) * atl::exp( (-1.0*((x - M_PI)*(x - M_PI)) - ((y - M_PI)*(y - M_PI))));
                     f_ = f.GetValue();
@@ -218,7 +218,7 @@ namespace atl {
                     this->RegisterParameter(y);
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = 100.0 * atl::sqrt(atl::ad_fabs<T>(y - .01 * atl::pow(x, 2.0), 1e-4)) + .01 * atl::ad_fabs<T>(x + 10.0, 1e-4);
                     f_ = f.GetValue();
                 }
@@ -262,7 +262,7 @@ namespace atl {
 
                 }
 
-                void ObjectiveFunction(var& f) {
+                void Objective_Function(var& f) {
                     f = static_cast<T> (0.0);
                     var sum;
                     for (int i = 0; i < x.size(); i++) {
@@ -291,6 +291,8 @@ namespace atl {
 
             void Run() {
 
+                atl::Variable<double>::tape.Reset();
+                atl::Variable<double>::tape.recording = true;
                 std::stringstream out;
 
                 atl::tests::fmin::Rosenbrock<double> rosenbrock;
