@@ -29,7 +29,7 @@
 
 
 
-#define ATL_HAS_EIGEN
+//#define ATL_HAS_EIGEN
 
 
 #ifdef ATL_HAS_EIGEN
