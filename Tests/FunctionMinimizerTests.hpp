@@ -166,13 +166,12 @@ namespace atl {
                 T f_;
 
                 void Initialize() {
-//                    x.SetMinBoundary(-100.0);
-//                    x.SetMaxBoundary(100.0);
-////                    x = M_PI - 1.50;
+                    x.SetValue(2.0);
+                    x.SetBounds(-12.0,10.0);
                     x.SetName("x");
-//                    y.SetMinBoundary(M_PI);
-//                    y.SetMaxBoundary(M_PI);
-//                    y = M_PI + 1.50;
+                    
+                    y.SetValue(2.0);
+                    y.SetBounds(-12.0,10);
                     y.SetName("y");
 
                     this->RegisterParameter(x);
@@ -181,7 +180,9 @@ namespace atl {
 
                 void Objective_Function(var& f) {
                     f = 0.0;
-                    f = -1.0 * atl::cos(x) * atl::cos(y) * atl::exp( (-1.0*((x - M_PI)*(x - M_PI)) - ((y - M_PI)*(y - M_PI))));
+                    var fact1 = -1.0 * atl::cos(x) * atl::cos(y);
+                    var fact2 = exp(-1.0*atl::pow(x-M_PI,2.0)- atl::pow(y-M_PI,2.0));
+                    f =  fact1*fact2;
                     f_ = f.GetValue();
                 }
 
@@ -363,9 +364,9 @@ namespace atl {
                     std::cout << "Styblinski Tang test failed.\n";
                 }
 
-                   atl::tests::fmin::Easom<double> easom;
+                
+                atl::tests::fmin::Easom<double> easom;
                 easom.Initialize();
-                lbfgs.SetTolerance(1e-15);
                 lbfgs.SetObjectiveFunction(&easom);
                 lbfgs.Run();
                 if (easom.Check()) {
