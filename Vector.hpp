@@ -22,7 +22,7 @@
 namespace atl {
 
     /**
-     * VariableVector is a 1 x M VariableMatrix.
+     * VariableRowVector is a 1 x M VariableMatrix.
      *
      * This object references values from a row in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
@@ -53,7 +53,7 @@ namespace atl {
             this->data_m.resize(size);
         }
 
-        atl::Variable<T>& operator()(size_t j) {
+        atl::Variable<T>& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
 
@@ -61,7 +61,7 @@ namespace atl {
          * Returns the size of this vector.
          * @return
          */
-        size_t GetSize() {
+        size_t GetSize() const {
             return this->columns_m;
         }
 
@@ -69,7 +69,11 @@ namespace atl {
             throw std::invalid_argument("GetValue() called on vector template.");
         }
 
-        inline const T GetValue(size_t i, size_t j = 0) const {
+        inline const T GetValue(size_t j) const {
+            return this->data_m[rows_m * this->columns_m + j].GetValue();
+        }
+
+        inline const T GetValue(size_t i, size_t j) const {
             return this->data_m[rows_m * this->columns_m + j].GetValue();
         }
 
@@ -77,11 +81,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j) const {
             data_m[rows_m * this->columns_m + j].PushIds(ids);
         }
 
@@ -104,15 +108,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
             return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x, y);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return this->data_m[rows_m * this->columns_m + j].EvaluateDerivative(x, y, z);
         }
 
@@ -124,7 +128,7 @@ namespace atl {
             return 1;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -138,7 +142,7 @@ namespace atl {
     };
 
     /**
-     * VariableVector is a 1 x M VariableMatrix.
+     * RealRowVector is a 1 x M VariableMatrix.
      *
      * This object references values from a row in a RealMatrix. Therfore,
      * if a value is modified, it is also modified in the RealMatrix of
@@ -169,7 +173,7 @@ namespace atl {
             this->data_m.resize(size);
         }
 
-        T& operator()(size_t j) {
+        T& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
 
@@ -177,7 +181,7 @@ namespace atl {
          * Returns the size of this vector.
          * @return
          */
-        size_t GetSize() {
+        size_t GetSize() const {
             return this->columns_m;
         }
 
@@ -185,7 +189,11 @@ namespace atl {
             throw std::invalid_argument("GetValue() called on vector template.");
         }
 
-        inline const T GetValue(size_t i, size_t j = 0) const {
+        inline const T GetValue(size_t j) const {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
+
+        inline const T GetValue(size_t i, size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
 
@@ -193,11 +201,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j) const {
 
         }
 
@@ -217,15 +225,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
@@ -237,7 +245,7 @@ namespace atl {
             return 1;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -251,7 +259,7 @@ namespace atl {
     };
 
     /**
-     * VariableVector is a N x 1 VariableMatrix.
+     * VariableColumnVector is a N x 1 VariableMatrix.
      *
      * This object references values from a column in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
@@ -307,11 +315,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0) const {
             data_m[i * this->columns_m + col].PushIds(ids);
         }
 
@@ -354,7 +362,7 @@ namespace atl {
             return this->rows_m;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -368,7 +376,7 @@ namespace atl {
     };
 
     /**
-     * VariableVector is a N x 1 VariableMatrix.
+     * RealColumnVector is a N x 1 VariableMatrix.
      *
      * This object references values from a column in a VariableMatrix. Therfore,
      * if a value is modified, it is also modified in the VariableMatrix of
@@ -424,11 +432,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0) const {
 
         }
 
@@ -471,7 +479,7 @@ namespace atl {
             return this->rows_m;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -819,7 +827,7 @@ namespace atl {
             throw std::invalid_argument("GetValue() called on vector template.");
         }
 
-        inline const T GetValue(size_t i, size_t j = 0) const {
+        inline const T GetValue(size_t i, size_t j) const {
             return this->data_m[j].GetValue();
         }
 
@@ -827,11 +835,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j) const {
             data_m[j].PushIds(ids, i, j);
         }
 
@@ -854,15 +862,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
             return this->data_m[j].EvaluateDerivative(x);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return this->data_m[j].EvaluateDerivative(x, y);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return this->data_m[j].EvaluateDerivative(x, y, z);
         }
 
@@ -874,7 +882,7 @@ namespace atl {
             return 1;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -884,11 +892,10 @@ namespace atl {
             return ss.str();
         }
 
-
     };
 
     /**
-     * VariableVector is a 1 x M VariableMatrix.
+     * RealVector is a 1 x M VariableMatrix.
      */
     template<typename T>
     struct RealVector : atl::ExpressionBase<T, RealVector<T > > {
@@ -1050,7 +1057,7 @@ namespace atl {
             throw std::invalid_argument("GetValue() called on vector template.");
         }
 
-        inline const T GetValue(size_t i, size_t j = 0) const {
+        inline const T GetValue(size_t i, size_t j) const {
             return this->data_m[j].GetValue();
         }
 
@@ -1058,11 +1065,11 @@ namespace atl {
             return false;
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids) const {
             throw std::invalid_argument("PushIds(typename atl::StackEntry<T>::vi_storage& ids) called on vector template.");
         }
 
-        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j = 0)const {
+        inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids, size_t i, size_t j) const {
         }
 
         std::shared_ptr<DynamicExpressionBase<T> > ToDynamic() const {
@@ -1084,15 +1091,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
@@ -1104,7 +1111,7 @@ namespace atl {
             return 1;
         }
 
-        bool IsScalar()const {
+        bool IsScalar() const {
             return false;
         }
 
@@ -1149,13 +1156,23 @@ namespace atl {
     }
 
     template<class T>
-    inline const atl::Variable<T> Average(const atl::VariableVector<T> &expr) {
-        atl::Variable<T> ret = T(0.0);
+    inline const atl::Variable<T> Product(const atl::VariableVector<T> &expr) {
+        atl::Variable<T> ret = T(1.0);
         size_t n = expr.GetSize();
         for (size_t i = 0; i < n; i++) {
-            ret += expr(i);
+            ret *= expr(i);
         }
-        return (ret / T(n));
+        return ret;
+    }
+
+    template<class T>
+    inline const atl::Variable<T> Average(const atl::VariableVector<T> &expr) {
+        atl::Variable<T> ret = atl::Sum(expr);
+        size_t n = expr.GetSize();
+        if (n > 1) {
+            ret /= T(n);
+        }
+        return ret;
     }
 
     template<typename REAL_T>
