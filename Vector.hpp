@@ -53,7 +53,11 @@ namespace atl {
             this->data_m.resize(size);
         }
 
-        atl::Variable<T>& operator()(size_t j) const {
+        atl::Variable<T>& operator()(size_t j) {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
+
+        const atl::Variable<T>& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
 
@@ -173,7 +177,11 @@ namespace atl {
             this->data_m.resize(size);
         }
 
-        T& operator()(size_t j) const {
+        T& operator()(size_t j) {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
+
+        const T& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
 
@@ -295,6 +303,10 @@ namespace atl {
             return this->data_m[i * this->columns_m + col];
         }
 
+        const atl::Variable<T>& operator()(size_t i) const {
+            return this->data_m[i * this->columns_m + col];
+        }
+
         /**
          * Returns the size of this vector.
          * @return
@@ -409,6 +421,10 @@ namespace atl {
         }
 
         T& operator()(size_t i) {
+            return this->data_m[i * this->columns_m + col];
+        }
+
+        const T& operator()(size_t i) const {
             return this->data_m[i * this->columns_m + col];
         }
 
@@ -827,6 +843,10 @@ namespace atl {
             throw std::invalid_argument("GetValue() called on vector template.");
         }
 
+        inline const T GetValue(size_t j) const {
+            return this->data_m[j].GetValue();
+        }
+
         inline const T GetValue(size_t i, size_t j) const {
             return this->data_m[j].GetValue();
         }
@@ -1055,6 +1075,10 @@ namespace atl {
 
         inline const T GetValue() const {
             throw std::invalid_argument("GetValue() called on vector template.");
+        }
+
+        inline const T GetValue(size_t j) const {
+            return this->data_m[j].GetValue();
         }
 
         inline const T GetValue(size_t i, size_t j) const {
