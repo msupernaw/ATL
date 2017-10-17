@@ -514,7 +514,7 @@ namespace simd {
 
     private:
 
-        __m128 m_value;
+        __m128d m_value;
     };
 
     inline const vector2d operator+(const vector2d& lhs, const vector2d& rhs) {
