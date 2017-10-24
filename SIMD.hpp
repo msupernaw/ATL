@@ -485,7 +485,7 @@ namespace simd {
         inline vector2d(const __m128d& rhs) : m_value(rhs) {
         }
 
-        inline vector2d& operator=(const __m12d8& rhs) {
+        inline vector2d& operator=(const __m128d& rhs) {
             m_value = rhs;
             return *this;
         }
