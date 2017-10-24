@@ -37,7 +37,6 @@
 
 namespace atl {
 
-    
     /**
      * Expression template to handle natural exponential function for variable or 
      * container expressions. 
@@ -202,14 +201,12 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            REAL_T val = this->GetValue();
-            return val * (expr_m.EvaluateDerivative(x))*
+            return std::exp(expr_m.GetValue())*((expr_m.EvaluateDerivative(x))*
                     (expr_m.EvaluateDerivative(y))*(expr_m.EvaluateDerivative(z))
-                    + val * (expr_m.EvaluateDerivative(x, y))*
-                    (expr_m.EvaluateDerivative(z)) + this->GetValue() *
-                    (expr_m.EvaluateDerivative(x))*(expr_m.EvaluateDerivative(y, z))
-                    + val * (expr_m.EvaluateDerivative(x, z))*(expr_m.EvaluateDerivative(y))
-                    + val * (expr_m.EvaluateDerivative(x, y, z));
+                    + (expr_m.EvaluateDerivative(x, y))* (expr_m.EvaluateDerivative(z)) +
+                    (expr_m.EvaluateDerivative(x))*(expr_m.EvaluateDerivative(y, z)) +
+                    (expr_m.EvaluateDerivative(x, z))*(expr_m.EvaluateDerivative(y))+
+                    (expr_m.EvaluateDerivative(x, y, z)));
         }
 
         /**
@@ -270,14 +267,12 @@ namespace atl {
          * @return 
          */
         inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            REAL_T val = this->GetValue(i, j);
-            return val * (expr_m.EvaluateDerivative(x, i, j))*
+            return std::exp(expr_m.GetValue(i, j))*((expr_m.EvaluateDerivative(x, i, j))*
                     (expr_m.EvaluateDerivative(y, i, j))*(expr_m.EvaluateDerivative(z, i, j))
-                    + val * (expr_m.EvaluateDerivative(x, y, i, j))*
-                    (expr_m.EvaluateDerivative(z, i, j)) + val *
-                    (expr_m.EvaluateDerivative(x, i, j))*(expr_m.EvaluateDerivative(y, z, i, j))
-                    + val * (expr_m.EvaluateDerivative(x, z, i, j))*(expr_m.EvaluateDerivative(y, i, j))
-                    + val * (expr_m.EvaluateDerivative(x, y, z, i, j));
+                    + (expr_m.EvaluateDerivative(x, y, i, j))* (expr_m.EvaluateDerivative(z, i, j)) +
+                    (expr_m.EvaluateDerivative(x, i, j))*(expr_m.EvaluateDerivative(y, z, i, j)) +
+                    (expr_m.EvaluateDerivative(x, z, i, j))*(expr_m.EvaluateDerivative(y, i, j))+
+                    (expr_m.EvaluateDerivative(x, y, z, i, j)));
         }
 
         /**
