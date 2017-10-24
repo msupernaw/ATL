@@ -482,15 +482,15 @@ namespace simd {
         inline vector2d(double f0, double f1) : m_value(_mm_setr_pd(f0, f1)) {
         }
 
-        inline vector2d(const __m128& rhs) : m_value(rhs) {
+        inline vector2d(const __m128d& rhs) : m_value(rhs) {
         }
 
-        inline vector2d& operator=(const __m128& rhs) {
+        inline vector2d& operator=(const __m12d8& rhs) {
             m_value = rhs;
             return *this;
         }
 
-        inline operator __m128() const {
+        inline operator __m128d() const {
             return m_value;
         }
 
