@@ -137,7 +137,7 @@ namespace atl {
          * @param id
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t id) const {
+        inline const REAL_T EvaluateFirstDerivative(uint32_t id) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -148,7 +148,7 @@ namespace atl {
          * @param b
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b) const {
+        inline REAL_T EvaluateSecondDerivative(uint32_t a, uint32_t b) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -160,7 +160,7 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -172,7 +172,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t id, size_t i, size_t j = 0) const {
+        inline const REAL_T EvaluateFirstDerivativeAt(uint32_t id, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -185,7 +185,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -199,7 +199,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -260,3 +260,4 @@ namespace atl {
 }//end namespace atl
 
 #endif
+

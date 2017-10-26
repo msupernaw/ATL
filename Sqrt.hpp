@@ -162,8 +162,8 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x) const {
-            return expr_m.EvaluateDerivative(x) / (2.0 * this->GetValue());
+        inline const REAL_T EvaluateFirstDerivative(uint32_t x) const {
+            return expr_m.EvaluateFirstDerivative(x) / (2.0 * this->GetValue());
         }
 
         /**
@@ -177,9 +177,9 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return (expr_m.EvaluateDerivative(x, y) / (2.0 * this->GetValue())) -
-                    (expr_m.EvaluateDerivative(x) * expr_m.EvaluateDerivative(y)) / (4.0 * std::pow(expr_m.GetValue(), 1.5));
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
+            return (expr_m.EvaluateSecondDerivative(x, y) / (2.0 * this->GetValue())) -
+                    (expr_m.EvaluateFirstDerivative(x) * expr_m.EvaluateFirstDerivative(y)) / (4.0 * std::pow(expr_m.GetValue(), 1.5));
         }
 
         /**
@@ -202,15 +202,15 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
 
-            return (3.0 * (expr_m.EvaluateDerivative(x))*(expr_m.EvaluateDerivative(y))
-                    *(expr_m.EvaluateDerivative(z))) / (8.0 * std::pow(expr_m.GetValue(), 2.5))
-                    -((expr_m.EvaluateDerivative(x, y))*(expr_m.EvaluateDerivative(z)))
-                    / (4.0 * std::pow(expr_m.GetValue(), 1.5))-((expr_m.EvaluateDerivative(x))
-                    *(expr_m.EvaluateDerivative(y, z))) / (4.0 * std::pow(expr_m.GetValue(), 1.5))
-                    -((expr_m.EvaluateDerivative(x, z))*(expr_m.EvaluateDerivative(y)))
-                    / (4.0 * std::pow(expr_m.GetValue(), 1.5)) + expr_m.EvaluateDerivative(x, y, z)
+            return (3.0 * (expr_m.EvaluateFirstDerivative(x))*(expr_m.EvaluateFirstDerivative(y))
+                    *(expr_m.EvaluateFirstDerivative(z))) / (8.0 * std::pow(expr_m.GetValue(), 2.5))
+                    -((expr_m.EvaluateSecondDerivative(x, y))*(expr_m.EvaluateFirstDerivative(z)))
+                    / (4.0 * std::pow(expr_m.GetValue(), 1.5))-((expr_m.EvaluateFirstDerivative(x))
+                    *(expr_m.EvaluateSecondDerivative(y, z))) / (4.0 * std::pow(expr_m.GetValue(), 1.5))
+                    -((expr_m.EvaluateSecondDerivative(x, z))*(expr_m.EvaluateFirstDerivative(y)))
+                    / (4.0 * std::pow(expr_m.GetValue(), 1.5)) + expr_m.EvaluateThirdDerivative(x, y, z)
                     / (2.0 * std::sqrt(expr_m.GetValue()));
         }
 
@@ -224,9 +224,9 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline const REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
 
-            return expr_m.EvaluateDerivative(x, i, j) / (2.0 * this->GetValue(i, j));
+            return expr_m.EvaluateFirstDerivativeAt(x, i, j) / (2.0 * this->GetValue(i, j));
         }
 
         /**
@@ -244,10 +244,10 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
 
-            return (expr_m.EvaluateDerivative(x, y, i, j) / (2.0 * this->GetValue(i, j))) -
-                    (expr_m.EvaluateDerivative(x, i, j) * expr_m.EvaluateDerivative(y, i, j)) / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5));
+            return (expr_m.EvaluateSecondDerivativeAt(x, y, i, j) / (2.0 * this->GetValue(i, j))) -
+                    (expr_m.EvaluateFirstDerivativeAt(x, i, j) * expr_m.EvaluateFirstDerivativeAt(y, i, j)) / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5));
         }
 
         /**
@@ -273,15 +273,15 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
 
-            return (3.0 * (expr_m.EvaluateDerivative(x, i, j))*(expr_m.EvaluateDerivative(y, i, j))
-                    *(expr_m.EvaluateDerivative(z, i, j))) / (8.0 * std::pow(expr_m.GetValue(i, j), 2.5))
-                    -((expr_m.EvaluateDerivative(x, y, i, j))*(expr_m.EvaluateDerivative(z, i, j)))
-                    / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5))-((expr_m.EvaluateDerivative(x, i, j))
+            return (3.0 * (expr_m.EvaluateFirstDerivativeAt(x, i, j))*(expr_m.EvaluateFirstDerivativeAt(y, i, j))
+                    *(expr_m.EvaluateFirstDerivativeAt(z, i, j))) / (8.0 * std::pow(expr_m.GetValue(i, j), 2.5))
+                    -((expr_m.EvaluateSecondDerivativeAt(x, y, i, j))*(expr_m.EvaluateFirstDerivativeAt(z, i, j)))
+                    / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5))-((expr_m.EvaluateFirstDerivativeAt(x, i, j))
                     *(expr_m.EvaluateDerivative(y, z, i, j))) / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5))
-                    -((expr_m.EvaluateDerivative(x, z, i, j))*(expr_m.EvaluateDerivative(y, i, j)))
-                    / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5)) + expr_m.EvaluateDerivative(x, y, z, i, j)
+                    -((expr_m.EvaluateSecondDerivativeAt(x, z, i, j))*(expr_m.EvaluateFirstDerivativeAt(y, i, j)))
+                    / (4.0 * std::pow(expr_m.GetValue(i, j), 1.5)) + expr_m.EvaluateThirdDerivativeAt(x, y, z, i, j)
                     / (2.0 * std::sqrt(expr_m.GetValue(i, j)));
         }
 
@@ -336,3 +336,4 @@ namespace atl {
 }//end namespace atl
 
 #endif
+

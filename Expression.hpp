@@ -101,16 +101,16 @@ namespace atl {
             return Cast().ToDynamic();
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x) const {
-            return Cast().EvaluateDerivative(x);
+        inline REAL_T EvaluateFirstDerivative(uint32_t x) const {
+            return Cast().EvaluateFirstDerivative(x);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return Cast().EvaluateDerivative(x, y);
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
+            return Cast().EvaluateSecondDerivative(x, y);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return Cast().EvaluateDerivative(x, y, z);
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            return Cast().EvaluateThirdDerivative(x, y, z);
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, size_t i, size_t j = 0, REAL_T h = 1e-20) const {
@@ -121,16 +121,16 @@ namespace atl {
             return Cast().Taylor(degree);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return Cast().EvaluateDerivative(x, i, j);
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
+            return Cast().EvaluateFirstDerivativeAt(x, i, j);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            return Cast().EvaluateDerivative(x, y, i, j);
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return Cast().EvaluateSecondDerivativeAt(x, y, i, j);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            return Cast().EvaluateDerivative(x, y, z, i, j);
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+            return Cast().EvaluateThirdDerivativeAt(x, y, z, i, j);
         }
 
         const ExpressionBase& operator=(const ExpressionBase & exp) const {
@@ -272,4 +272,5 @@ inline const int operator>=(const atl::ExpressionBase<REAL_T, T>& lhs, const REA
 }
 
 #endif /* EXPRESSION_HPP */
+
 

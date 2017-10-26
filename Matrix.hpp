@@ -96,7 +96,7 @@ namespace atl {
                             for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                                 entry.min_id = std::min((*it)->id, entry.min_id);
                                 entry.max_id = std::max((*it)->id, entry.max_id);
-                                entry.first[ii] = exp.EvaluateDerivative((*it)->id, i, j);
+                                entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
                                 ii++;
                             }
                             break;
@@ -111,10 +111,10 @@ namespace atl {
 
                                 entry.min_id = std::min((*it)->id, entry.min_id);
                                 entry.max_id = std::max((*it)->id, entry.max_id);
-                                entry.first[ii] = exp.EvaluateDerivative((*it)->id);
+                                entry.first[ii] = exp.EvaluateFirstDerivative((*it)->id);
                                 jj = 0;
                                 for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id, i, j);
+                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivativeAt((*it)->id, (*jt)->id, i, j);
                                     jj++;
                                 }
                                 ii++;
@@ -131,15 +131,15 @@ namespace atl {
                                 (*it)->live++;
                                 entry.min_id = std::min((*it)->id, entry.min_id);
                                 entry.max_id = std::max((*it)->id, entry.max_id);
-                                entry.first[ii] = exp.EvaluateDerivative((*it)->id, i, j);
+                                entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
                                 jj = 0;
                                 for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
+                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
                                     kk = 0;
                                     for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
 
                                         entry.third[ii * entry.ids.size() * entry.ids.size() + jj * entry.ids.size() + kk] =
-                                                exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id, i, j);
+                                                exp.EvaluateThirdDerivativeAt((*it)->id, (*jt)->id, (*kt)->id, i, j);
                                         kk++;
                                     }
                                     jj++;
@@ -330,7 +330,7 @@ namespace atl {
                                 for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                                     entry.min_id = std::min((*it)->id, entry.min_id);
                                     entry.max_id = std::max((*it)->id, entry.max_id);
-                                    entry.first[ii] = exp.EvaluateDerivative((*it)->id, i, j);
+                                    entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
                                     ii++;
                                 }
                                 break;
@@ -345,10 +345,10 @@ namespace atl {
 
                                     entry.min_id = std::min((*it)->id, entry.min_id);
                                     entry.max_id = std::max((*it)->id, entry.max_id);
-                                    entry.first[ii] = exp.EvaluateDerivative((*it)->id);
+                                    entry.first[ii] = exp.EvaluateFirstDerivative((*it)->id);
                                     jj = 0;
                                     for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                        entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id, i, j);
+                                        entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivativeAt((*it)->id, (*jt)->id, i, j);
                                         jj++;
                                     }
                                     i++;
@@ -365,15 +365,15 @@ namespace atl {
                                     (*it)->live++;
                                     entry.min_id = std::min((*it)->id, entry.min_id);
                                     entry.max_id = std::max((*it)->id, entry.max_id);
-                                    entry.first[i] = exp.EvaluateDerivative((*it)->id, i, j);
+                                    entry.first[i] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
                                     jj = 0;
                                     for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                        entry.second[ii * entry.ids.size() + jj] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
+                                        entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
                                         kk = 0;
                                         for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
 
                                             entry.third[ii * entry.ids.size() * entry.ids.size() + jj * entry.ids.size() + kk] =
-                                                    exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id, i, j);
+                                                    exp.EvaluateThirdDerivativeAt((*it)->id, (*jt)->id, (*kt)->id, i, j);
                                             kk++;
                                         }
                                         jj++;
@@ -629,16 +629,16 @@ namespace atl {
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x) called on matrix template.");
-            return this->data_m[0].EvaluateDerivative(x);
+        inline T EvaluateFirstDerivative(uint32_t x) const {
+            throw std::invalid_argument("EvaluateFirstDerivative(uint32_t x) called on matrix template.");
+            return this->data_m[0].EvaluateFirstDerivative(x);
         }
 
         /**
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y) const {
+        inline T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
             throw std::invalid_argument("EvaluateDerivative(uint32_t x,uint32_t y) called on matrix template.");
             return static_cast<T> (0.0);
         }
@@ -647,7 +647,7 @@ namespace atl {
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             throw std::invalid_argument("EvaluateDerivative(uint32_t x, uint32_t y,uint32_t z) called on matrix template.");
             return static_cast<T> (0.0);
         }
@@ -662,8 +662,8 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return this->data_m[i * columns + j].EvaluateDerivative(x);
+        inline T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
+            return this->data_m[i * columns + j].EvaluateFirstDerivative(x);
         }
 
         /**
@@ -675,7 +675,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -689,7 +689,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -758,7 +758,7 @@ namespace atl {
                     typename atl::StackEntry<T>::vi_iterator it;
                     size_t k = 0;
                     for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                        entry.first[k] = exp.EvaluateDerivative((*it)->id, i, j);
+                        entry.first[k] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
                         k++;
                     }
                 }
@@ -833,26 +833,26 @@ namespace atl {
         }
 
         inline T EvaluateDerivative(uint32_t a) const {
-            return this->data_m[0].EvaluateDerivative(a);
+            return this->data_m[0].EvaluateFirstDerivative(a);
         }
 
-        inline T EvaluateDerivative(uint32_t a, uint32_t b) const {
+        inline T EvaluateSecondDerivative(uint32_t a, uint32_t b) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return static_cast<T> (0.0);
         }
 
         inline T EvaluateDerivative(uint32_t a, size_t i, size_t j = 0) const {
-            return this->data_m[i * columns + j].EvaluateDerivative(a);
+            return this->data_m[i * columns + j].EvaluateFirstDerivative(a);
         }
 
-        inline T EvaluateDerivative(uint32_t a, uint32_t b, size_t i, size_t j = 0) const {
+        inline T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -1103,8 +1103,8 @@ namespace atl {
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x) const {
-            throw std::invalid_argument("EvaluateDerivative(uint32_t x) called on matrix template.");
+        inline T EvaluateFirstDerivative(uint32_t x) const {
+            throw std::invalid_argument("EvaluateFirstDerivative(uint32_t x) called on matrix template.");
             return static_cast<T> (0.0);
         }
 
@@ -1112,7 +1112,7 @@ namespace atl {
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y) const {
+        inline T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
             throw std::invalid_argument("EvaluateDerivative(uint32_t x,uint32_t y) called on matrix template.");
             return static_cast<T> (0.0);
         }
@@ -1121,7 +1121,7 @@ namespace atl {
          * throws std::invalid_argument
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             throw std::invalid_argument("EvaluateDerivative(uint32_t x, uint32_t y,uint32_t z) called on matrix template.");
             return static_cast<T> (0.0);
         }
@@ -1136,7 +1136,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -1149,7 +1149,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -1209,7 +1209,7 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<T> (0.0);
         }
 
@@ -1335,4 +1335,5 @@ namespace atl {
 
 
 #endif /* MATRIX_HPP */
+
 

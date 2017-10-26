@@ -144,8 +144,8 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x) const {
-            return lhs_m.EvaluateDerivative(x) - rhs_m.EvaluateDerivative(x);
+        inline REAL_T EvaluateFirstDerivative(uint32_t x) const {
+            return lhs_m.EvaluateFirstDerivative(x) - rhs_m.EvaluateFirstDerivative(x);
         }
 
         /**
@@ -157,8 +157,8 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return lhs_m.EvaluateDerivative(x, y) - rhs_m.EvaluateDerivative(x, y);
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
+            return lhs_m.EvaluateSecondDerivative(x, y) - rhs_m.EvaluateSecondDerivative(x, y);
         }
 
         /**
@@ -172,8 +172,8 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return lhs_m.EvaluateDerivative(x, y, z) - rhs_m.EvaluateDerivative(x, y, z);
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            return lhs_m.EvaluateThirdDerivative(x, y, z) - rhs_m.EvaluateThirdDerivative(x, y, z);
         }
 
         /**
@@ -187,8 +187,8 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return lhs_m.EvaluateDerivative(x, i, j) - rhs_m.EvaluateDerivative(x, i, j);
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
+            return lhs_m.EvaluateFirstDerivativeAt(x, i, j) - rhs_m.EvaluateFirstDerivativeAt(x, i, j);
         }
 
         /**
@@ -204,8 +204,8 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            return lhs_m.EvaluateDerivative(x, y, i, j) - rhs_m.EvaluateDerivative(x, y, i, j);
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return lhs_m.EvaluateSecondDerivativeAt(x, y, i, j) - rhs_m.EvaluateSecondDerivativeAt(x, y, i, j);
         }
 
         /**
@@ -222,8 +222,8 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
-            return lhs_m.EvaluateDerivative(x, y, z, i, j) - rhs_m.EvaluateDerivative(x, y, z, i, j);
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+            return lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j) - rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j);
         }
 
         /**
@@ -334,4 +334,5 @@ namespace atl {
 }
 
 #endif /* SUBTRACT_HPP */
+
 

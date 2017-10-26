@@ -138,7 +138,7 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x) const {
+        inline REAL_T EvaluateFirstDerivative(uint32_t x) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -149,44 +149,7 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return static_cast<REAL_T> (0.0);
-        }
-
-        /**
-         * Returns 0.
-         * 
-         * @param x
-         * @param y
-         * @param z
-         * @return 
-         */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return static_cast<REAL_T> (0.0);
-        }
-
-        /**
-         * Returns 0.
-         * 
-         * @param x
-         * @param i
-         * @param j
-         * @return 
-         */
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
-            return static_cast<REAL_T> (0.0);
-        }
-
-        /**
-         * Returns 0.
-         * 
-         * @param x
-         * @param y
-         * @param i
-         * @param j
-         * @return 
-         */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -196,11 +159,48 @@ namespace atl {
          * @param x
          * @param y
          * @param z
+         * @return 
+         */
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            return static_cast<REAL_T> (0.0);
+        }
+
+        /**
+         * Returns 0.
+         * 
+         * @param x
          * @param i
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
+            return static_cast<REAL_T> (0.0);
+        }
+
+        /**
+         * Returns 0.
+         * 
+         * @param x
+         * @param y
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return static_cast<REAL_T> (0.0);
+        }
+
+        /**
+         * Returns 0.
+         * 
+         * @param x
+         * @param y
+         * @param z
+         * @param i
+         * @param j
+         * @return 
+         */
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -249,4 +249,5 @@ namespace atl {
 }
 
 #endif /* REAL_HPP */
+
 

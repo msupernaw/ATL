@@ -193,9 +193,9 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x) const {
-            return (lhs_m.GetValue() * rhs_m.EvaluateDerivative(x) +
-                    lhs_m.EvaluateDerivative(x) * rhs_m.GetValue());
+        inline const REAL_T EvaluateFirstDerivative(uint32_t x) const {
+            return (lhs_m.GetValue() * rhs_m.EvaluateFirstDerivative(x) +
+                    lhs_m.EvaluateFirstDerivative(x) * rhs_m.GetValue());
         }
 
         /**
@@ -213,11 +213,11 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return lhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y) +
-                    lhs_m.GetValue() * rhs_m.EvaluateDerivative(x, y) +
-                    lhs_m.EvaluateDerivative(y) * rhs_m.EvaluateDerivative(x) +
-                    rhs_m.GetValue() * lhs_m.EvaluateDerivative(x, y);
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
+            return lhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y) +
+                    lhs_m.GetValue() * rhs_m.EvaluateSecondDerivative(x, y) +
+                    lhs_m.EvaluateFirstDerivative(y) * rhs_m.EvaluateFirstDerivative(x) +
+                    rhs_m.GetValue() * lhs_m.EvaluateSecondDerivative(x, y);
         }
 
         /**
@@ -243,15 +243,15 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
-                    (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))
-                    +(lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))
-                    +(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))
-                    + lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, y, z))+
-                    (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y))+
-                    (lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x))
-                    + rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y, z));
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            return (lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))+
+                    (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))
+                    +(lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))
+                    +(lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivative(x, z))
+                    + lhs_m.GetValue()*(rhs_m.EvaluateThirdDerivative(x, y, z))+
+                    (lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateSecondDerivative(x, y))+
+                    (lhs_m.EvaluateSecondDerivative(y, z))*(rhs_m.EvaluateFirstDerivative(x))
+                    + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivative(x, y, z));
         }
 
         /**
@@ -264,7 +264,7 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
 
             ////            return first_order_func(a,i,j,lhs_m.Cast(), rhs_m.Cast());
             //            
@@ -272,22 +272,22 @@ namespace atl {
             //            if (lhs_m.IsScalar()) {//scalar multiply
             //                if (rhs_m.IsScalar()) {//scalar multiply
             //                    return (lhs_m.GetValue() *
-            //                            rhs_m.EvaluateDerivative(a) +
-            //                            lhs_m.EvaluateDerivative(a) *
+            //                            rhs_m.EvaluateFirstDerivative(a) +
+            //                            lhs_m.EvaluateFirstDerivative(a) *
             //                            rhs_m.GetValue());
             //                } else {//scalar/matrix multiply
-            //                    return (lhs_m.GetValue() * rhs_m.EvaluateDerivative(a, i, j) +
-            //                            lhs_m.EvaluateDerivative(a) * rhs_m.GetValue(i, j));
+            //                    return (lhs_m.GetValue() * rhs_m.EvaluateFirstDerivativeAt(a, i, j) +
+            //                            lhs_m.EvaluateFirstDerivative(a) * rhs_m.GetValue(i, j));
             //                }
             //            } else if (rhs_m.IsScalar()) {//scalar/matrix multiply
             //                return (lhs_m.GetValue(i, j) *
-            //                        rhs_m.EvaluateDerivative(a) +
-            //                        lhs_m.EvaluateDerivative(a, i, j) *
+            //                        rhs_m.EvaluateFirstDerivative(a) +
+            //                        lhs_m.EvaluateFirstDerivativeAt(a, i, j) *
             //                        rhs_m.GetValue());
             if (!mm_multiply) {
                 return (lhs_m.GetValue(i, j) *
-                        rhs_m.EvaluateDerivative(x, i, j) +
-                        lhs_m.EvaluateDerivative(x, i, j) *
+                        rhs_m.EvaluateFirstDerivativeAt(x, i, j) +
+                        lhs_m.EvaluateFirstDerivativeAt(x, i, j) *
                         rhs_m.GetValue(i, j));
             } else { //matrix multiply
 
@@ -321,34 +321,34 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
-                    return lhs_m.EvaluateDerivative(x) *
-                            rhs_m.EvaluateDerivative(y) +
+                    return lhs_m.EvaluateFirstDerivative(x) *
+                            rhs_m.EvaluateFirstDerivative(y) +
                             lhs_m.GetValue() *
-                            rhs_m.EvaluateDerivative(x, y) +
-                            lhs_m.EvaluateDerivative(y) *
-                            rhs_m.EvaluateDerivative(x) +
+                            rhs_m.EvaluateSecondDerivative(x, y) +
+                            lhs_m.EvaluateFirstDerivative(y) *
+                            rhs_m.EvaluateFirstDerivative(x) +
                             rhs_m.GetValue() *
-                            lhs_m.EvaluateDerivative(x, y);
+                            lhs_m.EvaluateSecondDerivative(x, y);
                 } else {//scalar/matrix multiply
-                    return lhs_m.EvaluateDerivative(x) *
-                            rhs_m.EvaluateDerivative(x, i, j) +
+                    return lhs_m.EvaluateFirstDerivative(x) *
+                            rhs_m.EvaluateFirstDerivativeAt(x, i, j) +
                             lhs_m.GetValue() *
-                            rhs_m.EvaluateDerivative(x, y, i, j) +
-                            lhs_m.EvaluateDerivative(y) *
-                            rhs_m.EvaluateDerivative(x, i, j) +
+                            rhs_m.EvaluateSecondDerivativeAt(x, y, i, j) +
+                            lhs_m.EvaluateFirstDerivative(y) *
+                            rhs_m.EvaluateFirstDerivativeAt(x, i, j) +
                             rhs_m.GetValue(i, j) *
-                            lhs_m.EvaluateDerivative(x, y);
+                            lhs_m.EvaluateSecondDerivative(x, y);
                 }
             } else if (rhs_m.IsScalar()) {//scalar/matrix multiply
-                return lhs_m.EvaluateDerivative(x, i, j) *
-                        rhs_m.EvaluateDerivative(y) + lhs_m.GetValue(i, j) *
-                        rhs_m.EvaluateDerivative(x, y) +
-                        lhs_m.EvaluateDerivative(y, i, j) *
-                        rhs_m.EvaluateDerivative(x) + rhs_m.GetValue() *
-                        lhs_m.EvaluateDerivative(x, y, i, j);
+                return lhs_m.EvaluateFirstDerivativeAt(x, i, j) *
+                        rhs_m.EvaluateFirstDerivative(y) + lhs_m.GetValue(i, j) *
+                        rhs_m.EvaluateSecondDerivative(x, y) +
+                        lhs_m.EvaluateFirstDerivativeAt(y, i, j) *
+                        rhs_m.EvaluateFirstDerivative(x) + rhs_m.GetValue() *
+                        lhs_m.EvaluateSecondDerivativeAt(x, y, i, j);
             } else { //matrix multiply
 
                 assert(lhs_m.GetRows() == rhs_m.GetColumns());
@@ -393,36 +393,36 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
-                    return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))+
-                            (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))
-                            +(lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))
-                            +(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))
-                            + lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, y, z))+
-                            (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y))+
-                            (lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x))
-                            + rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y, z));
+                    return (lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))+
+                            (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))
+                            +(lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))
+                            +(lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivative(x, z))
+                            + lhs_m.GetValue()*(rhs_m.EvaluateThirdDerivative(x, y, z))+
+                            (lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateSecondDerivative(x, y))+
+                            (lhs_m.EvaluateSecondDerivative(y, z))*(rhs_m.EvaluateFirstDerivative(x))
+                            + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivative(x, y, z));
                 } else {//scalar - matrix multiply
-                    return (lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z, i, j))+
-                            (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z, i, j))
-                            +(lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y, i, j))
-                            +(lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z, i, j))
-                            + lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, y, z, i, j))+
-                            (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y, i, j))+
-                            (lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x, i, j))
-                            + rhs_m.GetValue(i, j)*(lhs_m.EvaluateDerivative(x, y, z));
+                    return (lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivativeAt(z, i, j))+
+                            (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateDerivative(y, z, i, j))
+                            +(lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivativeAt(y, i, j))
+                            +(lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))
+                            + lhs_m.GetValue()*(rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j))+
+                            (lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))+
+                            (lhs_m.EvaluateSecondDerivative(y, z))*(rhs_m.EvaluateFirstDerivativeAt(x, i, j))
+                            + rhs_m.GetValue(i, j)*(lhs_m.EvaluateThirdDerivative(x, y, z));
                 }
             } else if (rhs_m.IsScalar()) {//scalar - matrix multiply
-                return (lhs_m.EvaluateDerivative(x, y, i, j))*(rhs_m.EvaluateDerivative(z))+
-                        (lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, z))
-                        +(lhs_m.EvaluateDerivative(x, z, i, j))*(rhs_m.EvaluateDerivative(y))
-                        +(lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, z))
-                        + lhs_m.GetValue(i, j)*(rhs_m.EvaluateDerivative(x, y, z))+
-                        (lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, y))+
-                        (lhs_m.EvaluateDerivative(y, z, i, j))*(rhs_m.EvaluateDerivative(x))
-                        + rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y, z, i, j));
+                return (lhs_m.EvaluateSecondDerivativeAt(x, y, i, j))*(rhs_m.EvaluateFirstDerivative(z))+
+                        (lhs_m.EvaluateFirstDerivativeAt(x, i, j))*(rhs_m.EvaluateSecondDerivative(y, z))
+                        +(lhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*(rhs_m.EvaluateFirstDerivative(y))
+                        +(lhs_m.EvaluateFirstDerivativeAt(y, i, j))*(rhs_m.EvaluateSecondDerivative(x, z))
+                        + lhs_m.GetValue(i, j)*(rhs_m.EvaluateThirdDerivative(x, y, z))+
+                        (lhs_m.EvaluateFirstDerivativeAt(z, i, j))*(rhs_m.EvaluateSecondDerivative(x, y))+
+                        (lhs_m.EvaluateDerivative(y, z, i, j))*(rhs_m.EvaluateFirstDerivative(x))
+                        + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j));
             } else { //matrix multiply
 
                 assert(lhs_m.GetRows() == rhs_m.GetColumns());
@@ -562,4 +562,5 @@ namespace atl {
 
 
 #endif /* MULTIPLY_HPP */
+
 

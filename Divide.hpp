@@ -180,9 +180,9 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x) const {
-            return (rhs_m.GetValue() * lhs_m.EvaluateDerivative(x) -
-                    rhs_m.EvaluateDerivative(x) * lhs_m.GetValue()) / (rhs_m.GetValue() * rhs_m.GetValue());
+        inline const REAL_T EvaluateFirstDerivative(uint32_t x) const {
+            return (rhs_m.GetValue() * lhs_m.EvaluateFirstDerivative(x) -
+                    rhs_m.EvaluateFirstDerivative(x) * lhs_m.GetValue()) / (rhs_m.GetValue() * rhs_m.GetValue());
         }
 
         /**
@@ -203,14 +203,14 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
             REAL_T lhs_value_m = lhs_m.GetValue();
             REAL_T rhs_value_m = rhs_m.GetValue();
-            REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
-            REAL_T bb = ((lhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
-            REAL_T cc = ((lhs_value_m * rhs_m.EvaluateDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
-            REAL_T dd = ((lhs_m.EvaluateDerivative(y) * rhs_m.EvaluateDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
-            REAL_T ee = lhs_m.EvaluateDerivative(x, y) / rhs_value_m;
+            REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
+            REAL_T bb = ((lhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
+            REAL_T cc = ((lhs_value_m * rhs_m.EvaluateSecondDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
+            REAL_T dd = ((lhs_m.EvaluateFirstDerivative(y) * rhs_m.EvaluateFirstDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
+            REAL_T ee = lhs_m.EvaluateSecondDerivative(x, y) / rhs_value_m;
             return aa - bb - cc - dd + ee;
         }
 
@@ -262,15 +262,15 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             REAL_T lhs_value_m = lhs_m.GetValue();
             REAL_T rhs_value_m = rhs_m.GetValue();
-            return -1.0 * (static_cast<REAL_T> (6.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
-                    (static_cast<REAL_T> (2) * lhs_value_m * (rhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                    ((lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
-                    (static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                    ((lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_value_m * (rhs_m.EvaluateDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-                    ((lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + lhs_m.EvaluateDerivative(x, y, z) / rhs_value_m;
+            return -1.0 * (static_cast<REAL_T> (6.0) * lhs_value_m * (rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
+                    (static_cast<REAL_T> (2) * lhs_value_m * (rhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+                    ((lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
+                    (static_cast<REAL_T> (2.0) * lhs_value_m * (rhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+                    ((lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_value_m * (rhs_m.EvaluateThirdDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
+                    ((lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateSecondDerivative(x, y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateSecondDerivative(y, z))*(rhs_m.EvaluateFirstDerivative(x))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + lhs_m.EvaluateThirdDerivative(x, y, z) / rhs_value_m;
         }
 
         /**
@@ -282,19 +282,19 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
 #warning  Multiply.hpp : Line 70 needs review
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
-                    return (rhs_m.GetValue() * lhs_m.EvaluateDerivative(x) -
-                            rhs_m.EvaluateDerivative(x) * lhs_m.GetValue()) / (rhs_m.GetValue() * rhs_m.GetValue());
+                    return (rhs_m.GetValue() * lhs_m.EvaluateFirstDerivative(x) -
+                            rhs_m.EvaluateFirstDerivative(x) * lhs_m.GetValue()) / (rhs_m.GetValue() * rhs_m.GetValue());
                 } else {//scalar/matrix multiply
-                    return (rhs_m.GetValue(i, j) * lhs_m.EvaluateDerivative(x) -
-                            rhs_m.EvaluateDerivative(x, i, j) * lhs_m.GetValue()) / (rhs_m.GetValue(i, j) * rhs_m.GetValue(i, j));
+                    return (rhs_m.GetValue(i, j) * lhs_m.EvaluateFirstDerivative(x) -
+                            rhs_m.EvaluateFirstDerivativeAt(x, i, j) * lhs_m.GetValue()) / (rhs_m.GetValue(i, j) * rhs_m.GetValue(i, j));
                 }
             } else if (rhs_m.IsScalar()) {//scalar/matrix divide
-                return (rhs_m.GetValue() * lhs_m.EvaluateDerivative(x, i, j) -
-                        rhs_m.EvaluateDerivative(x) * lhs_m.GetValue(i, j)) / (rhs_m.GetValue() * rhs_m.GetValue());
+                return (rhs_m.GetValue() * lhs_m.EvaluateFirstDerivativeAt(x, i, j) -
+                        rhs_m.EvaluateFirstDerivative(x) * lhs_m.GetValue(i, j)) / (rhs_m.GetValue() * rhs_m.GetValue());
             } else { //matrix multiply
 
                 throw std::invalid_argument("matrix-matrix division not available.");
@@ -324,35 +324,35 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             if (lhs_m.IsScalar()) {//scalar multiply
                 if (rhs_m.IsScalar()) {//scalar multiply
                     REAL_T lhs_value_m = lhs_m.GetValue();
                     REAL_T rhs_value_m = rhs_m.GetValue();
-                    REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
-                    REAL_T bb = ((lhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
-                    REAL_T cc = ((lhs_value_m * rhs_m.EvaluateDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
-                    REAL_T dd = ((lhs_m.EvaluateDerivative(y) * rhs_m.EvaluateDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
-                    REAL_T ee = lhs_m.EvaluateDerivative(x, y) / rhs_value_m;
+                    REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
+                    REAL_T bb = ((lhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
+                    REAL_T cc = ((lhs_value_m * rhs_m.EvaluateSecondDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
+                    REAL_T dd = ((lhs_m.EvaluateFirstDerivative(y) * rhs_m.EvaluateFirstDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
+                    REAL_T ee = lhs_m.EvaluateSecondDerivative(x, y) / rhs_value_m;
                     return aa - bb - cc - dd + ee;
                 } else {//scalar/matrix divide
                     REAL_T lhs_value_m = lhs_m.GetValue();
                     REAL_T rhs_value_m = rhs_m.GetValue(i, j);
-                    REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateDerivative(x, i, j) * rhs_m.EvaluateDerivative(y, i, j)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
-                    REAL_T bb = ((lhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y, i, j)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
-                    REAL_T cc = ((lhs_value_m * rhs_m.EvaluateDerivative(x, y, i, j)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
-                    REAL_T dd = ((lhs_m.EvaluateDerivative(y) * rhs_m.EvaluateDerivative(x, i, j)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
-                    REAL_T ee = lhs_m.EvaluateDerivative(x, y) / rhs_value_m;
+                    REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateFirstDerivativeAt(x, i, j) * rhs_m.EvaluateFirstDerivativeAt(y, i, j)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
+                    REAL_T bb = ((lhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivativeAt(y, i, j)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
+                    REAL_T cc = ((lhs_value_m * rhs_m.EvaluateSecondDerivativeAt(x, y, i, j)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
+                    REAL_T dd = ((lhs_m.EvaluateFirstDerivative(y) * rhs_m.EvaluateFirstDerivativeAt(x, i, j)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
+                    REAL_T ee = lhs_m.EvaluateSecondDerivative(x, y) / rhs_value_m;
                     return aa - bb - cc - dd + ee;
                 }
             } else if (rhs_m.IsScalar()) {//scalar/matrix multiply
                 REAL_T lhs_value_m = lhs_m.GetValue(i, j);
                 REAL_T rhs_value_m = rhs_m.GetValue();
-                REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateDerivative(x) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
-                REAL_T bb = ((lhs_m.EvaluateDerivative(x, i, j) * rhs_m.EvaluateDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
-                REAL_T cc = ((lhs_value_m * rhs_m.EvaluateDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
-                REAL_T dd = ((lhs_m.EvaluateDerivative(y, i, j) * rhs_m.EvaluateDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
-                REAL_T ee = lhs_m.EvaluateDerivative(x, y, i, j) / rhs_value_m;
+                REAL_T aa = ((2.0 * lhs_value_m * rhs_m.EvaluateFirstDerivative(x) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m * rhs_value_m)); //(2*f(a,b)*('diff(g(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^3
+                REAL_T bb = ((lhs_m.EvaluateFirstDerivativeAt(x, i, j) * rhs_m.EvaluateFirstDerivative(y)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),a,1))*('diff(g(a,b),b,1)))/g(a,b)^2
+                REAL_T cc = ((lhs_value_m * rhs_m.EvaluateSecondDerivative(x, y)) / (rhs_value_m * rhs_value_m)); //(f(a,b)*('diff(g(a,b),a,1,b,1)))/g(a,b)^2
+                REAL_T dd = ((lhs_m.EvaluateFirstDerivativeAt(y, i, j) * rhs_m.EvaluateFirstDerivative(x)) / (rhs_value_m * rhs_value_m)); //(('diff(f(a,b),b,1))*('diff(g(a,b),a,1)))/g(a,b)^2
+                REAL_T ee = lhs_m.EvaluateSecondDerivativeAt(x, y, i, j) / rhs_value_m;
                 return aa - bb - cc - dd + ee;
             } else { //matrix multiply
 
@@ -402,17 +402,17 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             //            if (lhs_m.IsScalar()) {//scalar divide
             //                if (rhs_m.IsScalar()) {//scalar divide
             //                    REAL_T lhs_value_m = lhs_m.GetValue();
             //                    REAL_T rhs_value_m = rhs_m.GetValue();
-            //                    return -1.0 * (static_cast<REAL_T> (6.0) * lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
-            //                            (static_cast<REAL_T> (2) * lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-            //                            ((lhs_m.EvaluateDerivative(x, y))*(rhs_m.EvaluateDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
-            //                            (static_cast<REAL_T> (2.0) * lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-            //                            ((lhs_m.EvaluateDerivative(x, z))*(rhs_m.EvaluateDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y))*(rhs_m.EvaluateDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_m.GetValue()*(rhs_m.EvaluateDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-            //                            ((lhs_m.EvaluateDerivative(z))*(rhs_m.EvaluateDerivative(x, y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateDerivative(y, z))*(rhs_m.EvaluateDerivative(x))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + lhs_m.EvaluateDerivative(x, y, z) / rhs_value_m;
+            //                    return -1.0 * (static_cast<REAL_T> (6.0) * lhs_m.GetValue()*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, 4.0)+(2 * (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
+            //                            (static_cast<REAL_T> (2) * lhs_m.GetValue()*(rhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+            //                            ((lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivative(z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+(static_cast<REAL_T> (2.0) * lhs_m.GetValue()*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-((lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivative(y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
+            //                            (static_cast<REAL_T> (2.0) * lhs_m.GetValue()*(rhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+(static_cast<REAL_T> (2.0) * (lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
+            //                            ((lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivative(y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivative(x, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-(lhs_m.GetValue()*(rhs_m.EvaluateThirdDerivative(x, y, z))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
+            //                            ((lhs_m.EvaluateFirstDerivative(z))*(rhs_m.EvaluateSecondDerivative(x, y))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-((lhs_m.EvaluateSecondDerivative(y, z))*(rhs_m.EvaluateFirstDerivative(x))) / std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + lhs_m.EvaluateThirdDerivative(x, y, z) / rhs_value_m;
             //
             //                } else {//scalar/matrix divide
             //                    REAL_T lhs_value_m = lhs_m.GetValue();
@@ -423,7 +423,7 @@ namespace atl {
             //                            (rhs_m.EvaluateDerivative(y,i,j))*
             //                            (rhs_m.EvaluateDerivative(z,i,j))) /
             //                            std::pow(rhs_value_m, 4.0)+
-            //                            (2 * (lhs_m.EvaluateDerivative(x))*
+            //                            (2 * (lhs_m.EvaluateFirstDerivative(x))*
             //                            (rhs_m.EvaluateDerivative(y,i,j))*
             //                            (rhs_m.EvaluateDerivative(z,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+          
@@ -433,18 +433,18 @@ namespace atl {
             //                            (rhs_m.EvaluateDerivative(z,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))
             //                            +(static_cast<REAL_T> (2.0) * 
-            //                            (lhs_m.EvaluateDerivative(y))*
+            //                            (lhs_m.EvaluateFirstDerivative(y))*
             //                            (rhs_m.EvaluateDerivative(x,i,j))*
             //                            (rhs_m.EvaluateDerivative(z,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-            //                            ((lhs_m.EvaluateDerivative(x, y))*
+            //                            ((lhs_m.EvaluateSecondDerivative(x, y))*
             //                            (rhs_m.EvaluateDerivative(z,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
             //                            (static_cast<REAL_T> (2.0) * lhs_m.GetValue()*
             //                            (rhs_m.EvaluateDerivative(x,i,j))*
             //                            (rhs_m.EvaluateDerivative(y, z,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-            //                            ((lhs_m.EvaluateDerivative(x))*
+            //                            ((lhs_m.EvaluateFirstDerivative(x))*
             //                            (rhs_m.EvaluateDerivative(y, z,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
             //                            (static_cast<REAL_T> (2.0) * 
@@ -453,37 +453,37 @@ namespace atl {
             //                            (rhs_m.EvaluateDerivative(y,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
             //                            (static_cast<REAL_T> (2.0) * 
-            //                            (lhs_m.EvaluateDerivative(z))*
+            //                            (lhs_m.EvaluateFirstDerivative(z))*
             //                            (rhs_m.EvaluateDerivative(x,i,j))*
             //                            (rhs_m.EvaluateDerivative(y,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-            //                            ((lhs_m.EvaluateDerivative(x, z))*
+            //                            ((lhs_m.EvaluateSecondDerivative(x, z))*
             //                            (rhs_m.EvaluateDerivative(y,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-            //                            ((lhs_m.EvaluateDerivative(y))*
+            //                            ((lhs_m.EvaluateFirstDerivative(y))*
             //                            (rhs_m.EvaluateDerivative(x, z,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
             //                            (lhs_m.GetValue()*
             //                            (rhs_m.EvaluateDerivative(x, y, z,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-            //                            ((lhs_m.EvaluateDerivative(z))*
+            //                            ((lhs_m.EvaluateFirstDerivative(z))*
             //                            (rhs_m.EvaluateDerivative(x, y,i,j))) / 
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-            //                            ((lhs_m.EvaluateDerivative(y, z))*
+            //                            ((lhs_m.EvaluateSecondDerivative(y, z))*
             //                            (rhs_m.EvaluateDerivative(x,i,j))) /
             //                            std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) + 
-            //                            lhs_m.EvaluateDerivative(x, y, z) / rhs_value_m;
+            //                            lhs_m.EvaluateThirdDerivative(x, y, z) / rhs_value_m;
             //
             //                }
             //            } else if (rhs_m.IsScalar()) {//scalar/matrix multiply
-            //                return (lhs_m.EvaluateDerivative(x, y, i, j))*(rhs_m.EvaluateDerivative(z))+
-            //                        (lhs_m.EvaluateDerivative(x, i, j))*(rhs_m.EvaluateDerivative(y, z))
-            //                        +(lhs_m.EvaluateDerivative(x, z, i, j))*(rhs_m.EvaluateDerivative(y))
-            //                        +(lhs_m.EvaluateDerivative(y, i, j))*(rhs_m.EvaluateDerivative(x, z))
-            //                        + lhs_m.GetValue(i, j)*(rhs_m.EvaluateDerivative(x, y, z))+
-            //                        (lhs_m.EvaluateDerivative(z, i, j))*(rhs_m.EvaluateDerivative(x, y))+
-            //                        (lhs_m.EvaluateDerivative(y, z, i, j))*(rhs_m.EvaluateDerivative(x))
-            //                        + rhs_m.GetValue()*(lhs_m.EvaluateDerivative(x, y, z, i, j));
+            //                return (lhs_m.EvaluateSecondDerivativeAt(x, y, i, j))*(rhs_m.EvaluateFirstDerivative(z))+
+            //                        (lhs_m.EvaluateFirstDerivativeAt(x, i, j))*(rhs_m.EvaluateSecondDerivative(y, z))
+            //                        +(lhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*(rhs_m.EvaluateFirstDerivative(y))
+            //                        +(lhs_m.EvaluateFirstDerivativeAt(y, i, j))*(rhs_m.EvaluateSecondDerivative(x, z))
+            //                        + lhs_m.GetValue(i, j)*(rhs_m.EvaluateThirdDerivative(x, y, z))+
+            //                        (lhs_m.EvaluateFirstDerivativeAt(z, i, j))*(rhs_m.EvaluateSecondDerivative(x, y))+
+            //                        (lhs_m.EvaluateDerivative(y, z, i, j))*(rhs_m.EvaluateFirstDerivative(x))
+            //                        + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j));
             //            } else { //matrix multiply
 
             if (lhs_m.IsScalar() || rhs_m.IsScalar()) {
@@ -491,60 +491,60 @@ namespace atl {
                 REAL_T rhs_value_m = rhs_m.GetValue(i, j);
                 return -1.0 * (static_cast<REAL_T> (6.0) *
                         lhs_value_m *
-                        (rhs_m.EvaluateDerivative(x, i, j))*
-                        (rhs_m.EvaluateDerivative(y, i, j))*
-                        (rhs_m.EvaluateDerivative(z, i, j))) /
+                        (rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(y, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                         std::pow(rhs_value_m, 4.0)+
-                        (2 * (lhs_m.EvaluateDerivative(x, i, j))*
-                        (rhs_m.EvaluateDerivative(y, i, j))*
-                        (rhs_m.EvaluateDerivative(z, i, j))) /
+                        (2 * (lhs_m.EvaluateFirstDerivativeAt(x, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(y, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
                         (static_cast<REAL_T> (2) *
                         lhs_value_m *
-                        (rhs_m.EvaluateDerivative(x, y, i, j))*
-                        (rhs_m.EvaluateDerivative(z, i, j))) /
+                        (rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))
                         +(static_cast<REAL_T> (2.0) *
-                        (lhs_m.EvaluateDerivative(y, i, j))*
-                        (rhs_m.EvaluateDerivative(x, i, j))*
-                        (rhs_m.EvaluateDerivative(z, i, j))) /
+                        (lhs_m.EvaluateFirstDerivativeAt(y, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                        ((lhs_m.EvaluateDerivative(x, y, i, j))*
-                        (rhs_m.EvaluateDerivative(z, i, j))) /
+                        ((lhs_m.EvaluateSecondDerivativeAt(x, y, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
                         (static_cast<REAL_T> (2.0) * lhs_m.GetValue()*
-                        (rhs_m.EvaluateDerivative(x, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
                         (rhs_m.EvaluateDerivative(y, z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                        ((lhs_m.EvaluateDerivative(x, i, j))*
+                        ((lhs_m.EvaluateFirstDerivativeAt(x, i, j))*
                         (rhs_m.EvaluateDerivative(y, z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))+
                         (static_cast<REAL_T> (2.0) *
                         lhs_m.GetValue()*
-                        (rhs_m.EvaluateDerivative(x, z, i, j))*
-                        (rhs_m.EvaluateDerivative(y, i, j))) /
+                        (rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))+
                         (static_cast<REAL_T> (2.0) *
-                        (lhs_m.EvaluateDerivative(z, i, j))*
-                        (rhs_m.EvaluateDerivative(x, i, j))*
-                        (rhs_m.EvaluateDerivative(y, i, j))) /
+                        (lhs_m.EvaluateFirstDerivativeAt(z, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (3.0))-
-                        ((lhs_m.EvaluateDerivative(x, z, i, j))*
-                        (rhs_m.EvaluateDerivative(y, i, j))) /
+                        ((lhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*
+                        (rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-                        ((lhs_m.EvaluateDerivative(y, i, j))*
-                        (rhs_m.EvaluateDerivative(x, z, i, j))) /
+                        ((lhs_m.EvaluateFirstDerivativeAt(y, i, j))*
+                        (rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
                         (lhs_value_m *
-                        (rhs_m.EvaluateDerivative(x, y, z, i, j))) /
+                        (rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
-                        ((lhs_m.EvaluateDerivative(z, i, j))*
-                        (rhs_m.EvaluateDerivative(x, y, i, j))) /
+                        ((lhs_m.EvaluateFirstDerivativeAt(z, i, j))*
+                        (rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0))-
                         ((lhs_m.EvaluateDerivative(y, z, i, j))*
-                        (rhs_m.EvaluateDerivative(x, i, j))) /
+                        (rhs_m.EvaluateFirstDerivativeAt(x, i, j))) /
                         std::pow(rhs_value_m, static_cast<REAL_T> (2.0)) +
-                        lhs_m.EvaluateDerivative(x, y, z, i, j) / rhs_value_m;
+                        lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j) / rhs_value_m;
 
             } else {
 
@@ -648,4 +648,5 @@ namespace atl {
 }
 
 #endif /* DIVISION_HPP */
+
 

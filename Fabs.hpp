@@ -156,9 +156,9 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x) const {
+        inline const REAL_T EvaluateFirstDerivative(uint32_t x) const {
 
-            return (expr_m.EvaluateDerivative(x) * expr_m.GetValue()) / this->GetValue();
+            return (expr_m.EvaluateFirstDerivative(x) * expr_m.GetValue()) / this->GetValue();
         }
 
         /**
@@ -171,9 +171,9 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
 
-            return (expr_m.EvaluateDerivative(x, y) * expr_m.GetValue()) / this->GetValue();
+            return (expr_m.EvaluateSecondDerivative(x, y) * expr_m.GetValue()) / this->GetValue();
         }
 
         /**
@@ -190,9 +190,9 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
 
-            return (expr_m.GetValue()*(expr_m.EvaluateDerivative(x, y, z))) / this->GetValue();
+            return (expr_m.GetValue()*(expr_m.EvaluateThirdDerivative(x, y, z))) / this->GetValue();
         }
 
         /**
@@ -207,9 +207,9 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline const REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline const REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
 
-            return (expr_m.EvaluateDerivative(x, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
+            return (expr_m.EvaluateFirstDerivativeAt(x, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
         }
 
         /**
@@ -227,9 +227,9 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
 
-            return (expr_m.EvaluateDerivative(x, y, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
+            return (expr_m.EvaluateSecondDerivativeAt(x, y, i, j) * expr_m.GetValue(i, j)) / this->GetValue(i, j);
         }
 
         /**
@@ -248,9 +248,9 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
 
-            return (expr_m.GetValue(i, j)*(expr_m.EvaluateDerivative(x, y, z, i, j))) / this->GetValue(i, j);
+            return (expr_m.GetValue(i, j)*(expr_m.EvaluateThirdDerivativeAt(x, y, z, i, j))) / this->GetValue(i, j);
         }
 
         /**
@@ -337,3 +337,4 @@ namespace std {
 
 
 #endif
+

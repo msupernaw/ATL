@@ -111,11 +111,11 @@ namespace atl {
          * @param x
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x) const {
+        inline REAL_T EvaluateFirstDerivative(uint32_t x) const {
             return 0.5 * (-(1.0 * (lhs_m.GetValue() - rhs_m.GetValue())*
-                    (lhs_m.EvaluateDerivative(x) - lhs_m.EvaluateDerivative(x))) /
+                    (lhs_m.EvaluateFirstDerivative(x) - lhs_m.EvaluateFirstDerivative(x))) /
                     std::pow(C + std::pow(lhs_m.GetValue() - rhs_m.GetValue(), 2.0), 0.5) +
-                    lhs_m.EvaluateDerivative(x) + lhs_m.EvaluateDerivative(x));
+                    lhs_m.EvaluateFirstDerivative(x) + lhs_m.EvaluateFirstDerivative(x));
         }
 
         /**
@@ -125,19 +125,19 @@ namespace atl {
          * @param y
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
-            return 0.5 * (-(1.0 * (lhs_m.EvaluateDerivative(x) -
-                    rhs_m.EvaluateDerivative(x))*(lhs_m.EvaluateDerivative(y)
-                    - rhs_m.EvaluateDerivative(y))) / std::pow(C + std::pow(lhs_m.GetValue() -
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
+            return 0.5 * (-(1.0 * (lhs_m.EvaluateFirstDerivative(x) -
+                    rhs_m.EvaluateFirstDerivative(x))*(lhs_m.EvaluateFirstDerivative(y)
+                    - rhs_m.EvaluateFirstDerivative(y))) / std::pow(C + std::pow(lhs_m.GetValue() -
                     rhs_m.GetValue(), 2.0), 0.5) - (1.0 * (lhs_m.GetValue() -
-                    rhs_m.GetValue())*(lhs_m.EvaluateDerivative(x, y) -
-                    rhs_m.EvaluateDerivative(x, y))) / std::pow(C + std::pow(lhs_m.GetValue() -
+                    rhs_m.GetValue())*(lhs_m.EvaluateSecondDerivative(x, y) -
+                    rhs_m.EvaluateSecondDerivative(x, y))) / std::pow(C + std::pow(lhs_m.GetValue() -
                     rhs_m.GetValue(), 2), 0.5) +
                     (1.0 * std::pow(lhs_m.GetValue() - rhs_m.GetValue(), 2.0) *
-                    (lhs_m.EvaluateDerivative(x) - rhs_m.EvaluateDerivative(x))*
-                    (lhs_m.EvaluateDerivative(y) - rhs_m.EvaluateDerivative(y))) /
+                    (lhs_m.EvaluateFirstDerivative(x) - rhs_m.EvaluateFirstDerivative(x))*
+                    (lhs_m.EvaluateFirstDerivative(y) - rhs_m.EvaluateFirstDerivative(y))) /
                     std::pow(C + std::pow(lhs_m.GetValue() - rhs_m.GetValue(), 2.0), 1.5) +
-                    rhs_m.EvaluateDerivative(x, y) + lhs_m.EvaluateDerivative(x, y));
+                    rhs_m.EvaluateSecondDerivative(x, y) + lhs_m.EvaluateSecondDerivative(x, y));
 
         }
 
@@ -149,9 +149,9 @@ namespace atl {
          * @param z
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
-            return 0.5 * (-((rhs_m.GetValue() - lhs_m.GetValue())*(rhs_m.EvaluateDerivative(x, y, z) - lhs_m.EvaluateDerivative(x, y, z)))
-                    / std::fabs(rhs_m.GetValue() - lhs_m.GetValue()) + rhs_m.EvaluateDerivative(x, y, z) + lhs_m.EvaluateDerivative(x, y, z));
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+            return 0.5 * (-((rhs_m.GetValue() - lhs_m.GetValue())*(rhs_m.EvaluateThirdDerivative(x, y, z) - lhs_m.EvaluateThirdDerivative(x, y, z)))
+                    / std::fabs(rhs_m.GetValue() - lhs_m.GetValue()) + rhs_m.EvaluateThirdDerivative(x, y, z) + lhs_m.EvaluateThirdDerivative(x, y, z));
         }
 
         /**
@@ -163,11 +163,11 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
             return 0.5 * (-(1.0 * (lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j))*
-                    (lhs_m.EvaluateDerivative(x, i, j) - lhs_m.EvaluateDerivative(x, i, j))) /
+                    (lhs_m.EvaluateFirstDerivativeAt(x, i, j) - lhs_m.EvaluateFirstDerivativeAt(x, i, j))) /
                     std::pow(C + std::pow(lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j), 2.0), 0.5) +
-                    lhs_m.EvaluateDerivative(x, i, j) + lhs_m.EvaluateDerivative(x, i, j));
+                    lhs_m.EvaluateFirstDerivativeAt(x, i, j) + lhs_m.EvaluateFirstDerivativeAt(x, i, j));
         }
 
         /**
@@ -178,19 +178,19 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
-            return 0.5 * (-(1.0 * (lhs_m.EvaluateDerivative(x, i, j) -
-                    rhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j)
-                    - rhs_m.EvaluateDerivative(y, i, j))) / std::pow(C + std::pow(lhs_m.GetValue() -
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+            return 0.5 * (-(1.0 * (lhs_m.EvaluateFirstDerivativeAt(x, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(x, i, j))*(lhs_m.EvaluateFirstDerivativeAt(y, i, j)
+                    - rhs_m.EvaluateFirstDerivativeAt(y, i, j))) / std::pow(C + std::pow(lhs_m.GetValue() -
                     rhs_m.GetValue(), 2.0), 0.5) - (1.0 * (lhs_m.GetValue() -
-                    rhs_m.GetValue())*(lhs_m.EvaluateDerivative(x, y, i, j) -
-                    rhs_m.EvaluateDerivative(x, y, i, j))) / std::pow(C + std::pow(lhs_m.GetValue() -
+                    rhs_m.GetValue())*(lhs_m.EvaluateSecondDerivativeAt(x, y, i, j) -
+                    rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))) / std::pow(C + std::pow(lhs_m.GetValue() -
                     rhs_m.GetValue(), 2), 0.5) +
                     (1.0 * std::pow(lhs_m.GetValue() - rhs_m.GetValue(), 2.0) *
-                    (lhs_m.EvaluateDerivative(x, i, j) - rhs_m.EvaluateDerivative(x, i, j))*
-                    (lhs_m.EvaluateDerivative(y, i, j) - rhs_m.EvaluateDerivative(y, i, j))) /
+                    (lhs_m.EvaluateFirstDerivativeAt(x, i, j) - rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
+                    (lhs_m.EvaluateFirstDerivativeAt(y, i, j) - rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                     std::pow(C + std::pow(lhs_m.GetValue() - rhs_m.GetValue(), 2.0), 1.5) +
-                    rhs_m.EvaluateDerivative(x, y, i, j) + lhs_m.EvaluateDerivative(x, y, i, j));
+                    rhs_m.EvaluateSecondDerivativeAt(x, y, i, j) + lhs_m.EvaluateSecondDerivativeAt(x, y, i, j));
         }
 
         /**
@@ -202,43 +202,43 @@ namespace atl {
          * @param j
          * @return 
          */
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             REAL_T diff = lhs_m.GetValue() - rhs_m.GetValue();
             REAL_T tmp0 = std::pow(diff, 2);
             REAL_T tmp1 = std::pow(C + std::pow(diff, 2), .5);
             REAL_T tmp2 = std::pow(C + std::pow(diff, 2.0), 1.5);
             REAL_T tmp3 = (1.0 * std::pow(diff, 2.0));
-            return 0.5 * (-(1.0 * (lhs_m.EvaluateDerivative(x, y, i, j) - rhs_m.EvaluateDerivative(x, y, i, j))
-                    *(lhs_m.EvaluateDerivative(z, i, j) - rhs_m.EvaluateDerivative(z, i, j))) /
+            return 0.5 * (-(1.0 * (lhs_m.EvaluateSecondDerivativeAt(x, y, i, j) - rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))
+                    *(lhs_m.EvaluateFirstDerivativeAt(z, i, j) - rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                     tmp1 -
-                    (1.0 * (lhs_m.EvaluateDerivative(x, i, j) - rhs_m.EvaluateDerivative(x, i, j))*
+                    (1.0 * (lhs_m.EvaluateFirstDerivativeAt(x, i, j) - rhs_m.EvaluateFirstDerivativeAt(x, i, j))*
                     (lhs_m.EvaluateDerivative(y, z, i, j) - rhs_m.EvaluateDerivative(y, z, i, j))) /
                     tmp1 -
-                    (1.0 * (lhs_m.EvaluateDerivative(x, z, i, j) - rhs_m.EvaluateDerivative(x, z, i, j))*
-                    (lhs_m.EvaluateDerivative(y, i, j) - rhs_m.EvaluateDerivative(y, i, j))) /
+                    (1.0 * (lhs_m.EvaluateSecondDerivativeAt(x, z, i, j) - rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*
+                    (lhs_m.EvaluateFirstDerivativeAt(y, i, j) - rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                     tmp1 -
-                    (1.0 * (lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j))*(lhs_m.EvaluateDerivative(x, y, z, i, j) -
-                    rhs_m.EvaluateDerivative(x, y, z, i, j))) /
+                    (1.0 * (lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j))*(lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j) -
+                    rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j))) /
                     tmp1 +
-                    (3.0 * (lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j))*(lhs_m.EvaluateDerivative(x, i, j) -
-                    rhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j) -
-                    rhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j) -
-                    rhs_m.EvaluateDerivative(z, i, j))) /
+                    (3.0 * (lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j))*(lhs_m.EvaluateFirstDerivativeAt(x, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(x, i, j))*(lhs_m.EvaluateFirstDerivativeAt(y, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(y, i, j))*(lhs_m.EvaluateFirstDerivativeAt(z, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                     tmp2 +
-                    (1.0 * tmp0 * (lhs_m.EvaluateDerivative(x, y, i, j) -
-                    rhs_m.EvaluateDerivative(x, y, i, j))*(lhs_m.EvaluateDerivative(z, i, j) - rhs_m.EvaluateDerivative(z, i, j))) /
+                    (1.0 * tmp0 * (lhs_m.EvaluateSecondDerivativeAt(x, y, i, j) -
+                    rhs_m.EvaluateSecondDerivativeAt(x, y, i, j))*(lhs_m.EvaluateFirstDerivativeAt(z, i, j) - rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                     tmp2 +
-                    (1.0 * tmp0 * (lhs_m.EvaluateDerivative(x, i, j) -
-                    rhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, z, i, j) - rhs_m.EvaluateDerivative(y, z, i, j))) /
+                    (1.0 * tmp0 * (lhs_m.EvaluateFirstDerivativeAt(x, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(x, i, j))*(lhs_m.EvaluateDerivative(y, z, i, j) - rhs_m.EvaluateDerivative(y, z, i, j))) /
                     tmp2 +
-                    (1.0 * tmp0 * (lhs_m.EvaluateDerivative(x, z, i, j) -
-                    rhs_m.EvaluateDerivative(x, z, i, j))*(lhs_m.EvaluateDerivative(y, i, j) - rhs_m.EvaluateDerivative(y, i, j))) /
+                    (1.0 * tmp0 * (lhs_m.EvaluateSecondDerivativeAt(x, z, i, j) -
+                    rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))*(lhs_m.EvaluateFirstDerivativeAt(y, i, j) - rhs_m.EvaluateFirstDerivativeAt(y, i, j))) /
                     tmp2 -
-                    (3.0 * std::pow(lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j), 3.0) * (lhs_m.EvaluateDerivative(x, i, j) -
-                    rhs_m.EvaluateDerivative(x, i, j))*(lhs_m.EvaluateDerivative(y, i, j) -
-                    rhs_m.EvaluateDerivative(y, i, j))*(lhs_m.EvaluateDerivative(z, i, j) - rhs_m.EvaluateDerivative(z, i, j))) /
+                    (3.0 * std::pow(lhs_m.GetValue(i, j) - rhs_m.GetValue(i, j), 3.0) * (lhs_m.EvaluateFirstDerivativeAt(x, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(x, i, j))*(lhs_m.EvaluateFirstDerivativeAt(y, i, j) -
+                    rhs_m.EvaluateFirstDerivativeAt(y, i, j))*(lhs_m.EvaluateFirstDerivativeAt(z, i, j) - rhs_m.EvaluateFirstDerivativeAt(z, i, j))) /
                     std::pow(C + tmp0, 2.5) +
-                    rhs_m.EvaluateDerivative(x, y, z, i, j) + lhs_m.EvaluateDerivative(x, y, z, i, j));
+                    rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j) + lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j));
         }
 
         /**
@@ -361,4 +361,5 @@ namespace atl {
 
 
 #endif /* MINMAX_HPP */
+
 

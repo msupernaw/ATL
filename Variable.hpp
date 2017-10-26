@@ -416,7 +416,7 @@ namespace atl {
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[i] = exp.EvaluateDerivative((*it)->id);
+                            entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
                             i++;
                         }
                         break;
@@ -431,10 +431,10 @@ namespace atl {
 
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[i] = exp.EvaluateDerivative((*it)->id);
+                            entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
                             j = 0;
                             for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                entry.second[i * entry.ids.size() + j] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
+                                entry.second[i * entry.ids.size() + j] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
                                 j++;
                             }
                             i++;
@@ -451,15 +451,15 @@ namespace atl {
                             (*it)->live++;
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[i] = exp.EvaluateDerivative((*it)->id);
+                            entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
                             j = 0;
                             for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                entry.second[i * entry.ids.size() + j] = exp.EvaluateDerivative((*it)->id, (*jt)->id);
+                                entry.second[i * entry.ids.size() + j] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
                                 k = 0;
                                 for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
 
                                     entry.third[i * entry.ids.size() * entry.ids.size() + j * entry.ids.size() + k] =
-                                            exp.EvaluateDerivative((*it)->id, (*jt)->id, (*kt)->id);
+                                            exp.EvaluateThirdDerivative((*it)->id, (*jt)->id, (*kt)->id);
                                     k++;
                                 }
                                 j++;
@@ -761,27 +761,27 @@ namespace atl {
 #endif
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x) const {
+        inline REAL_T EvaluateFirstDerivative(uint32_t x) const {
             return info->id == x ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const {
+        inline REAL_T EvaluateSecondDerivative(uint32_t x, uint32_t y) const {
             return static_cast<REAL_T> (0.0);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z) const {
+        inline REAL_T EvaluateThirdDerivative(uint32_t x, uint32_t y, uint32_t z) const {
             return static_cast<REAL_T> (0.0);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j = 0) const {
             return info->id == x ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
-        inline REAL_T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
+        inline REAL_T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j = 0) const {
             return static_cast<REAL_T> (0.0);
         }
 
@@ -973,4 +973,5 @@ namespace atl {
 
 
 #endif /* VARIABLE_HPP */
+
 
