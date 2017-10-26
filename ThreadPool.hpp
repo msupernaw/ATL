@@ -56,6 +56,10 @@
 #define NOAA_TP_WINDOWS
 #endif
 
+#if defined(NOAA_TP_WINDOWS)
+#undef max
+#undef min
+#endif
 
 namespace atl {
 
@@ -165,7 +169,7 @@ namespace atl {
             }
 #else
             for (int i = 0; i < threads_.size(); i++) {
-                SetThreadPriority(threads_[i].native_handle(), 50);
+         //       SetThreadPriority(threads_[i].native_handle(), 50);
             }
 #endif
 
@@ -249,7 +253,7 @@ namespace atl {
 
 
 
-            size_t max_threads = std::max(1ul, std::min((elements), this->thread_count));
+            size_t max_threads = std::max(1ul, (unsigned long int)std::min((elements), this->thread_count));
 
             size_t inc = elements / max_threads;
             auto siter = first;
@@ -286,7 +290,7 @@ namespace atl {
 
 
 
-            size_t max_threads = std::max(1ul, std::min((elements), this->thread_count));
+            size_t max_threads = std::max(1ul, (unsigned long int)std::min((elements), this->thread_count));
             wait.wait += max_threads;
             size_t inc = elements / max_threads;
             auto siter = first;
