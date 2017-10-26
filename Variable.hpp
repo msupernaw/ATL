@@ -951,7 +951,7 @@ namespace atl {
     };
 
     template<typename REAL_T>
-    Tape<REAL_T> Variable<REAL_T>::tape(100000);
+    Tape<REAL_T> Variable<REAL_T>::tape(10000);
 
     template<typename REAL_T>
     bool Variable<REAL_T>::show = false;
