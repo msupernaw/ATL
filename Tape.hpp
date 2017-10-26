@@ -335,7 +335,7 @@ namespace atl {
          * 
          * @param size
          */
-        Tape(size_t size = 10000000) {
+        Tape(size_t size = 10000) {
             stack.reserve(size);
             stack.resize(10000);
             //            std::cout << "Capacity = " << stack.capacity() << "\n";
