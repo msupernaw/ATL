@@ -22,8 +22,9 @@
 #include "ThreadPool.hpp"
 #include "CLFAllocator.hpp"
 
+#if ATL_USE_SSE
 #include "SIMD.hpp"
-
+#endif 
 namespace atl {
 
     //    template<typename T>
@@ -1237,7 +1238,7 @@ namespace atl {
         bool IsScalar()const {
             return false;
         }
-
+#ifdef ATL_USE_SSE
         static inline void MatrixMultiplySIMD(atl::RealMatrix<double>& m1,
                 atl::RealMatrix<double>& m2,
                 atl::RealMatrix<double>& result) {
@@ -1274,7 +1275,7 @@ namespace atl {
             }
             Transpose(size, m2);
         }
-
+#endif
 
     private:
 
