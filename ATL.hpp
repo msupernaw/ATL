@@ -43,7 +43,9 @@
 #include "Pow.hpp"
 #include "Real.hpp"
 #include "Serialize.hpp"
+#ifdef ATL_USE_SSE
 #include "SIMD.hpp"
+#endif
 #include "Sin.hpp"
 #include "Sinh.hpp"
 #include "Sqrt.hpp"
