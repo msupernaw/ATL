@@ -14,8 +14,8 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "Expression.hpp"
-#include "Variable.hpp"
+//#include "Expression.hpp"
+//#include "Variable.hpp"
 #include "Matrix.hpp"
 #include <cassert>
 
@@ -1078,11 +1078,11 @@ namespace atl {
         }
 
         inline const T GetValue(size_t j) const {
-            return this->data_m[j].GetValue();
+            return this->data_m[j];
         }
 
         inline const T GetValue(size_t i, size_t j) const {
-            return this->data_m[j].GetValue();
+            return this->data_m[j];
         }
 
         inline bool IsNonlinear() const {
@@ -1160,8 +1160,29 @@ namespace atl {
     }
 
     template<class T>
+    inline const atl::RealVector<T> FirstDifference(const atl::RealVector<T> &expr) {
+        atl::RealVector<T> ret;
+        size_t n = expr.GetSize() - 1;
+        ret.Resize(n);
+        for (size_t i = 0; i < n; i++) {
+            ret(i) = expr(i + 1) - expr(i);
+        }
+        return ret;
+    }
+
+    template<class T>
     inline const atl::Variable<T> Norm2(const atl::VariableVector<T> &expr) {
         atl::Variable<T> ret = T(0.0);
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret += expr(i) * expr(i);
+        }
+        return ret;
+    }
+
+    template<class T>
+    inline const T Norm2(const atl::RealVector<T> &expr) {
+        T ret = T(0.0);
         size_t n = expr.GetSize();
         for (size_t i = 0; i < n; i++) {
             ret += expr(i) * expr(i);
@@ -1180,6 +1201,16 @@ namespace atl {
     }
 
     template<class T>
+    inline const T Sum(const atl::RealVector<T> &expr) {
+        T ret = T(0.0);
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret += expr(i);
+        }
+        return ret;
+    }
+
+    template<class T>
     inline const atl::Variable<T> Product(const atl::VariableVector<T> &expr) {
         atl::Variable<T> ret = T(1.0);
         size_t n = expr.GetSize();
@@ -1190,8 +1221,28 @@ namespace atl {
     }
 
     template<class T>
+    inline const T Product(const atl::RealVector<T> &expr) {
+        T ret = T(1.0);
+        size_t n = expr.GetSize();
+        for (size_t i = 0; i < n; i++) {
+            ret *= expr(i);
+        }
+        return ret;
+    }
+
+    template<class T>
     inline const atl::Variable<T> Average(const atl::VariableVector<T> &expr) {
         atl::Variable<T> ret = atl::Sum(expr);
+        size_t n = expr.GetSize();
+        if (n > 1) {
+            ret /= T(n);
+        }
+        return ret;
+    }
+
+    template<class T>
+    inline const T Average(const atl::RealVector<T> &expr) {
+        T ret = atl::Sum(expr);
         size_t n = expr.GetSize();
         if (n > 1) {
             ret /= T(n);
@@ -1211,47 +1262,17 @@ namespace atl {
         return out;
     }
 
-    //    /**
-    //     * RealVector is a 1 x M RealMatrix.
-    //     */
-    //    template<typename T>
-    //    struct RealVector : RealMatrix<T> {
-    //        using RealMatrix<T>::operator=;
-    //
-    //        /**
-    //         * Constructor.
-    //         * @param columns
-    //         */
-    //        RealVector(size_t columns = 0) :
-    //        RealMatrix<T>(1, columns) {
-    //        }
-    //
-    //        /**
-    //         * Sets the size of this vector.
-    //         *
-    //         * @param size
-    //         */
-    //        void SetSize(size_t size) {
-    //            this->columns = size;
-    //            this->data_m.resize(size);
-    //        }
-    //
-    //        /**
-    //         * Returns the size of this vector.
-    //         * @return
-    //         */
-    //        size_t GetSize() {
-    //            return this->columns;
-    //        }
-    //
-    //        const std::string ToExpressionTemplateString() const {
-    //            std::stringstream ss;
-    //            ss << "atl::RealVector<T>";
-    //            return ss.str();
-    //        }
-    //
-    //
-    //    };
+    template<typename REAL_T>
+    std::ostream& operator<<(std::ostream& out, const RealVector<REAL_T>& m) {
+        for (int i = 0; i < m.GetRows(); i++) {
+            for (int j = 0; j < m.GetColumns(); j++) {
+                out << m.data_m[i * m.GetColumns() + j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        return out;
+    }
 
 }
 
