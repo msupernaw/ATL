@@ -297,8 +297,8 @@ namespace atl {
                 REAL_T ret = static_cast<REAL_T> (0.0);
                 for (size_t k = 0; k < kmax; k++) {
                     ret += (lhs_m.GetValue(i, k) *
-                            rhs_m.EvaluateDerivative(x, k, j) +
-                            lhs_m.EvaluateDerivative(x, i, k) *
+                            rhs_m.EvaluateFirstDerivativeAt(x, k, j) +
+                            lhs_m.EvaluateFirstDerivativeAt(x, i, k) *
                             rhs_m.GetValue(k, j));
 
                 }
@@ -356,14 +356,14 @@ namespace atl {
                 size_t kmax = lhs_m.GetColumns();
                 REAL_T ret = static_cast<REAL_T> (0.0);
                 for (size_t k = 0; k < kmax; k++) {
-                    ret += lhs_m.EvaluateDerivative(x, i, k) *
-                            rhs_m.EvaluateDerivative(y, k, j) +
+                    ret += lhs_m.EvaluateFirstDerivativeAt(x, i, k) *
+                            rhs_m.EvaluateFirstDerivativeAt(y, k, j) +
                             lhs_m.GetValue(i, k) *
-                            rhs_m.EvaluateDerivative(x, y, k, j) +
-                            lhs_m.EvaluateDerivative(y, i, k) *
-                            rhs_m.EvaluateDerivative(x, k, j) +
+                            rhs_m.EvaluateSecondDerivativeAt(x, y, k, j) +
+                            lhs_m.EvaluateFirstDerivativeAt(y, i, k) *
+                            rhs_m.EvaluateFirstDerivativeAt(x, k, j) +
                             rhs_m.GetValue(k, j) *
-                            lhs_m.EvaluateDerivative(x, y, i, k);
+                            lhs_m.EvaluateSecondDerivativeAt(x, y, i, k);
 
                 }
                 return ret;
@@ -406,7 +406,7 @@ namespace atl {
                             + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivative(x, y, z));
                 } else {//scalar - matrix multiply
                     return (lhs_m.EvaluateSecondDerivative(x, y))*(rhs_m.EvaluateFirstDerivativeAt(z, i, j))+
-                            (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateDerivative(y, z, i, j))
+                            (lhs_m.EvaluateFirstDerivative(x))*(rhs_m.EvaluateSecondDerivativeAt(y, z, i, j))
                             +(lhs_m.EvaluateSecondDerivative(x, z))*(rhs_m.EvaluateFirstDerivativeAt(y, i, j))
                             +(lhs_m.EvaluateFirstDerivative(y))*(rhs_m.EvaluateSecondDerivativeAt(x, z, i, j))
                             + lhs_m.GetValue()*(rhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j))+
@@ -421,7 +421,7 @@ namespace atl {
                         +(lhs_m.EvaluateFirstDerivativeAt(y, i, j))*(rhs_m.EvaluateSecondDerivative(x, z))
                         + lhs_m.GetValue(i, j)*(rhs_m.EvaluateThirdDerivative(x, y, z))+
                         (lhs_m.EvaluateFirstDerivativeAt(z, i, j))*(rhs_m.EvaluateSecondDerivative(x, y))+
-                        (lhs_m.EvaluateDerivative(y, z, i, j))*(rhs_m.EvaluateFirstDerivative(x))
+                        (lhs_m.EvaluateSecondDerivativeAt(y, z, i, j))*(rhs_m.EvaluateFirstDerivative(x))
                         + rhs_m.GetValue()*(lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, j));
             } else { //matrix multiply
 
@@ -431,14 +431,14 @@ namespace atl {
                 REAL_T ret = static_cast<REAL_T> (0.0);
 #pragma unroll
                 for (size_t k = 0; k < kmax; k++) {
-                    ret += (lhs_m.EvaluateDerivative(x, y, i, k))*(rhs_m.EvaluateDerivative(z, k, j))+
-                            (lhs_m.EvaluateDerivative(x, i, k))*(rhs_m.EvaluateDerivative(y, z, k, j))
-                            +(lhs_m.EvaluateDerivative(x, z, i, k))*(rhs_m.EvaluateDerivative(y, k, j))
-                            +(lhs_m.EvaluateDerivative(y, i, k))*(rhs_m.EvaluateDerivative(x, z, k, j))
-                            + lhs_m.GetValue(i, k)*(rhs_m.EvaluateDerivative(x, y, z, k, j))+
-                            (lhs_m.EvaluateDerivative(z, i, k))*(rhs_m.EvaluateDerivative(x, y, k, j))+
-                            (lhs_m.EvaluateDerivative(y, z, i, k))*(rhs_m.EvaluateDerivative(x, k, j))
-                            + rhs_m.GetValue(k, j)*(lhs_m.EvaluateDerivative(x, y, z, i, k));
+                    ret += (lhs_m.EvaluateSecondDerivativeAt(x, y, i, k))*(rhs_m.EvaluateFirstDerivativeAt(z, k, j))+
+                            (lhs_m.EvaluateFirstDerivativeAt(x, i, k))*(rhs_m.EvaluateSecondDerivativeAt(y, z, k, j))
+                            +(lhs_m.EvaluateSecondDerivativeAt(x, z, i, k))*(rhs_m.EvaluateFirstDerivativeAt(y, k, j))
+                            +(lhs_m.EvaluateFirstDerivativeAt(y, i, k))*(rhs_m.EvaluateThirdDerivativeAt(x, z, k, j))
+                            + lhs_m.GetValue(i, k)*(rhs_m.EvaluateThirdDerivativeAt(x, y, z, k, j))+
+                            (lhs_m.EvaluateFirstDerivativeAt(z, i, k))*(rhs_m.EvaluateSecondDerivativeAt(x, y, k, j))+
+                            (lhs_m.EvaluateSecondDerivativeAt(y, z, i, k))*(rhs_m.EvaluateFirstDerivativeAt(x, k, j))
+                            + rhs_m.GetValue(k, j)*(lhs_m.EvaluateThirdDerivativeAt(x, y, z, i, k));
 
                 }
                 return ret;
