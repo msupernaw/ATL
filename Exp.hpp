@@ -270,7 +270,7 @@ namespace atl {
             return std::exp(expr_m.GetValue(i, j))*((expr_m.EvaluateFirstDerivativeAt(x, i, j))*
                     (expr_m.EvaluateFirstDerivativeAt(y, i, j))*(expr_m.EvaluateFirstDerivativeAt(z, i, j))
                     + (expr_m.EvaluateSecondDerivativeAt(x, y, i, j))* (expr_m.EvaluateFirstDerivativeAt(z, i, j)) +
-                    (expr_m.EvaluateFirstDerivativeAt(x, i, j))*(expr_m.EvaluateDerivative(y, z, i, j)) +
+                    (expr_m.EvaluateFirstDerivativeAt(x, i, j))*(expr_m.EvaluateSecondDerivativeAt(y, z, i, j)) +
                     (expr_m.EvaluateSecondDerivativeAt(x, z, i, j))*(expr_m.EvaluateFirstDerivativeAt(y, i, j))+
                     (expr_m.EvaluateThirdDerivativeAt(x, y, z, i, j)));
         }
@@ -282,6 +282,15 @@ namespace atl {
          */
         size_t GetRows() const {
             return expr_m.GetRows();
+        }
+        
+          /**
+         * Return the number of columns.
+         * 
+         * @return 
+         */
+        size_t GetColumns() const {
+            return expr_m.GetColumns();
         }
 
         /**
