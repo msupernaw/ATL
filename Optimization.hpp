@@ -834,7 +834,6 @@ namespace atl {
             this->print_width = print_width;
         }
 
-        
         bool Run() {
             if (this->objective_function_m == NULL) {
                 return false;
@@ -1488,19 +1487,7 @@ namespace atl {
                     }
                     std::cout << std::setw(value_width) << this->parameters_m[i + j]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + j];
                 }
-                //                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
-                ////                    std::cout << '|' << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << '|';
-                ////                } else {
-                ////                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
-                ////                }
-                ////                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
-                ////
-                ////                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
-                ////                    std::cout << '|' << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                ////                } else {
-                ////                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                ////                }
-                std::cout << std::setw(value_width) << this->parameters_m[i + 2]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 2] << "|\n";
+                std::cout << "|\n";
             }
 
             for (; i< this->parameters_m.size(); i++) {
@@ -1511,10 +1498,7 @@ namespace atl {
                 }
                 std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
 
-                /*
-                std::cout << '|' << util::center("-", name_width) << '|';
-                std::cout << util::center("-", value_width) << '|' << util::center("-", grad_width) << "|\n";
-                 */
+               
             }
 
             std::cout << "|\n" << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
