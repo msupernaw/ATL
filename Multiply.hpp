@@ -434,7 +434,7 @@ namespace atl {
                     ret += (lhs_m.EvaluateSecondDerivativeAt(x, y, i, k))*(rhs_m.EvaluateFirstDerivativeAt(z, k, j))+
                             (lhs_m.EvaluateFirstDerivativeAt(x, i, k))*(rhs_m.EvaluateSecondDerivativeAt(y, z, k, j))
                             +(lhs_m.EvaluateSecondDerivativeAt(x, z, i, k))*(rhs_m.EvaluateFirstDerivativeAt(y, k, j))
-                            +(lhs_m.EvaluateFirstDerivativeAt(y, i, k))*(rhs_m.EvaluateThirdDerivativeAt(x, z, k, j))
+                            +(lhs_m.EvaluateFirstDerivativeAt(y, i, k))*(rhs_m.EvaluateSecondDerivativeAt(x, z, k, j))
                             + lhs_m.GetValue(i, k)*(rhs_m.EvaluateThirdDerivativeAt(x, y, z, k, j))+
                             (lhs_m.EvaluateFirstDerivativeAt(z, i, k))*(rhs_m.EvaluateSecondDerivativeAt(x, y, k, j))+
                             (lhs_m.EvaluateSecondDerivativeAt(y, z, i, k))*(rhs_m.EvaluateFirstDerivativeAt(x, k, j))
