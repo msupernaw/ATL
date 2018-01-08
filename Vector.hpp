@@ -1250,6 +1250,26 @@ namespace atl {
         return ret;
     }
 
+    template<class T>
+    const atl::Variable<T> Dot(const atl::VariableVector<T> &a, const atl::VariableVector<T> &b) {
+        atl::Variable<T> ret = 0.0;
+        for (size_t i = 0; i < a.GetSize(); i++) {
+
+            ret += a(i) * b(i);
+        }
+        return ret;
+    }
+
+    template<class T>
+    const T Dot(const atl::RealVector<T> &a, const atl::RealVector<T> &b) {
+        T ret = 0.0;
+        for (size_t i = 0; i < a.GetSize(); i++) {
+
+            ret += a(i) * b(i);
+        }
+        return ret;
+    }
+
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
         for (int i = 0; i < m.GetRows(); i++) {
