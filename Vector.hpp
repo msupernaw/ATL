@@ -1115,15 +1115,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
+        inline T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
+        inline T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
+        inline T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return static_cast<T> (0.0);
         }
 
