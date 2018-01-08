@@ -275,7 +275,7 @@ namespace atl {
                     (expr_m.EvaluateFirstDerivativeAt(z, i, j))) / std::pow(expr_m.GetValue(i, j), 3.0)-
                     ((expr_m.EvaluateSecondDerivativeAt(x, y, i, j))*(expr_m.EvaluateFirstDerivativeAt(z, i, j))) /
                     std::pow(expr_m.GetValue(i, j), 2.0)-((expr_m.EvaluateFirstDerivativeAt(x, i, j))*
-                    (expr_m.EvaluateDerivative(y, z, i, j))) / std::pow(expr_m.GetValue(i, j), 2.0)
+                    (expr_m.EvaluateSecondDerivativeAt(y, z, i, j))) / std::pow(expr_m.GetValue(i, j), 2.0)
                     -((expr_m.EvaluateSecondDerivativeAt(x, z, i, j))*(expr_m.EvaluateFirstDerivativeAt(y, i, j))) /
                     std::pow(expr_m.GetValue(i, j), 2.0) + expr_m.EvaluateThirdDerivativeAt(x, y, z, i, j) /
                     expr_m.GetValue(i, j);
