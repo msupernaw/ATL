@@ -38,8 +38,6 @@
 
 namespace atl {
 
-    
-
     /**
      * Expression template to handle log for variable or 
      * container expressions. 
@@ -290,6 +288,15 @@ namespace atl {
          */
         size_t GetRows() const {
             return expr_m.GetRows();
+        }
+
+        /**
+         * Return the number of rows.
+         * 
+         * @return 
+         */
+        size_t GetColumns() const {
+            return expr_m.GetColumns();
         }
 
         /**
