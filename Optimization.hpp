@@ -781,7 +781,7 @@ namespace atl {
         uint32_t max_line_searches = 1000;
         uint32_t max_iterations = 10000;
         size_t max_history = 1000;
-
+        int print_width = 3;
         std::valarray<T> x;
         std::valarray<T> best;
         std::valarray<T> gradient;
@@ -826,6 +826,15 @@ namespace atl {
             this->tolerance = tolerance;
         }
 
+        int GetPrintWidth() const {
+            return print_width;
+        }
+
+        void SetPrintWidth(int print_width) {
+            this->print_width = print_width;
+        }
+
+        
         bool Run() {
             if (this->objective_function_m == NULL) {
                 return false;
@@ -1444,10 +1453,12 @@ namespace atl {
                 }
             }
         }
-    void Print() {
-            const int name_width  = 35;
+
+        void Print() {
+
+            const int name_width = 35;
             const int value_width = 12;
-            const int grad_width  = 12;
+            const int grad_width = 12;
 
             std::cout << "Iteration: " << this->outer_iteration << "\n";
             std::cout << "Phase: " << this->phase_m << "\n";
@@ -1455,37 +1466,40 @@ namespace atl {
             std::cout << "Max Gradient Component: " << this->maxgc << "\n";
             std::cout << "Floating-Point Type: Float" << (sizeof (T)*8) << "\n";
             std::cout << "Number of Parameters: " << this->parameters_m.size() << "\n";
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-            std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                      << '|' << std::endl;
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+            std::cout << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+            for (int i = 0; i < print_width; i++) {
+                std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12);
+            }
+            //            << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
+            //                    << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
+            std::cout << '|' << std::endl;
+            std::cout << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
 
             int i = 0;
             std::cout.precision(4);
             std::cout << std::scientific;
 
-            for (i = 0; (i + 3) < this->parameters_m.size(); i += 3) {
-                if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
+            for (i = 0; (i + print_width) < this->parameters_m.size(); i += print_width) {
+                for (int j = 0; j < print_width; j++) {
+                    if (std::fabs(this->gradient[i + j]) == this->maxgc) {
+                        std::cout << '|' << util::center("*" + this->parameters_m[i + j]->GetName(), name_width) << '|';
+                    } else {
+                        std::cout << '|' << util::center(this->parameters_m[i + j]->GetName(), name_width) << '|';
+                    }
+                    std::cout << std::setw(value_width) << this->parameters_m[i + j]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + j];
                 }
-                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
-
-                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
-                }
-                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
-
-                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
-                }
+                //                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
+                ////                    std::cout << '|' << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                ////                } else {
+                ////                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
+                ////                }
+                ////                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
+                ////
+                ////                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
+                ////                    std::cout << '|' << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << '|';
+                ////                } else {
+                ////                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
+                ////                }
                 std::cout << std::setw(value_width) << this->parameters_m[i + 2]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 2] << "|\n";
             }
 
@@ -1500,13 +1514,13 @@ namespace atl {
                 /*
                 std::cout << '|' << util::center("-", name_width) << '|';
                 std::cout << util::center("-", value_width) << '|' << util::center("-", grad_width) << "|\n";
-                */
+                 */
             }
 
-            std::cout << "|\n" << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
+            std::cout << "|\n" << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
             std::cout << "\n\n";
         }
-        
+
         virtual bool Evaluate() = 0;
 
         T abs_sum(const std::valarray<T>&array) {
@@ -2190,10 +2204,10 @@ namespace atl {
 
                     if (err < error) {
                         error_change = error - err;
-                        lambda *= T(.5);// T(10.0);
+                        lambda *= T(.5); // T(10.0);
                     } else {
                         error_change = err - error;
-                        lambda *= T(2.0);//T(10.0);
+                        lambda *= T(2.0); //T(10.0);
                     }
                     error = err;
                     previous = this->function_value;
@@ -2257,13 +2271,13 @@ namespace atl {
                     this->S_outer = cs_schol<T>(0, hessian);
                 }
 
-//                this->this->maxgc = std::fabs(this->gradient[0]);
-//                for (int i = 0; i < gradient_.size(); i++) {
-//                    if (std::fabs(this->gradient[i]) > this->this->maxgc) {
-//                        this->maxgc = std::fabs(this->gradient[i]);
-//                    }
-//
-//                }
+                //                this->this->maxgc = std::fabs(this->gradient[0]);
+                //                for (int i = 0; i < gradient_.size(); i++) {
+                //                    if (std::fabs(this->gradient[i]) > this->this->maxgc) {
+                //                        this->maxgc = std::fabs(this->gradient[i]);
+                //                    }
+                //
+                //                }
                 int error = cs_cholsol(0, hessian, gradient_.data(), this->S_outer);
 
 
@@ -2278,7 +2292,7 @@ namespace atl {
 
 
                 for (int j = 0; j < this->parameters_m.size(); j++) {
-                    this->parameters_m[j]->UpdateValue(this->parameters_m[j]->GetInternalValue() - lambda*gradient_[j]);
+                    this->parameters_m[j]->UpdateValue(this->parameters_m[j]->GetInternalValue() - lambda * gradient_[j]);
                 }
             }
 
