@@ -35,6 +35,10 @@ namespace atl {
         size_t columns_m = 0;
         std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m;
 
+        VariableRowVector(size_t size) {
+            this->SetSize(size);
+        }
+
         VariableRowVector(size_t rows_m, size_t columns_m, std::vector<atl::Variable<T>, atl::clfallocator<atl::Variable<T> > >& data_m) :
         rows_m(rows_m), columns_m(columns_m), data_m(data_m) {
         }
@@ -158,6 +162,10 @@ namespace atl {
         size_t rows_m = 0;
         size_t columns_m = 0;
         std::vector<T, atl::clfallocator<T > >& data_m;
+
+        RealRowVector(size_t size) {
+            this->SetSize(size);
+        }
 
         RealRowVector(size_t rows_m, size_t columns_m, std::vector<T, atl::clfallocator<T> >& data_m) :
         rows_m(rows_m), columns_m(columns_m), data_m(data_m) {
@@ -882,15 +890,15 @@ namespace atl {
             return static_cast<T> (0.0);
         }
 
-        inline T EvaluateDerivative(uint32_t x, size_t i, size_t j) const {
+        inline T EvaluateFirstDerivativeAt(uint32_t x, size_t i, size_t j) const {
             return this->data_m[j].EvaluateFirstDerivative(x);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, size_t i, size_t j) const {
+        inline T EvaluateSecondDerivativeAt(uint32_t x, uint32_t y, size_t i, size_t j) const {
             return this->data_m[j].EvaluateSecondDerivative(x, y);
         }
 
-        inline T EvaluateDerivative(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
+        inline T EvaluateThirdDerivativeAt(uint32_t x, uint32_t y, uint32_t z, size_t i, size_t j) const {
             return this->data_m[j].EvaluateThirdDerivative(x, y, z);
         }
 
@@ -1270,6 +1278,51 @@ namespace atl {
         return ret;
     }
 
+    template<typename T>
+    const atl::VariableRowVector<T> Transpose(const atl::VariableColumnVector<T>& v) {
+        atl::VariableRowVector<T> ret(v.GetColumns());
+
+
+        for (int i = 0; i < v.GetColumns(); i++) {
+            ret(i) = v(i);
+        }
+
+        return ret;
+    }
+
+    template<typename T>
+    const atl::RealRowVector<T> Transpose(const atl::RealColumnVector<T>& v) {
+        atl::RealRowVector<T> ret(v.GetColumns());
+
+        for (int i = 0; i < v.GetColumns(); i++) {
+            ret(i) = v(i);
+        }
+
+        return ret;
+    }
+
+    template<typename T>
+    const atl::VariableColumnVector<T> Transpose(const atl::VariableRowVector<T>& v) {
+        atl::VariableColumnVector<T> ret(v.GetRows());
+
+        for (int i = 0; i < v.GetRows(); i++) {
+            ret(i) = v(i);
+        }
+
+        return ret;
+    }
+
+    template<typename T>
+    const atl::RealColumnVector<T> Transpose(const atl::RealRowVector<T>& v) {
+        atl::RealColumnVector<T> ret(v.GetRows());
+
+        for (int i = 0; i < v.GetRows(); i++) {
+            ret(i) = v(i);
+        }
+
+        return ret;
+    }
+
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const VariableVector<REAL_T>& m) {
         for (int i = 0; i < m.GetRows(); i++) {
@@ -1281,6 +1334,8 @@ namespace atl {
 
         return out;
     }
+
+  
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const RealVector<REAL_T>& m) {
