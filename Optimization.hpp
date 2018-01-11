@@ -1080,6 +1080,9 @@ namespace atl {
 
                 I admit that this may not be completely obvious from the paper :)
                  
+                 
+                 MS. I think this means initialize dependent variable 1st derivatives with the inverse subset as range weights, or perhaps the 2nd??
+                 
                  *****************************************************************************************************/
 
 
@@ -2207,7 +2210,7 @@ namespace atl {
                 if (!this->pattern_known) {
 
                     for (int i = 0; i <this->parameters_m.size(); i++) {
-                        gradient_[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+//                        gradient_[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
                         this->gradient[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
                         if (this->parameters_m[i]->bounded_m) {
                             gradient_[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
