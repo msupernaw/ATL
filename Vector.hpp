@@ -616,127 +616,134 @@ namespace atl {
 
             std::vector<T > temp(this->columns_m);
             this->data_m.resize(temp.size());
-            size_t index = tape.GetBlock(temp.size());
+            if (tape.recording) {
+                size_t index = tape.GetBlock(temp.size());
 
-            size_t i = 0;
-            for (size_t j = 0; j < this->columns_m; j++) {
+                size_t i = 0;
+                for (size_t j = 0; j < this->columns_m; j++) {
 
-                temp[j] = exp.GetValue(i, j);
-                typename atl::StackEntry<T>& entry = tape.stack[index++];
+                    temp[j] = exp.GetValue(i, j);
+                    typename atl::StackEntry<T>& entry = tape.stack[index++];
 
-                exp.PushIds(entry.ids, i, j);
+                    exp.PushIds(entry.ids, i, j);
 
-                entry.w = this->data_m[j].info;
-                entry.w->count++;
-                entry.w->is_nl = true;
-                entry.first.resize(entry.ids.size(), static_cast<T> (0.0));
-                typename atl::StackEntry<T>::vi_iterator it;
-                typename atl::StackEntry<T>::vi_iterator jt;
-                typename atl::StackEntry<T>::vi_iterator kt;
-                size_t ii = 0;
-                size_t jj = 0;
-                size_t kk = 0;
-                entry.wv = exp.GetValue(i, j);
-                switch (tape.derivative_trace_level) {
+                    entry.w = this->data_m[j].info;
+                    entry.w->count++;
+                    entry.w->is_nl = true;
+                    entry.first.resize(entry.ids.size(), static_cast<T> (0.0));
+                    typename atl::StackEntry<T>::vi_iterator it;
+                    typename atl::StackEntry<T>::vi_iterator jt;
+                    typename atl::StackEntry<T>::vi_iterator kt;
+                    size_t ii = 0;
+                    size_t jj = 0;
+                    size_t kk = 0;
+                    entry.wv = exp.GetValue(i, j);
+                    switch (tape.derivative_trace_level) {
 
-                    case FIRST_ORDER_REVERSE:
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
-                            ii++;
-                        }
-                        break;
-
-                    case SECOND_ORDER_REVERSE:
-                        entry.w->is_nl = exp.IsNonlinear();
-                        entry.is_nl = exp.IsNonlinear();
-
-                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
-
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[ii] = exp.EvaluateFirstDerivative((*it)->id);
-                            jj = 0;
-                            for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivativeAt((*it)->id, (*jt)->id, i, j);
-                                jj++;
+                        case FIRST_ORDER_REVERSE:
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                                entry.min_id = std::min((*it)->id, entry.min_id);
+                                entry.max_id = std::max((*it)->id, entry.max_id);
+                                entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
+                                ii++;
                             }
-                            i++;
-                        }
-                        break;
+                            break;
 
-                    case THIRD_ORDER_REVERSE:
-                        entry.w->is_nl = exp.IsNonlinear();
-                        entry.is_nl = exp.IsNonlinear();
+                        case SECOND_ORDER_REVERSE:
+                            entry.w->is_nl = exp.IsNonlinear();
+                            entry.is_nl = exp.IsNonlinear();
 
-                        entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
-                        entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            (*it)->live++;
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[i] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
-                            jj = 0;
-                            for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
-                                entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
-                                kk = 0;
-                                for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
+                            entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
 
-                                    entry.third[ii * entry.ids.size() * entry.ids.size() + jj * entry.ids.size() + kk] =
-                                            exp.EvaluateThirdDerivativeAt((*it)->id, (*jt)->id, (*kt)->id, i, j);
-                                    kk++;
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+
+                                entry.min_id = std::min((*it)->id, entry.min_id);
+                                entry.max_id = std::max((*it)->id, entry.max_id);
+                                entry.first[ii] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
+                                jj = 0;
+                                for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivativeAt((*it)->id, (*jt)->id, i, j);
+                                    jj++;
                                 }
-                                jj++;
+                                i++;
+                                ii++;
                             }
-                            ii++;
-                        }
-                        break;
-                    case atl::UTPM_REVERSE:
-                        throw std::invalid_argument("UTPM not yet implemented for VariableVector.");
+                            break;
 
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                            (*it)->tayor_coefficients.resize(tape.taylor_order + 1);
-                            (*it)->tayor_coefficients[0] = (*it)->value;
-                        }
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            (*it)->tayor_coefficients[1] = static_cast<T> (1.0);
-                            for (ii = 0; i <= tape.taylor_order; i++) {
-                                entry.taylor_coeff[(*it)->id].push_back(exp.Taylor(ii));
+                        case THIRD_ORDER_REVERSE:
+                            entry.w->is_nl = exp.IsNonlinear();
+                            entry.is_nl = exp.IsNonlinear();
+
+                            entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
+                            entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<T> (0.0));
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                                (*it)->live++;
+                                entry.min_id = std::min((*it)->id, entry.min_id);
+                                entry.max_id = std::max((*it)->id, entry.max_id);
+                                entry.first[i] = exp.EvaluateFirstDerivativeAt((*it)->id, i, j);
+                                jj = 0;
+                                for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                                    entry.second[ii * entry.ids.size() + jj] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
+                                    kk = 0;
+                                    for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
+
+                                        entry.third[ii * entry.ids.size() * entry.ids.size() + jj * entry.ids.size() + kk] =
+                                                exp.EvaluateThirdDerivativeAt((*it)->id, (*jt)->id, (*kt)->id, i, j);
+                                        kk++;
+                                    }
+                                    jj++;
+                                }
+                                ii++;
                             }
-                            (*it)->tayor_coefficients[1] = static_cast<T> (0.0);
-                        }
+                            break;
+                        case atl::UTPM_REVERSE:
+                            throw std::invalid_argument("UTPM not yet implemented for VariableVector.");
 
-                        break;
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                                entry.min_id = std::min((*it)->id, entry.min_id);
+                                entry.max_id = std::max((*it)->id, entry.max_id);
+                                (*it)->tayor_coefficients.resize(tape.taylor_order + 1);
+                                (*it)->tayor_coefficients[0] = (*it)->value;
+                            }
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                                (*it)->tayor_coefficients[1] = static_cast<T> (1.0);
+                                for (ii = 0; i <= tape.taylor_order; i++) {
+                                    entry.taylor_coeff[(*it)->id].push_back(exp.Taylor(ii));
+                                }
+                                (*it)->tayor_coefficients[1] = static_cast<T> (0.0);
+                            }
 
-                    case DYNAMIC_RECORD:
+                            break;
 
-                        throw std::invalid_argument("DYNAMIC_RECORD not yet implemented for VariableVector.");
+                        case DYNAMIC_RECORD:
+
+                            throw std::invalid_argument("DYNAMIC_RECORD not yet implemented for VariableVector.");
 
 
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                        }
-                        entry.exp = exp.ToDynamic();
+                            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                                entry.min_id = std::min((*it)->id, entry.min_id);
+                                entry.max_id = std::max((*it)->id, entry.max_id);
+                            }
+                            entry.exp = exp.ToDynamic();
 
-                        break;
-                    default:
-                        std::cout << "Unknown Derivative Trace Level.\n";
-                        exit(0);
+                            break;
+                        default:
+                            std::cout << "Unknown Derivative Trace Level.\n";
+                            exit(0);
+                    }
+
                 }
 
+                //in case there is aliasing
+                for (int i = 0; i < data_m.size(); i++) {
+                    data_m[i] = temp[i];
+                }
+            } else {
+                //in case there is aliasing
+                for (int i = 0; i < data_m.size(); i++) {
+                    data_m[i] = exp.GetValue(0, i);
+                }
             }
-
-            //in case there is aliasing
-            for (int i = 0; i < data_m.size(); i++) {
-                data_m[i] = temp[i];
-            }
-
 
         }
 
@@ -1334,8 +1341,6 @@ namespace atl {
 
         return out;
     }
-
-  
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const RealVector<REAL_T>& m) {
