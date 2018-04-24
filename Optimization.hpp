@@ -15,7 +15,6 @@
 #define OPTIMIZATION_HPP
 
 #include "Utilities/StringUtil.hpp"
-#include "Utilities/IO/Console.hpp"
 #include <vector>
 #include <map>
 #include "DerivativeChecker.hpp"
@@ -30,7 +29,7 @@
 
 
 
-#define ATL_HAS_EIGEN
+//#define ATL_HAS_EIGEN
 
 
 #ifdef ATL_HAS_EIGEN
@@ -133,7 +132,6 @@ namespace atl {
     template<typename Type>
     class SparseCholesky {
         struct cs_symbolic<Type> *S = NULL;
-
         //    struct cs_numeric<Type> *chol;
         //
         //    struct cs_sparse<Type> *A_inv;
@@ -184,14 +182,14 @@ namespace atl {
 
 
             //cholesky failed
-            if (ret.factor == NULL && S != NULL) {
-                ret.factor = cs_lu<Type>(ret.A, S, 1e-3);
+            if (ret.factor == NULL) {
+                ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
                 if (ret.factor == NULL) {
                     std::cout << "LU factorization error. " << std::endl;
                 }
             }
 
-            if (ret.factor == NULL && S != NULL) {
+            if (ret.factor == NULL) {
                 ret.factor = cs_qr<Type>(ret.A, S);
                 if (ret.factor == NULL) {
                     std::cout << "QR factorization error. " << std::endl;
@@ -203,6 +201,7 @@ namespace atl {
             //3. compute the inverse subset
             if (ret.factor != NULL) {
                 inv(ret);
+
             }
 
             //4. compute the log determinant
@@ -656,11 +655,8 @@ namespace atl {
                     T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id,
                             this->parameters_m[j]->info->id);
                     if (dxx != dxx) {//this is a big hack
-                        dxx = static_cast<T> (1e-3); //std::numeric_limits<T>::min();
+                        dxx = std::numeric_limits<T>::min();
                     }
-                    //                    if(i==j){
-                    //                        dxx += static_cast<T>(1e-5);
-                    //                    }
                     if (dxx != static_cast<T> (0.0)) {
                         cs_entry<T>(RHessian, i, j, dxx);
                     }
@@ -668,58 +664,50 @@ namespace atl {
             }
 
             struct cs_sparse<T> *hessian = cs_compress<T>(RHessian);
-
             SparseCholesky<T> sparse_cholesky;
 
             SCResult<T> ret = sparse_cholesky.Analyze(hessian);
-            atl::RealMatrix<T> ret_m(this->parameters_m.size(), this->parameters_m.size());
 
-            if (ret.factor != NULL) {
+            csi p, j, m, n, nzmax, nz, *Ap, *Ai;
+            T* Ax;
+            n = ret.A_inv->n;
+            Ap = ret.A_inv->p;
+            Ai = ret.A_inv->i;
+            Ax = ret.A_inv->x;
 
-                csi p, j, m, n, nzmax, nz, *Ap, *Ai;
-                T* Ax;
-                n = ret.A_inv->n;
-                Ap = ret.A_inv->p;
-                Ai = ret.A_inv->i;
-                Ax = ret.A_inv->x;
+            atl::RealMatrix<T> inverse_hess(this->parameters_m.size(), this->parameters_m.size());
 
-                atl::RealMatrix<T> inverse_hess(this->parameters_m.size(), this->parameters_m.size());
-
-                for (int j = 0; j < n; j++) {
-                    for (int k = Ap [j]; k < Ap [j + 1]; k++) {
-                        inverse_hess(Ai[k], j) = Ax[k];
-                    }
+            for (int j = 0; j < n; j++) {
+                for (int k = Ap [j]; k < Ap [j + 1]; k++) {
+                    inverse_hess(Ai[k], j) = Ax[k];
                 }
-
-                cs_spfree(RHessian);
-                cs_spfree(hessian);
-
-                std::vector<T> se(this->parameters_m.size());
-                for (int i = 0; i < this->parameters_m.size(); i++) {
-                    se[i] = std::sqrt(inverse_hess(i, i));
-                }
-
-
-
-                atl::RealMatrix<T> outer_product(this->parameters_m.size(), this->parameters_m.size());
-                for (size_t i = 0; i < this->parameters_m.size(); i++) {
-                    for (size_t j = 0; j < this->parameters_m.size(); j++) {
-                        outer_product(i, j) = se[i] * se[j];
-                    }
-                }
-
-
-
-
-                for (size_t i = 0; i < this->parameters_m.size(); i++) {
-                    for (size_t j = 0; j < this->parameters_m.size(); j++) {
-                        ret_m(i, j) = inverse_hess(i, j) * outer_product(i, j);
-                    }
-                }
-
-
             }
 
+            cs_spfree(RHessian);
+            cs_spfree(hessian);
+
+            std::vector<T> se(this->parameters_m.size());
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                se[i] = std::sqrt(inverse_hess(i, i));
+            }
+
+
+
+            atl::RealMatrix<T> outer_product(this->parameters_m.size(), this->parameters_m.size());
+            for (size_t i = 0; i < this->parameters_m.size(); i++) {
+                for (size_t j = 0; j < this->parameters_m.size(); j++) {
+                    outer_product(i, j) = se[i] * se[j];
+                }
+            }
+
+
+
+            atl::RealMatrix<T> ret_m(this->parameters_m.size(), this->parameters_m.size());
+            for (size_t i = 0; i < this->parameters_m.size(); i++) {
+                for (size_t j = 0; j < this->parameters_m.size(); j++) {
+                    ret_m(i, j) = inverse_hess(i, j) * outer_product(i, j);
+                }
+            }
             return ret_m;
 
             //            atl::Matrix<T> inverse_hess = atl::Matrix<T>::Identity(hess.Size(0));
@@ -790,7 +778,7 @@ namespace atl {
         T inner_maxgc;
         int phase_m;
         bool re_active = true;
-        uint32_t max_line_searches = 2000;
+        uint32_t max_line_searches = 1000;
         uint32_t max_iterations = 10000;
         size_t max_history = 1000;
         int print_width = 3;
@@ -1469,10 +1457,7 @@ namespace atl {
         }
 
         void Print() {
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
             const int name_width = 35;
             const int value_width = 12;
             const int grad_width = 12;
@@ -1483,14 +1468,6 @@ namespace atl {
             std::cout << "Max Gradient Component: " << this->maxgc << "\n";
             std::cout << "Floating-Point Type: Float" << (sizeof (T)*8) << "\n";
             std::cout << "Number of Parameters: " << this->parameters_m.size() << "\n";
-<<<<<<< HEAD
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-            std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                    << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                    << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
-                    << '|' << std::endl;
-            std::cout << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-=======
             std::cout << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
             for (int i = 0; i < print_width; i++) {
                 std::cout << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12);
@@ -1499,33 +1476,11 @@ namespace atl {
             //                    << '|' << util::center("Name", name_width) << '|' << util::center("Value", value_width) << '|' << util::center("Gradient", 12)
             std::cout << '|' << std::endl;
             std::cout << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
->>>>>>> origin/master
 
             int i = 0;
             std::cout.precision(4);
             std::cout << std::scientific;
 
-<<<<<<< HEAD
-            for (i = 0; (i + 3) < this->parameters_m.size(); i += 3) {
-                if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i]->GetName(), name_width) << io::DEFAULT << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
-                }
-                std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
-
-                if (std::fabs(this->gradient[i + 1]) == this->maxgc) {
-                    std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i + 1]->GetName(), name_width) << io::DEFAULT << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 1]->GetName(), name_width) << '|';
-                }
-                std::cout << std::setw(value_width) << this->parameters_m[i + 1]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + 1];
-
-                if (std::fabs(this->gradient[i + 2]) == this->maxgc) {
-                    std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i + 2]->GetName(), name_width) << io::DEFAULT << '|';
-                } else {
-                    std::cout << '|' << util::center(this->parameters_m[i + 2]->GetName(), name_width) << '|';
-=======
             for (i = 0; (i + print_width) < this->parameters_m.size(); i += print_width) {
                 for (int j = 0; j < print_width; j++) {
                     if (std::fabs(this->gradient[i + j]) == this->maxgc) {
@@ -1534,35 +1489,23 @@ namespace atl {
                         std::cout << '|' << util::center(this->parameters_m[i + j]->GetName(), name_width) << '|';
                     }
                     std::cout << std::setw(value_width) << this->parameters_m[i + j]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i + j];
->>>>>>> origin/master
                 }
                 std::cout << "|\n";
             }
 
             for (; i< this->parameters_m.size(); i++) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i]->GetName(), name_width) << io::DEFAULT << '|';
+                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
                 } else {
                     std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
                 }
                 std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
 
-<<<<<<< HEAD
-                /*
-                std::cout << '|' << util::center("-", name_width) << '|';
-                std::cout << util::center("-", value_width) << '|' << util::center("-", grad_width) << "|\n";
-                 */
-            }
-
-            std::cout << "|\n" << ' ' << std::string((3 * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
-            std::cout << std::endl<<std::endl;
-=======
                
             }
 
             std::cout << "|\n" << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
             std::cout << "\n\n";
->>>>>>> origin/master
         }
 
         virtual bool Evaluate() = 0;
@@ -1754,13 +1697,6 @@ namespace atl {
                     }
 
                     this->ComputeGradient(parameters, ng, maxgc);
-                    if ((ls % 10) == 0) {
-                        for (int i = 0; i < ng.size(); i++) {
-                            this->gradient[i] = ng[i];
-                        }
-                        std::cout << "Line Search\n";
-                        this->Print();
-                    }
                     atl::Variable<T>::tape.Reset();
                     if (down || (-1.0 * Dot(z, nwg) >= 0.9 * descent)) { // Second Wolfe condition
                         x = nx;
@@ -1776,7 +1712,6 @@ namespace atl {
                     down = true;
                 }
             }
-
 
             for (size_t j = 0; j < nops; j++) {
                 parameters[j]->SetValue(best[j]);
@@ -2723,4 +2658,3 @@ namespace atl {
 
 
 #endif /* FUNCTIONMINIMIZER_HPP */
-
