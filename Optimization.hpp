@@ -778,11 +778,13 @@ namespace atl {
         T maxgc;
         T inner_maxgc;
         int phase_m;
+       
         bool re_active = true;
         uint32_t max_line_searches = 1000;
         uint32_t max_iterations = 10000;
         size_t max_history = 1000;
         int print_width = 3;
+         int print_interval = 10;
         std::valarray<T> x;
         std::valarray<T> best;
         std::valarray<T> gradient;
@@ -1699,9 +1701,9 @@ namespace atl {
 
                     this->ComputeGradient(parameters, ng, maxgc);
                     
-                    if((ls%10)==0){
+                    if((ls%this->print_interval)==0){
                          gradient = ng;
-                         std::cout<<io::GREEN<<"Line Search...\n"<<io::DEFAULT;
+                         std::cout<<io::GREEN<<"Line Search Update.\n"<<io::DEFAULT;
                          this->Print();
                     }
                     
@@ -1846,7 +1848,7 @@ namespace atl {
                     wg[j] = this->parameters_m[j]->GetScaledGradient(this->parameters_m[j]->GetInternalValue()) * this->gradient[j];
                 }
 
-                if ((i % 10) == 0 || i == 0) {
+                if ((i % this->print_interval) == 0 || i == 0) {
                     std::cout << "Iteration " << i << "\n";
                     std::cout << "Phase = " << this->phase_m << "\n";
 
