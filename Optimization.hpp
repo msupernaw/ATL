@@ -1701,7 +1701,7 @@ namespace atl {
                     
                     if((ls%10)==0){
                          gradient = ng;
-                         std::cout<<io::GREEN<<"Line Search...\n";
+                         std::cout<<io::GREEN<<"Line Search...\n"<<io::DEFAULT;
                          this->Print();
                     }
                     
