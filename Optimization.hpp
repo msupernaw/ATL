@@ -15,6 +15,7 @@
 #define OPTIMIZATION_HPP
 
 #include "Utilities/StringUtil.hpp"
+#include "Utilities/IO/Console.hpp"
 #include <vector>
 #include <map>
 #include "DerivativeChecker.hpp"
@@ -1484,7 +1485,7 @@ namespace atl {
             for (i = 0; (i + print_width) < this->parameters_m.size(); i += print_width) {
                 for (int j = 0; j < print_width; j++) {
                     if (std::fabs(this->gradient[i + j]) == this->maxgc) {
-                        std::cout << '|' << util::center("*" + this->parameters_m[i + j]->GetName(), name_width) << '|';
+                        std::cout << '|' << io::RED<<util::center("*" + this->parameters_m[i + j]->GetName(), name_width) <<io::DEFAULT<< '|';
                     } else {
                         std::cout << '|' << util::center(this->parameters_m[i + j]->GetName(), name_width) << '|';
                     }
@@ -1495,7 +1496,7 @@ namespace atl {
 
             for (; i< this->parameters_m.size(); i++) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << util::center("*" + this->parameters_m[i]->GetName(), name_width) << '|';
+                    std::cout << '|' << io::RED<<util::center("*" + this->parameters_m[i]->GetName(), name_width) <<io::DEFAULT<< '|';
                 } else {
                     std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
                 }
@@ -1697,6 +1698,13 @@ namespace atl {
                     }
 
                     this->ComputeGradient(parameters, ng, maxgc);
+                    
+                    if((ls%10)==0){
+                         gradient = ng;
+                         std::cout<<io::GREEN<<"Line Search...\n";
+                         this->Print();
+                    }
+                    
                     atl::Variable<T>::tape.Reset();
                     if (down || (-1.0 * Dot(z, nwg) >= 0.9 * descent)) { // Second Wolfe condition
                         x = nx;
