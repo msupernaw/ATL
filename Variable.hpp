@@ -92,7 +92,7 @@ namespace atl {
     public:
 
         virtual REAL_T External2Internal(REAL_T val, REAL_T min_, REAL_T max_) const {
-            if (val <= min_ || val >= max_)std::cout << "value exceeds bounds....\n";
+            if (val < min_ || val > max_)std::cout << "value exceeds bounds....\n";
             //            return std::asin((2.0 * val) / (max_ - min_) - min_ / (max_ - min_) - max_ / (max_ - min_));
             return std::asin((2.0 * (val - min_) / (max_ - min_)) - 1.0);
         }
@@ -130,7 +130,13 @@ namespace atl {
     public:
 
         virtual REAL_T External2Internal(REAL_T val, REAL_T min_, REAL_T max_)const {
-            REAL_T p = (val - min_) / (max_ - min_);
+            if(val == min_){
+                val+=std::numeric_limits<REAL_T>::epsilon();
+            }else if(val == max_){
+                val-=std::numeric_limits<REAL_T>::epsilon();
+            }
+            
+            REAL_T p = ((val)- min_) / (max_ - min_);
             return std::log(p / (1.0 - p));
         }
 
@@ -140,6 +146,8 @@ namespace atl {
         }
 
         virtual REAL_T DerivativeInternal2External(REAL_T val, REAL_T min_, REAL_T max_)const {
+//            return ((max_-min_)*std::exp(val))/(std::exp(val)+1.0)-((max_-min_)*std::exp((2.0*val)))/std::pow((std::exp(val)+1.0),2.0);
+//            return ((max_−min_)*std::exp(val)/(std::exp(val)+1.0)−((max_−min_)*std::exp((2.0*val))/std::pow(std::exp(val)+1.0),2.0);
             return (std::exp(val) * std::log(M_E)*(max_ - min_)) / (std::exp(val) + 1.0)-
                     (std::exp(static_cast<REAL_T> (2.0 * val)) * std::log(M_E)*(max_ - min_)) / std::pow((std::exp(val) + 1), 2.0);
         }
@@ -168,7 +176,7 @@ namespace atl {
 
         VariableInfoPtr info; //(new atl::VariableInfo<REAL_T>());
 
-        static LogitParameterTransformation<REAL_T> default_transformation;
+        static std::shared_ptr<ParameterTransformation<REAL_T> > default_transformation;
         ParameterTransformation<REAL_T>* transformation;
 
         REAL_T min_boundary_m;
@@ -183,7 +191,7 @@ namespace atl {
         bounded_m(false),
         min_boundary_m(min_boundary),
         max_boundary_m(max_boundary),
-        transformation(&default_transformation) {
+        transformation(default_transformation.get()) {
 
             info = std::make_shared<VariableInfo<REAL_T> >(value);
 
@@ -196,7 +204,7 @@ namespace atl {
         bounded_m(false),
         min_boundary_m(min_boundary),
         max_boundary_m(max_boundary),
-        transformation(&default_transformation) {
+        transformation(default_transformation.get()) {
 
             info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (value));
             //            info->value = v;
@@ -208,7 +216,7 @@ namespace atl {
         bounded_m(false),
         min_boundary_m(min_boundary),
         max_boundary_m(max_boundary),
-        transformation(&default_transformation) {
+        transformation(default_transformation.get()) {
 
             info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (value));
             //            info->value = v;
@@ -237,7 +245,7 @@ namespace atl {
         bounded_m(false),
         min_boundary_m(std::numeric_limits<REAL_T>::min()),
         max_boundary_m(std::numeric_limits<REAL_T>::max()),
-        transformation(&default_transformation) {
+        transformation(default_transformation.get()) {
 
             info = std::make_shared<VariableInfo<REAL_T> >(static_cast<REAL_T> (0.0));
 
@@ -417,6 +425,15 @@ namespace atl {
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                            i++;
+                        }
+                        break;
+                        
+                    case FIRST_ORDER_REVERSE_COMPLEX_STEP:
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                            entry.min_id = std::min((*it)->id, entry.min_id);
+                            entry.max_id = std::max((*it)->id, entry.max_id);
+                            entry.first[i] = exp.ComplexEvaluate((*it)->id).imag()/1e-20;
                             i++;
                         }
                         break;
@@ -600,6 +617,15 @@ namespace atl {
         ParameterTransformation<REAL_T>& GetParameterTransformation() {
             return this->transformation;
         }
+        
+        /**
+         * Returns the variables transformation functor.
+         * @return
+         */
+        void SetParameterTransformation(ParameterTransformation<REAL_T>* trans) {
+             this->transformation = trans;
+        }
+
 
         /**
          * Returns the max boundary.
@@ -957,7 +983,7 @@ namespace atl {
     bool Variable<REAL_T>::show = false;
 
     template<typename REAL_T>
-    LogitParameterTransformation<REAL_T> Variable<REAL_T>::default_transformation;
+    std::shared_ptr<ParameterTransformation<REAL_T> > Variable<REAL_T>::default_transformation(new atl::LogitParameterTransformation<double>());
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const Variable<REAL_T>& v) {
