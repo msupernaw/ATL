@@ -33,6 +33,7 @@ namespace atl {
 
     enum DerivativeTraceLevel {
         FIRST_ORDER_REVERSE = 0,
+        FIRST_ORDER_REVERSE_COMPLEX_STEP,
         SECOND_ORDER_REVERSE,
         THIRD_ORDER_REVERSE,
         FIRST_ORDER_FORWARD,
@@ -336,13 +337,12 @@ namespace atl {
          * @param size
          */
         Tape(size_t size = 10000) {
-            stack.reserve(size);
-            stack.resize(10000);
-            //            std::cout << "Capacity = " << stack.capacity() << "\n";
+            stack.reserve(size*1.5);
+            stack.resize(size);
         }
 
         ~Tape() {
-            std::cout << "Destructing tape " << std::endl;
+            std::cout << "Destructing tape " <<this<< std::endl;
         }
 
         void SetRecording(bool record) {
@@ -1259,291 +1259,291 @@ namespace atl {
         return out;
     }
 
-    template<typename REAL_T>
-    class DerivativeStructure {
-    public:
-        atl::Tape<REAL_T>& tape;
-
-        typename atl::Tape<REAL_T>::first_order_container gradient;
-        typename atl::Tape<REAL_T>::second_order_container higher_order;
-        std::vector< typename atl::Tape<REAL_T>::first_order_container > derivatives;
-        int order;
-        uint32_t min;
-        uint32_t max;
-        std::vector<std::vector<uint32_t> > indexes;
-        typename atl::StackEntry<REAL_T>::vi_storage dependents;
-        typename atl::StackEntry<REAL_T>::vi_storage independents;
-
-        DerivativeStructure(atl::Tape<REAL_T>& tape, int order = 1) :
-        tape(tape), order(order) {
-            this->derivatives.resize(order);
-            std::pair<uint32_t, uint32_t> min_max = tape.FindMinMaxIds();
-            this->min = min_max.first;
-            this->max = min_max.second;
-
-            tape.GetVariableList(this->dependents, this->independents);
-
-            for (int i = 1; i <= order; i++) {
-                indexes.push_back(std::vector<uint32_t>(i));
-            }
-
-            typename atl::StackEntry<REAL_T>::vi_storage dependents = tape.DependentList();
-
-            for (int i = 0; i < tape.stack_current; i++) {
-                tape.stack[i].diff_exp.resize(order + 1);
-                tape.stack[i].diff_w.resize(order + 1);
-                tape.stack[i].diff_exp[0] = tape.stack[i].exp;
-                tape.stack[i].diff_w[0] = tape.stack[i].w;
-
-            }
-
-
-            for (int j = 1; j <= order; j++) {
-                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
-                typename atl::StackEntry<REAL_T>::vi_iterator it;
-                for (it = dependents.begin(); it != dependents.end(); ++it) {
-                    mapped_var_info[(*it)->id] =
-                            std::shared_ptr<atl::VariableInfo<REAL_T> > (new atl::VariableInfo<REAL_T>((*it)->value));
-                }
-                for (int i = 0; i < tape.stack_current; i++) {
-                    tape.stack[i].diff_w[j] = mapped_var_info[tape.stack[i].w->id];
-                    tape.stack[i].diff_exp[j] = tape.stack[i].diff_exp[j - 1]->Differentiate();
-                    tape.stack[i].diff_exp[j]->PushOrder(j);
-                    tape.stack[i].diff_exp[j]->SwapDependents(mapped_var_info);
-                    //                    tape.stack[i].diff_w[j]->value = tape.stack[i].diff_exp[j]->GetValue();
-                }
-            }
-
-
-
-        }
-
-        void Run() {
-            int current_order = 1;
-            gradient[tape.stack[(tape.stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
-            REAL_T w = static_cast<REAL_T> (0.0);
-            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-
-
-            for (int i = (tape.stack_current - 1); i >= 0; i--) {
-                REAL_T& GW = gradient[tape.stack[i].w->id];
-                REAL_T gw = GW;
-                std::cout << "variable[" << tape.stack[i].w->id << "," << tape.stack[i].w->value << "] = " << tape.stack[i].exp->ToString() << "\n";
-
-                GW = static_cast<REAL_T> (0.0);
-
-                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-                    //Gradient 
-                    gradient[(*vit)->id] += gw * tape.stack[i].exp->EvaluateDerivative((*vit)->id);
-
-                    if (this->order > 1) {
-                        this->Recursive(current_order + 1, i,{(*vit)->id});
-                    }
-
-                }
-
-            }
-
-            //            for (vit = this->independents.begin(); vit != this->independents.end(); ++vit) {
-            //                std::vector<uint32_t> ids;
-            //                ids.push_back((*vit)->id);
-            //                this->EvalTop(1, ids);
-            //            }
-
-
-        }
-
-        inline REAL_T Value(std::vector<uint32_t> index) {
-            int order = index.size();
-            if (order == 1) {
-                return this->gradient[index[0]];
-            }
-            //                        std::sort(index.begin(), index.end());
-            uint32_t key = this->key(index, this->max);
-            return this->derivatives[order - 1][key];
-
-        }
-
-    private:
-
-        inline void Eval(const int& current_order,
-                const typename atl::StackEntry<REAL_T>::VariableInfoPtr& w_,
-                const std::shared_ptr < atl::DynamicExpressionBase<REAL_T > >& exp_,
-                const typename atl::StackEntry<REAL_T>::vi_storage& ids_,
-                const std::vector< typename atl::StackEntry<REAL_T>::vi_iterator >& ids) {
-
-            typename atl::StackEntry<REAL_T>::vi_iterator piter = ids[ids.size() - 1];
-            uint32_t pid = (*ids[ids.size() - 1])->id;
-            typename atl::StackEntry<REAL_T>::vi_iterator it;
-
-            //            std::shared_ptr < atl::DynamicExpressionBase<REAL_T > > exp;
-
-
-            //            uint32_t rank = (current_order % 2);
-            //            if (rank == 0 && current_order != order) {
-            //                exp = exp_->Differentiate((*ids[ids.size() - (current_order - 1)])->id);
-            //            } else {
-            //                exp = exp_;
-            //            }
-
-            std::vector<uint32_t>& _ids = this->indexes[current_order - 1];
-
-            for (int i = 0; i < ids.size(); i++) {
-                _ids[i] = (*ids[i])->id;
-            }
-            exp_->DifferentiatedBy(_ids);
-
-
-
-            _ids[_ids.size() - 1] = tape.stack[tape.stack_current - 1].w->id;
-            size_t key = this->key(_ids, this->max);
-            this->derivatives[current_order - 1][key] = static_cast<REAL_T> (1.0);
-
-            _ids[_ids.size() - 1] = w_->id;
-            key = this->key(_ids, this->max);
-            REAL_T& W = this->derivatives[current_order - 1][key];
-
-            REAL_T w = W;
-            W = static_cast<REAL_T> (0.0);
-
-            REAL_T dx;
-
-            //            std::cout << exp->ToString() << " = ";
-            for (it = ids_.begin(); it != ids_.end(); ++it) {
-                _ids[_ids.size() - 1] = (*it)->id;
-
-                //
-
-                dx = w * exp_->EvaluateDerivative((*it)->id);
-                if (dx != std::fpclassify(0.0)) {
-                    key = this->key(_ids, this->max);
-                    std::cout << std::scientific << "D[" << pid << "," << (*it)->id << "]{" << key << "} = ";
-                    this->derivatives[current_order - 1][key] += dx;
-                    std::cout << w << " * " << exp_->EvaluateDerivative(pid, _ids[_ids.size() - 1]) << "\n";
-                    //                    std::cout << this->derivatives[current_order - 1][key] << "\n";
-                }
-                if (current_order < this->order) {
-                    std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
-                    nids.push_back(it);
-                    this->Eval(current_order + 1, w_, exp_, ids_, nids);
-                }
-            }
-
-            //            dx = w * exp_->EvaluateDerivative(pid, pid);
-            //            std::cout << "w{" << w << "} " << dx << " ";
-            //            if (dx != std::fpclassify(0.0)) {
-            //                _ids[_ids.size() - 1] = pid;
-            //                key = this->key(_ids, this->max);
-            //                this->derivatives[current_order - 1][key] += dx;
-            //            }
-            //
-            //            if (current_order < this->order) {
-            //                std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
-            //                nids.push_back(piter);
-            //                this->Eval(current_order + 1, w_, exp, ids_, nids);
-            //            }
-
-        }
-
-        inline void Recursive(const int& current_order, size_t i, const std::vector<uint32_t>& ids) {
-            std::vector<uint32_t>& index_l = this->indexes[current_order - 1];
-
-            REAL_T w = static_cast<REAL_T> (0.0);
-            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-            index_l[index_l.size() - 1] = tape.stack[this->tape.stack_current - 1].diff_w[current_order - 1]->id;
-            size_t key = this->key(index_l, this->max);
-            this->derivatives[current_order - 1][key] = 1.0;
-            for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-                index_l[index_l.size() - 1] = tape.stack[i].diff_w[current_order - 1]->id;
-                key = this->key(index_l, this->max);
-                REAL_T& gw = this->derivatives[current_order - 1][key];
-                index_l[index_l.size() - 1] = (*vit)->id;
-                key = this->key(index_l, this->max);
-                tape.stack[i].diff_exp[current_order - 1]->DifferentiatedBy(ids);
-                this->derivatives[current_order - 1][key] += gw * tape.stack[i].diff_exp[current_order - 1]->EvaluateDerivative((*vit)->id);
-                std::cout << this->derivatives[current_order - 1][key] << "\n";
-            }
-
-
-        }
-
-        inline void EvalTop(const int& current_order, const std::vector<uint32_t>& ids) {
-
-            //forward wrt to ids
-            for (int i = 0; i < this->tape.stack_current; i++) {
-                this->tape.stack[i].diff_exp[current_order]->DifferentiatedBy(ids);
-                //                this->tape.stack[i].diff_w[current_order]->value = this->tape.stack[i].diff_exp[current_order]->GetValue();
-            }
-
-            REAL_T w = static_cast<REAL_T> (0.0);
-            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-
-            std::vector<uint32_t> ids_l(ids.size() + 1);
-            for (int i = 0; i < ids.size(); i++) {
-                ids_l[i] = ids[i];
-            }
-            std::cout << "w[" << this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id << "] = 1.0" << std::endl;
-            ids_l[ids_l.size() - 1] = this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id;
-            higher_order[ids_l[0]][ids_l[1]] = 1.0;
-            size_t key = this->key(ids_l, this->max);
-            this->derivatives[current_order][key] = 1.0;
-
-            for (int i = (tape.stack_current - 1); i >= 0; i--) {
-
-                ids_l[ids_l.size() - 1] = this->tape.stack[i].diff_w[current_order]->id;
-                size_t key = this->key(ids_l, this->max);
-                //higher_order[ids_l[0]][ids_l[1]] = 1.0;
-                REAL_T& GW = higher_order[ids_l[0]][ids_l[1]]; //this->derivatives[current_order][key];
-                REAL_T gw = GW;
-
-                GW = static_cast<REAL_T> (0.0);
-
-
-                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-                    ids_l[ids_l.size() - 1] = (*vit)->id;
-                    size_t key = this->key(ids_l, this->max);
-
-                    //Gradient 
-                    //                    this->derivatives[current_order][key] 
-                    higher_order[ids_l[0]][ids_l[1]] += gw * this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id);
-                    //                    if ((ids_l[0] == ids_l[1] && ids_l[0] == 4)) {
-                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->Differentiate(ids_l[0])->ToString() << "\n";
-                    //                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->ToString() << "\n";
-                    //                    std::cout << higher_order[ids_l[0]][ids_l[1]] << "+= " << gw << "*" << this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id) << std::endl;
-                    //                    }
-
-                }
-
-            }
-
-
-
-
-        }
-
-        size_t key(const std::vector< uint32_t>& ids, int max) {
-            if (ids.size() == 2) {
-                return higher_order[ids[0]][ids[1]];
-            }
-            size_t order = ids.size();
-            size_t key = 0;
-            size_t m = max + 1;
-            size_t no = order - 1;
-            size_t tmp = 0;
-            for (int i = 0; i < order - 1; i++) {
-                tmp = (ids[i]);
-                tmp *= std::pow(m, no);
-                key += tmp;
-                no--;
-
-
-            }
-            key += (ids[ids.size() - 1]);
-            //            std::cout<<"key = "<<key<<"\n";
-            return key;
-        }
-    };
-
+//    template<typename REAL_T>
+//    class DerivativeStructure {
+//    public:
+//        atl::Tape<REAL_T>& tape;
+//
+//        typename atl::Tape<REAL_T>::first_order_container gradient;
+//        typename atl::Tape<REAL_T>::second_order_container higher_order;
+//        std::vector< typename atl::Tape<REAL_T>::first_order_container > derivatives;
+//        int order;
+//        uint32_t min;
+//        uint32_t max;
+//        std::vector<std::vector<uint32_t> > indexes;
+//        typename atl::StackEntry<REAL_T>::vi_storage dependents;
+//        typename atl::StackEntry<REAL_T>::vi_storage independents;
+//
+//        DerivativeStructure(atl::Tape<REAL_T>& tape, int order = 1) :
+//        tape(tape), order(order) {
+//            this->derivatives.resize(order);
+//            std::pair<uint32_t, uint32_t> min_max = tape.FindMinMaxIds();
+//            this->min = min_max.first;
+//            this->max = min_max.second;
+//
+//            tape.GetVariableList(this->dependents, this->independents);
+//
+//            for (int i = 1; i <= order; i++) {
+//                indexes.push_back(std::vector<uint32_t>(i));
+//            }
+//
+//            typename atl::StackEntry<REAL_T>::vi_storage dependents = tape.DependentList();
+//
+//            for (int i = 0; i < tape.stack_current; i++) {
+//                tape.stack[i].diff_exp.resize(order + 1);
+//                tape.stack[i].diff_w.resize(order + 1);
+//                tape.stack[i].diff_exp[0] = tape.stack[i].exp;
+//                tape.stack[i].diff_w[0] = tape.stack[i].w;
+//
+//            }
+//
+//
+//            for (int j = 1; j <= order; j++) {
+//                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
+//                typename atl::StackEntry<REAL_T>::vi_iterator it;
+//                for (it = dependents.begin(); it != dependents.end(); ++it) {
+//                    mapped_var_info[(*it)->id] =
+//                            std::shared_ptr<atl::VariableInfo<REAL_T> > (new atl::VariableInfo<REAL_T>((*it)->value));
+//                }
+//                for (int i = 0; i < tape.stack_current; i++) {
+//                    tape.stack[i].diff_w[j] = mapped_var_info[tape.stack[i].w->id];
+//                    tape.stack[i].diff_exp[j] = tape.stack[i].diff_exp[j - 1]->Differentiate();
+//                    tape.stack[i].diff_exp[j]->PushOrder(j);
+//                    tape.stack[i].diff_exp[j]->SwapDependents(mapped_var_info);
+//                    //                    tape.stack[i].diff_w[j]->value = tape.stack[i].diff_exp[j]->GetValue();
+//                }
+//            }
+//
+//
+//
+//        }
+//
+//        void Run() {
+//            int current_order = 1;
+//            gradient[tape.stack[(tape.stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+//            REAL_T w = static_cast<REAL_T> (0.0);
+//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+//
+//
+//            for (int i = (tape.stack_current - 1); i >= 0; i--) {
+//                REAL_T& GW = gradient[tape.stack[i].w->id];
+//                REAL_T gw = GW;
+//                std::cout << "variable[" << tape.stack[i].w->id << "," << tape.stack[i].w->value << "] = " << tape.stack[i].exp->ToString() << "\n";
+//
+//                GW = static_cast<REAL_T> (0.0);
+//
+//                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+//                    //Gradient 
+//                    gradient[(*vit)->id] += gw * tape.stack[i].exp->EvaluateDerivative((*vit)->id);
+//
+//                    if (this->order > 1) {
+//                        this->Recursive(current_order + 1, i,{(*vit)->id});
+//                    }
+//
+//                }
+//
+//            }
+//
+//            //            for (vit = this->independents.begin(); vit != this->independents.end(); ++vit) {
+//            //                std::vector<uint32_t> ids;
+//            //                ids.push_back((*vit)->id);
+//            //                this->EvalTop(1, ids);
+//            //            }
+//
+//
+//        }
+//
+//        inline REAL_T Value(std::vector<uint32_t> index) {
+//            int order = index.size();
+//            if (order == 1) {
+//                return this->gradient[index[0]];
+//            }
+//            //                        std::sort(index.begin(), index.end());
+//            uint32_t key = this->key(index, this->max);
+//            return this->derivatives[order - 1][key];
+//
+//        }
+//
+//    private:
+//
+//        inline void Eval(const int& current_order,
+//                const typename atl::StackEntry<REAL_T>::VariableInfoPtr& w_,
+//                const std::shared_ptr < atl::DynamicExpressionBase<REAL_T > >& exp_,
+//                const typename atl::StackEntry<REAL_T>::vi_storage& ids_,
+//                const std::vector< typename atl::StackEntry<REAL_T>::vi_iterator >& ids) {
+//
+//            typename atl::StackEntry<REAL_T>::vi_iterator piter = ids[ids.size() - 1];
+//            uint32_t pid = (*ids[ids.size() - 1])->id;
+//            typename atl::StackEntry<REAL_T>::vi_iterator it;
+//
+//            //            std::shared_ptr < atl::DynamicExpressionBase<REAL_T > > exp;
+//
+//
+//            //            uint32_t rank = (current_order % 2);
+//            //            if (rank == 0 && current_order != order) {
+//            //                exp = exp_->Differentiate((*ids[ids.size() - (current_order - 1)])->id);
+//            //            } else {
+//            //                exp = exp_;
+//            //            }
+//
+//            std::vector<uint32_t>& _ids = this->indexes[current_order - 1];
+//
+//            for (int i = 0; i < ids.size(); i++) {
+//                _ids[i] = (*ids[i])->id;
+//            }
+//            exp_->DifferentiatedBy(_ids);
+//
+//
+//
+//            _ids[_ids.size() - 1] = tape.stack[tape.stack_current - 1].w->id;
+//            size_t key = this->key(_ids, this->max);
+//            this->derivatives[current_order - 1][key] = static_cast<REAL_T> (1.0);
+//
+//            _ids[_ids.size() - 1] = w_->id;
+//            key = this->key(_ids, this->max);
+//            REAL_T& W = this->derivatives[current_order - 1][key];
+//
+//            REAL_T w = W;
+//            W = static_cast<REAL_T> (0.0);
+//
+//            REAL_T dx;
+//
+//            //            std::cout << exp->ToString() << " = ";
+//            for (it = ids_.begin(); it != ids_.end(); ++it) {
+//                _ids[_ids.size() - 1] = (*it)->id;
+//
+//                //
+//
+//                dx = w * exp_->EvaluateDerivative((*it)->id);
+//                if (dx != std::fpclassify(0.0)) {
+//                    key = this->key(_ids, this->max);
+//                    std::cout << std::scientific << "D[" << pid << "," << (*it)->id << "]{" << key << "} = ";
+//                    this->derivatives[current_order - 1][key] += dx;
+//                    std::cout << w << " * " << exp_->EvaluateDerivative(pid, _ids[_ids.size() - 1]) << "\n";
+//                    //                    std::cout << this->derivatives[current_order - 1][key] << "\n";
+//                }
+//                if (current_order < this->order) {
+//                    std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+//                    nids.push_back(it);
+//                    this->Eval(current_order + 1, w_, exp_, ids_, nids);
+//                }
+//            }
+//
+//            //            dx = w * exp_->EvaluateDerivative(pid, pid);
+//            //            std::cout << "w{" << w << "} " << dx << " ";
+//            //            if (dx != std::fpclassify(0.0)) {
+//            //                _ids[_ids.size() - 1] = pid;
+//            //                key = this->key(_ids, this->max);
+//            //                this->derivatives[current_order - 1][key] += dx;
+//            //            }
+//            //
+//            //            if (current_order < this->order) {
+//            //                std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+//            //                nids.push_back(piter);
+//            //                this->Eval(current_order + 1, w_, exp, ids_, nids);
+//            //            }
+//
+//        }
+//
+//        inline void Recursive(const int& current_order, size_t i, const std::vector<uint32_t>& ids) {
+//            std::vector<uint32_t>& index_l = this->indexes[current_order - 1];
+//
+//            REAL_T w = static_cast<REAL_T> (0.0);
+//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+//            index_l[index_l.size() - 1] = tape.stack[this->tape.stack_current - 1].diff_w[current_order - 1]->id;
+//            size_t key = this->key(index_l, this->max);
+//            this->derivatives[current_order - 1][key] = 1.0;
+//            for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+//                index_l[index_l.size() - 1] = tape.stack[i].diff_w[current_order - 1]->id;
+//                key = this->key(index_l, this->max);
+//                REAL_T& gw = this->derivatives[current_order - 1][key];
+//                index_l[index_l.size() - 1] = (*vit)->id;
+//                key = this->key(index_l, this->max);
+//                tape.stack[i].diff_exp[current_order - 1]->DifferentiatedBy(ids);
+//                this->derivatives[current_order - 1][key] += gw * tape.stack[i].diff_exp[current_order - 1]->EvaluateDerivative((*vit)->id);
+//                std::cout << this->derivatives[current_order - 1][key] << "\n";
+//            }
+//
+//
+//        }
+//
+//        inline void EvalTop(const int& current_order, const std::vector<uint32_t>& ids) {
+//
+//            //forward wrt to ids
+//            for (int i = 0; i < this->tape.stack_current; i++) {
+//                this->tape.stack[i].diff_exp[current_order]->DifferentiatedBy(ids);
+//                //                this->tape.stack[i].diff_w[current_order]->value = this->tape.stack[i].diff_exp[current_order]->GetValue();
+//            }
+//
+//            REAL_T w = static_cast<REAL_T> (0.0);
+//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+//
+//            std::vector<uint32_t> ids_l(ids.size() + 1);
+//            for (int i = 0; i < ids.size(); i++) {
+//                ids_l[i] = ids[i];
+//            }
+//            std::cout << "w[" << this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id << "] = 1.0" << std::endl;
+//            ids_l[ids_l.size() - 1] = this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id;
+//            higher_order[ids_l[0]][ids_l[1]] = 1.0;
+//            size_t key = this->key(ids_l, this->max);
+//            this->derivatives[current_order][key] = 1.0;
+//
+//            for (int i = (tape.stack_current - 1); i >= 0; i--) {
+//
+//                ids_l[ids_l.size() - 1] = this->tape.stack[i].diff_w[current_order]->id;
+//                size_t key = this->key(ids_l, this->max);
+//                //higher_order[ids_l[0]][ids_l[1]] = 1.0;
+//                REAL_T& GW = higher_order[ids_l[0]][ids_l[1]]; //this->derivatives[current_order][key];
+//                REAL_T gw = GW;
+//
+//                GW = static_cast<REAL_T> (0.0);
+//
+//
+//                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+//                    ids_l[ids_l.size() - 1] = (*vit)->id;
+//                    size_t key = this->key(ids_l, this->max);
+//
+//                    //Gradient 
+//                    //                    this->derivatives[current_order][key] 
+//                    higher_order[ids_l[0]][ids_l[1]] += gw * this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id);
+//                    //                    if ((ids_l[0] == ids_l[1] && ids_l[0] == 4)) {
+//                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->Differentiate(ids_l[0])->ToString() << "\n";
+//                    //                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->ToString() << "\n";
+//                    //                    std::cout << higher_order[ids_l[0]][ids_l[1]] << "+= " << gw << "*" << this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id) << std::endl;
+//                    //                    }
+//
+//                }
+//
+//            }
+//
+//
+//
+//
+//        }
+//
+//        size_t key(const std::vector< uint32_t>& ids, int max) {
+//            if (ids.size() == 2) {
+//                return higher_order[ids[0]][ids[1]];
+//            }
+//            size_t order = ids.size();
+//            size_t key = 0;
+//            size_t m = max + 1;
+//            size_t no = order - 1;
+//            size_t tmp = 0;
+//            for (int i = 0; i < order - 1; i++) {
+//                tmp = (ids[i]);
+//                tmp *= std::pow(m, no);
+//                key += tmp;
+//                no--;
+//
+//
+//            }
+//            key += (ids[ids.size() - 1]);
+//            //            std::cout<<"key = "<<key<<"\n";
+//            return key;
+//        }
+//    };
+//
 
 }
 
