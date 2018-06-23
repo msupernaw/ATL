@@ -1325,7 +1325,7 @@ namespace atl {
             for (int j = 0; j < m.columns; j++) {
                 out << m.data_m[i * m.columns + j] << " ";
             }
-            std::cout << std::endl;
+            out << std::endl;
         }
 
         return out;
