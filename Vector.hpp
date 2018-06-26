@@ -64,6 +64,14 @@ namespace atl {
         const atl::Variable<T>& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
+        
+        atl::Variable<T>& operator[](size_t j) {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
+        
+        const atl::Variable<T>& operator[](size_t j) const {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
 
         /**
          * Returns the size of this vector.
@@ -192,6 +200,14 @@ namespace atl {
         const T& operator()(size_t j) const {
             return this->data_m[rows_m * this->columns_m + j];
         }
+        
+        T& operator[](size_t j) {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
+        
+        const T& operator[](size_t j) const {
+            return this->data_m[rows_m * this->columns_m + j];
+        }
 
         /**
          * Returns the size of this vector.
@@ -314,6 +330,14 @@ namespace atl {
         const atl::Variable<T>& operator()(size_t i) const {
             return this->data_m[i * this->columns_m + col];
         }
+        
+        atl::Variable<T>& operator[](size_t i) {
+            return this->data_m[i * this->columns_m + col];
+        }
+        
+        const atl::Variable<T>& operator[](size_t i) const {
+            return this->data_m[i * this->columns_m + col];
+        }
 
         /**
          * Returns the size of this vector.
@@ -433,6 +457,14 @@ namespace atl {
         }
 
         const T& operator()(size_t i) const {
+            return this->data_m[i * this->columns_m + col];
+        }
+        
+        T& operator[](size_t i) {
+            return this->data_m[i * this->columns_m + col];
+        }
+        
+        const T& operator[](size_t i) const {
             return this->data_m[i * this->columns_m + col];
         }
 
@@ -828,6 +860,15 @@ namespace atl {
         const atl::Variable<T>& operator()(size_t j) const {
             return this->data_m[j];
         }
+        
+        
+        atl::Variable<T>& operator[](size_t j) {
+            return this->data_m[j];
+        }
+        
+        const atl::Variable<T>& operator[](size_t j) const {
+            return this->data_m[j];
+        }
 
         void SetName(const std::string& name) {
             std::stringstream ss;
@@ -977,7 +1018,7 @@ namespace atl {
          */
         inline RealVector& operator=(const T& value) {
             for (int i = 0; i < data_m.size(); i++) {
-                data_m[i].info->value = value;
+                data_m[i] = value;
             }
             return *this;
         }
@@ -1069,6 +1110,15 @@ namespace atl {
         }
 
         const T& operator()(size_t j) const {
+            return this->data_m[j];
+        }
+        
+        
+        T& operator[](size_t j) {
+            return this->data_m[j];
+        }
+        
+        const T& operator[](size_t j) const {
             return this->data_m[j];
         }
 
