@@ -599,6 +599,10 @@ namespace atl {
                 max_phase_m = phase;
             }
         }
+        
+        void ClearParameters(){
+            this->parameters_m.clear();
+        }
 
         void RegisterRandomVariable(atl::Variable<T>& v, int phase = 1) {
             this->random_variables_m.push_back(&v);
@@ -606,6 +610,10 @@ namespace atl {
             if (phase > max_phase_m) {
                 max_phase_m = phase;
             }
+        }
+        
+        void ClearRandomVariables(){
+            this->random_variables_m.clear();
         }
 
         int GetActivePhase(const atl::Variable<T>& v) {
@@ -637,6 +645,56 @@ namespace atl {
             return stats;
         }
 
+        const atl::RealVector<T> GetGradient() {
+            atl::Variable<T>::tape.Reset();
+            atl::Variable<T>::tape.derivative_trace_level = atl::FIRST_ORDER_REVERSE;
+
+            atl::Variable<T>::tape.recording = true;
+            atl::Variable<T> f;
+
+            this->Objective_Function(f);
+
+            atl::Variable<T>::tape.AccumulateFirstOrder();
+            atl::RealVector<T> gradient(this->parameters_m.size());
+
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                gradient(i) = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+            }
+            
+            return gradient;
+        }
+
+        const atl::RealMatrix<T> GetHessian() {
+            atl::Variable<T>::tape.Reset();
+            atl::Variable<T>::tape.derivative_trace_level = atl::SECOND_ORDER_REVERSE;
+
+            atl::Variable<T>::tape.recording = true;
+            atl::Variable<T> f;
+
+            this->Objective_Function(f);
+
+            atl::Variable<T>::tape.AccumulateSecondOrder();
+            atl::RealMatrix<T> hessian(this->parameters_m.size(), this->parameters_m.size());
+
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                for (int j = 0; j < this->parameters_m.size(); j++) {
+                    T dxx = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id,
+                            this->parameters_m[j]->info->id);
+                    if (dxx != dxx) {//this is a big hack
+                        dxx = std::numeric_limits<T>::min();
+                    }
+                    if (dxx != static_cast<T> (0.0)) {
+                        hessian(i, j) = dxx;
+                    }
+                }
+            }
+
+
+            return hessian;
+        }
+
         const atl::RealMatrix<T> GetVarianceCovariance() {
 
             atl::Variable<T>::tape.Reset();
@@ -649,7 +707,6 @@ namespace atl {
             this->Objective_Function(f);
 
             atl::Variable<T>::tape.AccumulateSecondOrder();
-
 
             for (int i = 0; i < this->parameters_m.size(); i++) {
                 for (int j = 0; j < this->parameters_m.size(); j++) {
@@ -778,13 +835,9 @@ namespace atl {
         T maxgc;
         T inner_maxgc;
         int phase_m;
-       
+
         bool re_active = true;
-        uint32_t max_line_searches = 1000;
-        uint32_t max_iterations = 10000;
-        size_t max_history = 1000;
-        int print_width = 3;
-         int print_interval = 10;
+
         std::valarray<T> x;
         std::valarray<T> best;
         std::valarray<T> gradient;
@@ -808,6 +861,12 @@ namespace atl {
         std::vector<T> re_dx;
         bool pattern_known = false;
     public:
+
+        uint32_t max_line_searches = 1000;
+        uint32_t max_iterations = 10000;
+        size_t max_history = 1000;
+        int print_width = 3;
+        int print_interval = 10;
 
         OptimizationRoutine(ObjectiveFunction<T>* objective_function = NULL) :
         objective_function_m(objective_function) {
@@ -1487,7 +1546,7 @@ namespace atl {
             for (i = 0; (i + print_width) < this->parameters_m.size(); i += print_width) {
                 for (int j = 0; j < print_width; j++) {
                     if (std::fabs(this->gradient[i + j]) == this->maxgc) {
-                        std::cout << '|' << io::RED<<util::center("*" + this->parameters_m[i + j]->GetName(), name_width) <<io::DEFAULT<< '|';
+                        std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i + j]->GetName(), name_width) << io::DEFAULT << '|';
                     } else {
                         std::cout << '|' << util::center(this->parameters_m[i + j]->GetName(), name_width) << '|';
                     }
@@ -1498,13 +1557,13 @@ namespace atl {
 
             for (; i< this->parameters_m.size(); i++) {
                 if (std::fabs(this->gradient[i]) == this->maxgc) {
-                    std::cout << '|' << io::RED<<util::center("*" + this->parameters_m[i]->GetName(), name_width) <<io::DEFAULT<< '|';
+                    std::cout << '|' << io::RED << util::center("*" + this->parameters_m[i]->GetName(), name_width) << io::DEFAULT << '|';
                 } else {
                     std::cout << '|' << util::center(this->parameters_m[i]->GetName(), name_width) << '|';
                 }
                 std::cout << std::setw(value_width) << this->parameters_m[i]->GetValue() << '|' << std::setw(grad_width) << this->gradient[i];
 
-               
+
             }
 
             std::cout << "|\n" << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
@@ -1700,13 +1759,13 @@ namespace atl {
                     }
 
                     this->ComputeGradient(parameters, ng, maxgc);
-                    
-                    if((ls%this->print_interval)==0){
-                         gradient = ng;
-                         std::cout<<io::GREEN<<"Line Search Update.\n"<<io::DEFAULT;
-                         this->Print();
+
+                    if ((ls % this->print_interval) == 0) {
+                        gradient = ng;
+                        std::cout << io::GREEN << "Line Search Update.\n" << io::DEFAULT;
+                        this->Print();
                     }
-                    
+
                     atl::Variable<T>::tape.Reset();
                     if (down || (-1.0 * Dot(z, nwg) >= 0.9 * descent)) { // Second Wolfe condition
                         x = nx;
@@ -2220,7 +2279,7 @@ namespace atl {
                 if (!this->pattern_known) {
 
                     for (int i = 0; i <this->parameters_m.size(); i++) {
-//                        gradient_[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
+                        //                        gradient_[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
                         this->gradient[i] = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
                         if (this->parameters_m[i]->bounded_m) {
                             gradient_[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
@@ -2589,6 +2648,224 @@ namespace atl {
         };
      */
 #endif
+
+   template<typename T>
+    struct Chromosome {
+        std::vector<T> x;
+        T fitness;
+    };
+
+    template<typename T>
+    struct customLess {
+
+        bool operator()(Chromosome<T> a, Chromosome<T> b) const {
+            return a.fitness < b.fitness;
+        }
+    };
+
+    template<typename T>
+    class GeneticAlgorithm : public atl::OptimizationRoutine<T> {
+
+        void copy_individual(Chromosome<T>& dest, Chromosome<T>& source) {
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                dest.x[i] = source.x[i];
+            }
+            dest.fitness = source.fitness;
+        }
+
+#warning utilize transformations here
+
+        void mutation(Chromosome<T>& c)
+        // mutate the individual
+        {
+            // mutate each symbol with the same pm probability
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+
+                double p = rand() / (double) RAND_MAX;
+                if (p < this->mutation_probablility) {
+                    int r = rand() % 2;
+                    // I choose randomly if I add or if I subtract delta
+                    if (r) {
+                        if (c.x[i] + this->delta <= this->parameters_m[i]->GetMaxBoundary())
+                            c.x[i] += delta;
+                    } else {
+                        if (c.x[i] - delta >= this->parameters_m[i]->GetMinBoundary())
+                            c.x[i] -= delta;
+                    }
+                }
+            }
+        }
+
+        void one_cut_point_crossover(
+                const Chromosome<T>& parent1,
+                const Chromosome<T>& parent2,
+                Chromosome<T>& offspring1,
+                Chromosome<T>& offspring2) {
+
+            int pct;
+            pct = 1 + rand() % (this->parameters_m.size() - 1);
+            // the cutting point should be after first gene 
+            //and before the last one
+            for (int i = 0; i < pct; i++) {
+                offspring1.x[i] = parent1.x[i];
+                offspring2.x[i] = parent2.x[i];
+            }
+            for (int i = pct; i < this->parameters_m.size(); i++) {
+                offspring1.x[i] = parent2.x[i];
+                offspring2.x[i] = parent1.x[i];
+            }
+        }
+
+        void uniform_crossover(
+                const Chromosome<T>& parent1,
+                const Chromosome<T>& parent2,
+                Chromosome<T>& offspring1,
+                Chromosome<T>& offspring2) { // uniform crossover can also be used
+            // for each gene we decide randomly where it goes
+            // (to the first or second offspring)
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                if (rand() % 2) {// flip
+                    offspring1.x[i] = parent2.x[i];
+                    offspring2.x[i] = parent1.x[i];
+                } else {
+                    offspring1.x[i] = parent1.x[i];
+                    offspring2.x[i] = parent2.x[i];
+                }
+            }
+        }
+
+        static int sort_function(const Chromosome<T>& a, const Chromosome<T>& b) {
+            if (a.fitness > b.fitness)
+                return 1;
+            else
+                if (a.fitness < b.fitness)
+                return -1;
+            else
+                return 0;
+        }
+
+        int tournament_selection(int tournament_size) {
+            // randomly pick several individuals
+            // and return the best of them
+            int selected_index;
+            selected_index = rand() % this->population_size_m;
+            for (int i = 1; i < tournament_size; i++) {
+                int r = rand() % this->population_size_m;
+                selected_index = this->population_m[r].fitness < this->population_m[selected_index].fitness ? r : selected_index;
+            }
+            return selected_index;
+        }
+
+        void generate_random(Chromosome<T>& c) {
+
+
+
+            for (int i = 0; i<this->parameters_m.size(); i++) {
+                std::uniform_real_distribution<T> gen(this->parameters_m[i]->GetMinBoundary(),
+                        this->parameters_m[i]->GetMaxBoundary());
+                c.x[i] = gen(rng);
+                //                std::cout << c.x[i] << " ";
+            }
+            //            std::cout << "\n";
+        }
+
+        void compute_fitness(Chromosome<T>& c) {
+            for (int i = 0; i < this->parameters_m.size(); i++) {
+                this->parameters_m[i]->SetValue(c.x[i]);
+                //                std::cout << c.x[i] << " ";
+            }
+            atl::Variable<T> fx;
+            this->objective_function_m->Objective_Function(fx);
+            c.fitness = fx.GetValue();
+            //            std::cout << c.fitness << std::endl;
+        }
+
+
+    public:
+
+        std::mt19937 rng;
+        int seed = 40901120730;
+        size_t population_size_m = 1000;
+        size_t number_of_generations_m = 101;
+        std::vector<Chromosome<T> > population_m;
+        T mutation_probablility = .7;
+        T probability_of_crossover = .7;
+        T delta = 0.90; //jumps for mutation
+        bool elitism = false; 
+        bool Evaluate() {
+            this->seed = time(NULL);
+            //            this->population_size_m = this->parameters_m.size();
+            rng.seed(this->seed);
+            atl::Variable<T>::tape.recording = false;
+            int pop_size = this->population_size_m;
+            this->gradient.resize(this->parameters_m.size());
+            // allocate memory
+            population_m.resize(this->population_size_m);
+            for (int i = 0; i < pop_size; i++)
+                population_m[i].x.resize(this->parameters_m.size());
+
+            Chromosome<T> offspring1, offspring2;
+            offspring1.x.resize(this->parameters_m.size());
+            offspring2.x.resize(this->parameters_m.size());
+
+            // initialize
+            for (int i = 0; i < population_m.size(); i++) {
+                generate_random(population_m[i]);
+                compute_fitness(population_m[i]);
+            }
+
+            std::sort(this->population_m.begin(), this->population_m.end(),
+                    customLess<T>());
+
+            //            this->Print();
+
+            for (int g = 0; g < this->number_of_generations_m; g++) {
+                this->outer_iteration = g;
+                for (int k = 0; k < pop_size; k += 2) {
+                    // choose the parents using binary tournament
+                    int r1 = tournament_selection(2);
+                    int r2 = tournament_selection(2);
+                    // crossover
+                    double p = rand() / double(RAND_MAX);
+                    if (p < this->probability_of_crossover)
+                        one_cut_point_crossover(population_m[r1], population_m[r2], offspring1, offspring2);
+                    else {
+                        copy_individual(offspring1, population_m[r1]);
+                        copy_individual(offspring2, population_m[r2]);
+                    }
+                    // mutate the result
+                    mutation(offspring1);
+                    compute_fitness(offspring1);
+                    mutation(offspring2);
+                    compute_fitness(offspring2);
+
+                    // are offspring better than the worst
+                    if (offspring1.fitness < population_m[pop_size - 1].fitness) {
+                        copy_individual(population_m[pop_size - 1], offspring1);
+                        std::sort(this->population_m.begin(), this->population_m.end(),
+                                customLess<T>());
+                    }
+
+                    if (offspring2.fitness < population_m[pop_size - 1].fitness) {
+                        copy_individual(population_m[pop_size - 1], offspring2);
+                        std::sort(this->population_m.begin(), this->population_m.end(),
+                                customLess<T>());
+                    }
+                }
+                //                 std::sort(this->population_m.begin(), this->population_m.end(),
+                //                               customLess<T>());
+                for (int i = 0; i < this->parameters_m.size(); i++) {
+                    this->parameters_m[i]->SetValue(this->population_m[0].x[i]);
+                    this->function_value = this->population_m[0].fitness;
+                }
+                if ((this->outer_iteration % this->print_interval) == 0) {
+                    this->Print();
+                }
+            }
+
+        }
+    };
 
     template<class T>
     class MCMC {
