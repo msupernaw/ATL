@@ -36,6 +36,7 @@
 #define FLOOR_HPP
 
 #include "Expression.hpp"
+#include <exception>
 
 namespace atl {
 
@@ -124,7 +125,8 @@ namespace atl {
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
-            return std::floor(expr_m.ComplexEvaluate(x, h));
+            throw std::exception("floor not available for complex numbers");
+            //            return std::floor(expr_m.ComplexEvaluate(x, h));
         }
 
         std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
