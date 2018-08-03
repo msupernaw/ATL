@@ -2,6 +2,7 @@
 #define CEIL_HPP
 
 #include "Expression.hpp"
+#include <exception>
 
 namespace atl {
 
@@ -54,7 +55,8 @@ namespace atl {
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
-            return std::ceil(expr_m.ComplexEvaluate(x, h));
+           throw std::exception("ceil not available for complex numbers");
+//            return std::ceil(expr_m.ComplexEvaluate(x, h));
         }
 
         /**
