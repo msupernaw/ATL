@@ -847,7 +847,7 @@ namespace atl {
         std::valarray<T> inner_gradient;
         std::valarray<T> inner_wg;
 
-        atl::Tape<T> inner_gs;
+ //       atl::Tape<T> inner_gs;
         atl::Variable<T> log_det;
 
         std::vector< std::vector<int> > hessian_pattern_map;
@@ -1760,7 +1760,7 @@ namespace atl {
 
                     this->ComputeGradient(parameters, ng, maxgc);
 
-                    if ((ls % this->print_interval) == 0) {
+                    if ((this->outer_iteration % this->print_interval) == 0) {
                         gradient = ng;
                         std::cout << io::GREEN << "Line Search Update.\n" << io::DEFAULT;
                         this->Print();
@@ -2863,6 +2863,21 @@ namespace atl {
                     this->Print();
                 }
             }
+            
+            int min_index = 0;
+            for(int i =0; i < this->population_m.size(); i++){
+                if(this->population_m[i].fitness < this->population_m[min_index].fitness){
+                    min_index = i;
+                }
+            }
+            
+            for(int i =0; i < this->parameters_m.size(); i++){
+                this->parameters_m[i]->SetValue(this->population_m[min_index].x[i]);
+            }
+            
+            atl::Variable<T> fx;
+            this->objective_function_m->Objective_Function(fx);
+            
 
         }
     };
