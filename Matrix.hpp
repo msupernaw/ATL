@@ -436,6 +436,8 @@ namespace atl {
             }
         }
 
+#ifdef ATL_USE_THREAD_POOL
+        
         /**
          * Assignment function for concurrent assignment. This function 
          * guarantees proper tape recording by reserving a block of entries from
@@ -483,7 +485,7 @@ namespace atl {
                 this->Assign(exp, atl::Variable<T>::tape);
             }
         }
-
+#endif
         void Resize(size_t rows, size_t columns) {
             this->rows = rows;
             this->columns = columns;
@@ -773,6 +775,7 @@ namespace atl {
             return *this;
         }
 
+#ifdef ATL_USE_THREAD_POOL
         template<class A>
         inline void AssignConcurrent(const ExpressionBase<T, A>& exp) {
             this->columns = exp.GetColumns();
@@ -808,6 +811,8 @@ namespace atl {
 
 
         }
+        
+#endif
 
         inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
             this->data_m[0].PushIds(ids);
