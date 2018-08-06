@@ -384,10 +384,10 @@ namespace atl {
         std::queue <std::function <void (void) > > jobs_;
         std::vector <std::thread> threads_;
     };
-
+#ifdef ATL_USE_THREAD_POOL
     //global thread pool
     atl::ThreadPool thread_pool_g;
-
+#endif
 }
 
 
