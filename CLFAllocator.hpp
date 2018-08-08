@@ -23,7 +23,7 @@
 #include "Platform.hpp"
 
 #ifndef ATL_WINDOWS
-#include "clfmalloc.h"
+//#include "clfmalloc.h"
 #endif
 
 
