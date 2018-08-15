@@ -30,7 +30,8 @@
 
 
 
-//#define ATL_HAS_EIGEN
+
+#define ATL_HAS_EIGEN
 
 
 #ifdef ATL_HAS_EIGEN
@@ -542,18 +543,17 @@ namespace atl {
 
     template<class T>
     class ObjectiveFunction : public DerivativeChecker<T> {
-        std::map<atl::Variable<T>*, int> phase_info;
-        std::vector<atl::Variable<T>* > parameters_m;
-        std::vector<int> parameter_phases_m;
-        std::vector<atl::Variable<T>* > random_variables_m;
-        std::vector<int> random_variable_phases_m;
-
         std::vector<atl::Variable<T>* > all_parameters_m;
         int max_phase_m = 0;
         friend class OptimizationRoutine<T>;
         friend class MCMC<T>;
 
     public:
+        std::map<atl::Variable<T>*, int> phase_info;
+        std::vector<atl::Variable<T>* > parameters_m;
+        std::vector<int> parameter_phases_m;
+        std::vector<atl::Variable<T>* > random_variables_m;
+        std::vector<int> random_variable_phases_m;
 
         int phase_m = 1;
 
@@ -599,8 +599,8 @@ namespace atl {
                 max_phase_m = phase;
             }
         }
-        
-        void ClearParameters(){
+
+        void ClearParameters() {
             this->parameters_m.clear();
         }
 
@@ -611,8 +611,8 @@ namespace atl {
                 max_phase_m = phase;
             }
         }
-        
-        void ClearRandomVariables(){
+
+        void ClearRandomVariables() {
             this->random_variables_m.clear();
         }
 
@@ -661,7 +661,7 @@ namespace atl {
             for (int i = 0; i < this->parameters_m.size(); i++) {
                 gradient(i) = atl::Variable<T>::tape.Value(this->parameters_m[i]->info->id);
             }
-            
+
             return gradient;
         }
 
@@ -847,7 +847,7 @@ namespace atl {
         std::valarray<T> inner_gradient;
         std::valarray<T> inner_wg;
 
- //       atl::Tape<T> inner_gs;
+        //       atl::Tape<T> inner_gs;
         atl::Variable<T> log_det;
 
         std::vector< std::vector<int> > hessian_pattern_map;
@@ -1904,7 +1904,8 @@ namespace atl {
                 i = iteration;
                 this->outer_iteration = iteration;
                 for (int j = 0; j < nops; j++) {
-                    wg[j] = this->parameters_m[j]->GetScaledGradient(this->parameters_m[j]->GetInternalValue()) * this->gradient[j];
+                    wg[j] = this->parameters_m[j]->GetScaledGradient(
+                            this->parameters_m[j]->GetInternalValue()) * this->gradient[j];
                 }
 
                 if ((i % this->print_interval) == 0 || i == 0) {
@@ -2031,7 +2032,7 @@ namespace atl {
             port::integer n = this->parameters_m.size();
             std::vector<T> g(n, 0.0);
             std::vector<T> d(n, 0.0);
-            std::vector<T> x(n, 0.0);
+            std::vector<T> x_(n, 0.0);
             std::vector<T> b(n * 2, 0.0);
             port::integer lv = 71 + n * (n + 13) / 2;
             std::vector<T> v(lv, 0.0);
@@ -2040,21 +2041,16 @@ namespace atl {
             v[0] = 2;
             std::valarray<T> z(n);
             std::valarray<T> wg(n);
+            std::vector<T> wg_(n);
             this->best.resize(n);
             this->x.resize(n);
+
             for (int i = 0; i < n; i++) {
-                d[i] = 1.0;
-                x[i] = this->parameters_m[i]->GetInternalValue();
-                this->x[i] = x[i];
-                if (this->parameters_m[i]->GetMinBoundary() != std::numeric_limits<T>::min()) {
-                    b[2 * i] = this->parameters_m[i]->GetMinBoundary();
+                d[i] = 0.001;
+                if (this->parameters_m[i]->IsBounded()) {
+                    this->x[i] = x_[i] = this->parameters_m[i]->GetInternalValue();
                 } else {
-                    b[2 * i] = this->parameters_m[i]->GetMinBoundary() + 1.0;
-                }
-                if (this->parameters_m[i]->GetMaxBoundary() != std::numeric_limits<T>::max()) {
-                    b[2 * i + 1] = this->parameters_m[i]->GetMaxBoundary();
-                } else {
-                    b[2 * i + 1] = this->parameters_m[i]->GetMaxBoundary() - 1.0;
+                    this->x[i] = x_[i] = this->parameters_m[i]->GetValue();
                 }
             }
 
@@ -2067,105 +2063,131 @@ namespace atl {
             fx = f.GetValue();
             this->function_value = f.GetValue();
             this->ComputeGradient(this->parameters_m, this->gradient, this->maxgc);
-            for (int i = 0; i < n; i++) {
-                g[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
-                wg[i] = g[i];
-            }
+
+
             atl::Variable<T>::tape.Reset();
 
-            int iter = 0;
-            this->outer_iteration = iter;
-            T maxgc;
+            this->outer_iteration = 0;
 
             port::ivset_(2, iv.data(), iv.size(), v.size(), v.data());
 
+            //            iv[MXFCAL-1] = 200;
+
             T previous_function_value;
+
             do {
 
 
+                if (this->outer_iteration == 1 || (this->outer_iteration % 10) == 0) {
+                    this->Print();
+                }
 
-                port::drmng_<T>(/*b.data(),*/ d.data(), &fx, g.data(), iv.data(), &liv, &lv, &n, v.data(), x.data());
+                for (int i = 0; i < n; i++) {
+                    x_[i] = this->parameters_m[i]->GetInternalValue();
+                    g[i] = this->gradient[i];
+                    wg[i] = this->parameters_m[i]->GetScaledGradient(
+                            this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
+                    wg_[i] = wg[i];
+                }
+
+                //                //
+                //                if (!this->line_search(this->parameters_m,
+                //                        this->function_value,
+                //                        this->x,
+                //                        this->best,
+                //                        z,
+                //                        this->gradient,
+                //                        wg,
+                //                        this->maxgc,
+                //                        iter, false)) {
+                //                    std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
+                //                    for (int i = 0; i < n; i++) {
+                //                        this->x[i] = this->best[i];
+                //                    }
+                //
+                //                } else {
+                //                    fx = this->function_value;
+                //                    for (int i = 0; i < n; i++) {
+                //                        x_[i] = this->parameters_m[i]->GetInternalValue();
+                //                        wg_[i] = wg[i];
+                //                    }
+                //                }
+
+                port::drmng_<T>(/*b.data(),*/ d.data(), &fx, wg_.data(), iv.data(), &liv, &lv, &n, v.data(), x_.data());
 
 
 
                 if ((iv[0]) == 2) {
-                    iter++;
-                    this->outer_iteration = iter;
-                    atl::Variable<T>::tape.Reset();
+
+
                     for (int i = 0; i < n; i++) {
-                        this->parameters_m[i]->UpdateValue(x[i]);
-                        this->x[i] = x[i];
+                        this->parameters_m[i]->UpdateValue(x_[i]);
+                        this->x[i] = x_[i];
                     }
 
                     atl::Variable<T>::SetRecording(true);
-                    //                    atl::Variable<T>::tape.Reset()
+                    atl::Variable<T>::tape.Reset();
                     previous_function_value = f.GetValue();
+                    f = 0.0;
                     this->CallObjectiveFunction(f);
                     fx = f.GetValue();
                     this->function_value = f.GetValue();
+
                     this->ComputeGradient(this->parameters_m, this->gradient, this->maxgc);
+
                     for (int i = 0; i < n; i++) {
-                        g[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
-                        wg[i] = g[i];
+                        g[i] = this->gradient[i];
+                        wg[i] = this->parameters_m[i]->GetScaledGradient(
+                                this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
+                        wg_[i] = wg[i];
                     }
                     z = wg;
-
-                    maxgc = std::fabs(g[0]); // std::numeric_limits<T>::min();
-                    for (int i = 0; i < n; i++) {
-                        if (std::fabs(g[i]) > maxgc) {
-                            maxgc = std::fabs(g[i]);
-                        }
-
-                    }
-                    this->maxgc = maxgc;
-
-                    //                                        if ((std::fabs(previous_function_value) - std::fabs(fx)) < 1e-15) {
-                    //                                            std::cout << "Line searching....\n";
-                    //                                            if (!this->line_search(this->parameters_m,
-                    //                                                    this->function_value,
-                    //                                                    this->x,
-                    //                                                    this->best,
-                    //                                                    z,
-                    //                                                    this->gradient,
-                    //                                                    wg,
-                    //                                                    this->maxgc,
-                    //                                                    iter, false)) {
-                    //                                                std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
-                    //                                                for (int i = 0; i < n; i++) {
-                    //                                                    this->x[i] = this->best[i];
-                    //                                                }
-                    //                    
-                    //                                            }
-                    //                                        }
-
-                    for (int i = 0; i < n; i++) {
-                        if (std::fabs(g[i]) > maxgc) {
-                            maxgc = std::fabs(g[i]);
-                        }
-
-                    }
-                    this->maxgc = maxgc;
-
-                    for (int i = 0; i < n; i++) {
-                        this->parameters_m[i]->UpdateValue(this->x[i]);
-                        x[i] = this->x[i];
-                        g[i] = this->gradient[i];
-                    }
-
-                    if (iter == 1 || (iter % 10) == 0) {
+                    if (this->maxgc <= this->tolerance) {
                         this->Print();
+                        break;
                     }
+
+                    //                    maxgc = std::fabs(g[0]); // std::numeric_limits<T>::min();
+                    //                    for (int i = 0; i < n; i++) {
+                    //                        if (std::fabs(g[i]) > maxgc) {
+                    //                            maxgc = std::fabs(g[i]);
+                    //                        }
+                    //
+                    //                    }
+                    //                    this->maxgc = maxgc;
+
+
+                    //                    for (int i = 0; i < n; i++) {
+                    //                        if (std::fabs(g[i]) > maxgc) {
+                    //                            maxgc = std::fabs(g[i]);
+                    //                        }
+                    //
+                    //                    }
+                    //                    this->maxgc = maxgc;
+
+                    //                    for (int i = 0; i < n; i++) {
+                    //                        this->parameters_m[i]->UpdateValue(x_[i]);
+                    //                        this->x[i] = x_[i];
+                    //                        g[i] = this->gradient[i];
+                    //                        wg[i] = this->parameters_m[i]->GetScaledGradient(this->parameters_m[i]->GetInternalValue()) * this->gradient[i];
+                    //                        wg_[i] = wg[i];
+                    //                    }
+
+
+
+
                 } else {
 
                     for (int i = 0; i < n; i++) {
-                        this->parameters_m[i]->UpdateValue(x[i]);
-                        this->x[i] = x[i];
+                        this->parameters_m[i]->UpdateValue(x_[i]);
+                        this->x[i] = x_[i];
                     }
 
 
 
                     atl::Variable<T>::SetRecording(false);
                     previous_function_value = f.GetValue();
+                    f = 0.0;
                     this->CallObjectiveFunction(f);
                     fx = f.GetValue();
                     this->function_value = f.GetValue();
@@ -2181,14 +2203,18 @@ namespace atl {
                 }
 
 
-            } while ((iv[0]) < 3);
+                this->outer_iteration++;
+
+            } while (this->outer_iteration < this->max_iterations || (iv[0]) < 3);
+
             for (int i = 0; i < n; i++) {
-                this->parameters_m[i]->UpdateValue(x[i]);
-                this->x[i] = x[i];
+                this->parameters_m[i]->UpdateValue(x_[i]);
+                this->x[i] = x_[i];
             }
 
             atl::Variable<T>::SetRecording(true);
             atl::Variable<T>::tape.Reset();
+            f = 0.0;
             this->CallObjectiveFunction(f);
             fx = f.GetValue();
             this->function_value = f.GetValue();
@@ -2199,6 +2225,7 @@ namespace atl {
             if (this->maxgc <= this->tolerance) {
                 return true;
             }
+
             return false;
         }
 
@@ -2260,10 +2287,10 @@ namespace atl {
 
                     if (err < error) {
                         error_change = error - err;
-                        lambda *= T(.5); // T(10.0);
+                        lambda /= T(10.0);
                     } else {
                         error_change = err - error;
-                        lambda *= T(2.0); //T(10.0);
+                        lambda *= T(10.0);
                     }
                     error = err;
                     previous = this->function_value;
@@ -2340,6 +2367,7 @@ namespace atl {
                 cs_free(hessian);
 
                 if (this->maxgc <= this->tolerance) {
+                    this->Print();
                     return true;
                 }
                 if (iter == 1 || (iter % 10) == 0) {
@@ -2352,6 +2380,7 @@ namespace atl {
                 }
             }
 
+            this->Print();
 
             return false;
         }
@@ -2442,8 +2471,14 @@ namespace atl {
         bool callback(const cppoptlib::Criteria<T> &state, const TVector & x) {
             this->OR->outer_iteration = state.iterations - 1;
             if (((state.iterations - 1) % 10) == 0 || (state.iterations - 1) == 1) {
+
+                std::cout << "Gradient norm = " << state.gradNorm << "\n";
                 this->OR->Print();
             }
+
+            //            if(state.gradNorm <= 1e-3){
+            //                return false;
+            //            }
 
             return true;
         }
@@ -2456,7 +2491,9 @@ namespace atl {
         virtual bool Evaluate() {
             this->gradient.resize(this->parameters_m.size());
             this->x.resize(this->parameters_m.size());
-            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<T>::defaults();
+            crit.iterations = this->max_iterations;
+
             cppoptlib::LbfgsSolver<Objective_Function2<T> > min;
             min.setStopCriteria(crit);
             Objective_Function2<T> of;
@@ -2473,6 +2510,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2484,8 +2522,10 @@ namespace atl {
         virtual bool Evaluate() {
             this->gradient.resize(this->parameters_m.size());
             this->x.resize(this->parameters_m.size());
-            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<T>::defaults();
+
             cppoptlib::BfgsSolver<Objective_Function2<T> > min;
+            crit.iterations = this->max_iterations;
             min.setStopCriteria(crit);
             Objective_Function2<T> of;
             of.OR = this;
@@ -2501,6 +2541,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2512,7 +2553,8 @@ namespace atl {
         virtual bool Evaluate() {
             this->gradient.resize(this->parameters_m.size());
             this->x.resize(this->parameters_m.size());
-            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<T>::defaults();
+            crit.iterations = this->max_iterations;
             cppoptlib::GradientDescentSolver<Objective_Function2<T> > min;
             min.setStopCriteria(crit);
             Objective_Function2<T> of;
@@ -2529,6 +2571,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2540,7 +2583,8 @@ namespace atl {
         virtual bool Evaluate() {
             this->gradient.resize(this->parameters_m.size());
             this->x.resize(this->parameters_m.size());
-            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
+            cppoptlib::Criteria<T> crit = cppoptlib::Criteria<T>::defaults();
+            crit.iterations = this->max_iterations;
             cppoptlib::ConjugatedGradientDescentSolver<Objective_Function2<T> > min;
             min.setStopCriteria(crit);
             Objective_Function2<T> of;
@@ -2557,6 +2601,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2586,6 +2631,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2600,6 +2646,7 @@ namespace atl {
             cppoptlib::Criteria<T> crit = cppoptlib::Criteria<double>::defaults();
             cppoptlib::NewtonDescentSolver<Objective_Function2<T> > min;
             min.setStopCriteria(crit);
+
             Objective_Function2<T> of;
             of.OR = this;
             //            of.iprint = iprint;
@@ -2614,6 +2661,7 @@ namespace atl {
                 this->x[i] = this->parameters_m[i]->GetValue();
             }
             min.minimize(of, xx);
+            this->Print();
         }
 
     };
@@ -2649,7 +2697,7 @@ namespace atl {
      */
 #endif
 
-   template<typename T>
+    template<typename T>
     struct Chromosome {
         std::vector<T> x;
         T fitness;
@@ -2792,7 +2840,8 @@ namespace atl {
         T mutation_probablility = .7;
         T probability_of_crossover = .7;
         T delta = 0.90; //jumps for mutation
-        bool elitism = false; 
+        bool elitism = false;
+
         bool Evaluate() {
             this->seed = time(NULL);
             //            this->population_size_m = this->parameters_m.size();
@@ -2863,21 +2912,21 @@ namespace atl {
                     this->Print();
                 }
             }
-            
+
             int min_index = 0;
-            for(int i =0; i < this->population_m.size(); i++){
-                if(this->population_m[i].fitness < this->population_m[min_index].fitness){
+            for (int i = 0; i < this->population_m.size(); i++) {
+                if (this->population_m[i].fitness < this->population_m[min_index].fitness) {
                     min_index = i;
                 }
             }
-            
-            for(int i =0; i < this->parameters_m.size(); i++){
+
+            for (int i = 0; i < this->parameters_m.size(); i++) {
                 this->parameters_m[i]->SetValue(this->population_m[min_index].x[i]);
             }
-            
+
             atl::Variable<T> fx;
             this->objective_function_m->Objective_Function(fx);
-            
+
 
         }
     };
