@@ -125,7 +125,7 @@ namespace atl {
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
-            throw std::exception("floor not available for complex numbers");
+            throw std::invalid_argument("floor not available for complex numbers");
             //            return std::floor(expr_m.ComplexEvaluate(x, h));
         }
 
