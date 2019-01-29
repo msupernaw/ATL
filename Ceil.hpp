@@ -55,7 +55,7 @@ namespace atl {
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
-           throw std::exception("ceil not available for complex numbers");
+           throw std::invalid_argument("ceil not available for complex numbers");
 //            return std::ceil(expr_m.ComplexEvaluate(x, h));
         }
 
