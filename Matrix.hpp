@@ -78,7 +78,7 @@ namespace atl {
                 for (size_t j = 0; j < m.columns; j++) {
                     atl::StackEntry<T>& entry = atl::Variable<T>::tape.stack[index_start++];
 
-                    exp.PushIds(entry.ids,i,j);
+                    exp.PushIds(entry.ids, i, j);
 
                     entry.w = m.data_m[i * m.columns + j].info;
                     entry.w->count++;
@@ -437,7 +437,7 @@ namespace atl {
         }
 
 #ifdef ATL_USE_THREAD_POOL
-        
+
         /**
          * Assignment function for concurrent assignment. This function 
          * guarantees proper tape recording by reserving a block of entries from
@@ -486,6 +486,7 @@ namespace atl {
             }
         }
 #endif
+
         void Resize(size_t rows, size_t columns) {
             this->rows = rows;
             this->columns = columns;
@@ -543,7 +544,7 @@ namespace atl {
          * @param i
          * @return 
          */
-        const atl::VariableRowVector<T> Row(size_t i)  {
+        const atl::VariableRowVector<T> Row(size_t i) {
             return atl::VariableRowVector<T>(i, this->columns, this->data_m);
         }
 
@@ -776,6 +777,7 @@ namespace atl {
         }
 
 #ifdef ATL_USE_THREAD_POOL
+
         template<class A>
         inline void AssignConcurrent(const ExpressionBase<T, A>& exp) {
             this->columns = exp.GetColumns();
@@ -811,7 +813,7 @@ namespace atl {
 
 
         }
-        
+
 #endif
 
         inline void PushIds(typename atl::StackEntry<T>::vi_storage& ids)const {
@@ -923,6 +925,24 @@ namespace atl {
         size_t columns;
 
         std::vector<T, atl::clfallocator<T > > data_m;
+
+        RealMatrix(const RealMatrix<T>& other) :
+        rows(other.rows), columns(other.columns), data_m(other.data_m) {
+        }
+
+        RealMatrix<T>& operator=(const RealMatrix<T>& right) {
+            // Check for self-assignment!
+            if (this == &right) // Same object?
+                return *this; // Yes, so skip assignment, and just return *this.
+
+            this->rows = right.rows;
+            this->columns = right.columns;
+            this->data_m.resize(right.data_m.size());
+            for (int i = 0; i < right.data_m.size(); i++)
+                this->data_m[i] = right.data_m[i];
+
+            return *this;
+        }
 
         /**
          * Constructor.
@@ -1166,7 +1186,7 @@ namespace atl {
          * @param i
          * @return 
          */
-        const atl::RealRowVector<T> Row(size_t i)  {
+        const atl::RealRowVector<T> Row(size_t i) {
             return atl::RealRowVector<T>(i, this->columns, this->data_m);
         }
 
@@ -1244,6 +1264,7 @@ namespace atl {
             return false;
         }
 #ifdef ATL_USE_SSE
+
         static inline void MatrixMultiplySIMD(atl::RealMatrix<double>& m1,
                 atl::RealMatrix<double>& m2,
                 atl::RealMatrix<double>& result) {
