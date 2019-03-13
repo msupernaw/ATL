@@ -192,3 +192,13 @@ text-align: center;
     justify-content: flex-end;
     margin-bottom: 25px;
 }
+
+ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+}
+
+li{
+  line-height:20px;
+}
