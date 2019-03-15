@@ -2,7 +2,7 @@
 .container{
     display: flex;
     flex-direction:column;
-
+    height: 100%;
   color:#3F51B5;
   margin:60px;
 
@@ -81,12 +81,12 @@ margin-bottom:20px;
 width: auto;
 height: 45px;
 color: #3F51B5;
-font-size: 14px;
 font-weight: bold;
 font-style: normal;
 text-decoration: none;
 text-align: left;
 margin-right: auto;
+line-height: 30px;
 }
 
 .pdfIcon{
@@ -111,10 +111,10 @@ font-size: 24px;
 font-weight: normal;
 border: none;
 background-image: url("./icons8-github-32.png");
-border: 1px solid black;
+border: 1px solid #00000066;
 background-repeat: no-repeat;
 background-size: cover;
-border-radius: 2px;
+border-radius: 4px;
 }
 
 .versionButton{
@@ -155,12 +155,12 @@ text-align: left;
 .mainText {
 
 width: auto;
-height: 204px;
+min-height: 250px;
 color: #000000;
 font-family: sans-serif;
 font-size: 18px;
 text-align: left;
-padding: 5px;
+padding-top: 15px;
 line-height: 22px;
 }
 
