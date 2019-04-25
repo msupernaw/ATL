@@ -69,6 +69,12 @@ namespace atl {
             return ret; //(++_id);
         }
 
+        void reset(){
+            this->available = std::stack<uint32_t>();
+            available_size =0;
+            _id =1;
+        }
+        
         void release(const uint32_t& id) {
 #ifdef ATL_THREAD_SAFE
             lock.lock();
