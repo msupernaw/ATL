@@ -632,7 +632,11 @@ namespace atl {
         }
 
         bool LastPhase() {
-            return this->current_phase == this->max_phase;
+            return this->phase_m == this->max_phase_m;
+        }
+
+        virtual void TransitionPhase() {
+
         }
 
         virtual void Objective_Function(atl::Variable<T>& ff) {
@@ -864,7 +868,7 @@ namespace atl {
     public:
 
         uint32_t max_line_searches = 1000;
-        uint32_t max_iterations = 10000;
+        uint32_t max_iterations = 1000;
         size_t max_history = 1000;
         int print_width = 3;
         int print_interval = 10;
@@ -905,7 +909,9 @@ namespace atl {
             for (int i = 1; i <= this->objective_function_m->max_phase_m; i++) {
                 this->Prepare(i);
                 phase_m = i;
+
                 success = this->Evaluate();
+                this->objective_function_m->TransitionPhase();
             }
             return success;
         }
@@ -1028,7 +1034,7 @@ namespace atl {
                 auto inner_start = std::chrono::steady_clock::now();
 #endif
                 std::cout << "Inner Minimization:\n";
-                if (this->NewtonInner(10, 1e-4)) {
+                if (this->NewtonInner(1000, 1e-4)) {
                     std::cout << "Inner converged.\n";
                     std::cout << "Inner f = " << this->inner_function_value << "\n";
                     std::cout << "Inner maxg = " << this->inner_maxgc << "\n";
@@ -1899,7 +1905,7 @@ namespace atl {
 
             std::valarray<T> p(this->max_history);
             std::valarray<T>a(this->max_history);
-
+            int no_progress_count = 0;
             int i;
             for (int iteration = 0; iteration < this->max_iterations; iteration++) {
                 i = iteration;
@@ -1967,7 +1973,7 @@ namespace atl {
 
 
 
-
+                T fv = this->function_value;
                 if (!this->line_search(this->parameters_m,
                         this->function_value,
                         this->x,
@@ -1980,6 +1986,12 @@ namespace atl {
                     std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
                     return false;
 
+                }
+                if ((fv - this->function_value) == 0.0 && no_progress_count == 5) {
+                    std::cout << "Not progressing...bailing out!\n";
+                    return false;
+                }else{
+                    no_progress_count++;
                 }
 
             }
@@ -2834,7 +2846,7 @@ namespace atl {
     public:
 
         std::mt19937 rng;
-        int seed = 40901120730;
+        size_t seed = 40901120730;
         size_t population_size_m = 1000;
         size_t number_of_generations_m = 101;
         std::vector<Chromosome<T> > population_m;
