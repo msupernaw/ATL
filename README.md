@@ -1,5 +1,5 @@
 # ATL
-The Analytics Template Library (ATL) is a header-only library for gradient-based optimization. 
+* **The Analytics Template Library (ATL)** is a header-only library for gradient-based optimization. 
 
 ## Disclaimer
 
