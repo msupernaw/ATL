@@ -1,6 +1,6 @@
 
 #include "../../../ATL.hpp"
-
+#include "../../../Utilities/IO/StreamedDataFile.hpp"
 
 template<typename T>
 class ThetaLog : public atl::ObjectiveFunction<T> {
@@ -54,9 +54,6 @@ public:
             this->RegisterRandomVariable(X[i]);
         }
         
-        //        while(true){
-        //
-        //        }
     }
     
     const atl::Variable<T> dnorm(const atl::Variable<T>& x,
@@ -125,7 +122,7 @@ int main(int argc, char** argv) {
     objective_function.Initialize();
     
     //create an instance of a L-BFGS minimizer
-    atl::PortMinimizer<REAL> fm;
+    atl::LBFGS<REAL> fm;
     
     //set the objective function
     fm.SetObjectiveFunction(&objective_function);
