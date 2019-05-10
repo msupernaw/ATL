@@ -1,4 +1,5 @@
 #include "../../../ATL.hpp"
+#include "../../../Utilities/IO/StreamedDataFile.hpp"
 
 
 template<typename T>
@@ -147,31 +148,76 @@ public:
         return ret;
     }
     
+    const std::valarray<atl::Variable<T> > dnorm(const std::vector<atl::Variable<T> > & x,
+                                 const atl::Variable<T>& mean,
+                                 const atl::Variable<T>& sd, int give_log = 0) {
+        if (sd.GetValue() == 0.0) {
+            throw std::overflow_error("Divide by zero exception");
+        }
+        std::valarray<atl::Variable<T> > ret(x.size());
+        for(int i =0; i < x.size(); i++){
+            ret[i] = variable();
+            ret[i] = static_cast<T> (-1.0) * atl::log(T(sqrt(2 * M_PI)) * sd) - static_cast<T> (.5) * atl::pow((x[i] - mean) / sd, static_cast<T> (2.0));
+            if (!give_log){
+                ret[i] = atl::exp(ret[i]);
+            }
+            
+        }
+        
+        return ret;
+    }
+    
+    const atl::Variable<T> dnorm(const atl::Variable<T>& x,
+                                 const atl::Variable<T>& mean,
+                                 const atl::Variable<T>& sd, int give_log = 0) {
+        if (sd.GetValue() == 0.0) {
+            throw std::overflow_error("Divide by zero exception");
+        }
+        
+        atl::Variable<T> logres = static_cast<T> (-1.0) * atl::log(T(sqrt(2 * M_PI)) * sd) - static_cast<T> (.5) * atl::pow((x - mean) / sd, static_cast<T> (2.0));
+        if (give_log)return logres;
+        else return atl::exp(logres);
+    }
+    
     virtual const atl::Variable<T> Evaluate() {
-        
-        variable f = 0.0;
-     
-        
+        int M = y.size();  // number of individuals
+        int n = y[0].size();  // number of time steps
+        variable jnll = 0.0;
         sigma = atl::exp(logSigma);
         sigmaB = atl::exp(logSigmaB);
         
-        
-        RSS = 0;
-        RSS.SetName("RSS");
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                yfit[i][j] = (phi1 + b[i]) / (1.0 + atl::exp(-1.0 * (x[j] - phi2) / phi3));
-                RSS += (y[i][j] - yfit[i][j])*(y[i][j] - yfit[i][ j]);
+        for (int i=0; i<M; i++)  // individuals
+        {
+            for (int j=0; j<n; j++)  // time steps
+            {
+                yfit[i][j] = (phi1 + b[i]) / (1.0 + atl::exp(-1.0*(x[j]-phi2)/phi3));
+                jnll += -dnorm(y[i][j], yfit[i][j], sigma, true);
             }
         }
-        variable sumb = sum(square(b));
-        f = 0.5 * M * N * log(2.0 * M_PI) + T(M * N) * logSigma + RSS / (2.0 * (sigma * sigma));
-        f += 0.5 * M * log(2.0 * M_PI) + T(M) * logSigmaB + sumb / (2.0 * (sigmaB * sigmaB));
-      
-        return f;
+        jnll += -sum(dnorm(b, variable(0.0), sigmaB, true));
+//        variable f = 0.0;
+//
+//
+//        sigma = atl::exp(logSigma);
+//        sigmaB = atl::exp(logSigmaB);
+//
+//
+//        RSS = 0;
+//        RSS.SetName("RSS");
+//        for (int i = 0; i < M; i++) {
+//            for (int j = 0; j < N; j++) {
+//                yfit[i][j] = (phi1 + b[i]) / (1.0 + atl::exp(-1.0 * (x[j] - phi2) / phi3));
+//                RSS += (y[i][j] - yfit[i][j])*(y[i][j] - yfit[i][ j]);
+//            }
+//        }
+//        variable sumb = sum(square(b));
+//        f = 0.5 * M * N * log(2.0 * M_PI) + T(M * N) * logSigma + RSS / (2.0 * (sigma * sigma));
+//        f += 0.5 * M * log(2.0 * M_PI) + T(M) * logSigmaB + sumb / (2.0 * (sigmaB * sigmaB));
+//
+        return jnll;
     }
     
-    virtual void ObjectiveFunction(atl::Variable<T>& f) {
+    virtual void Objective_Function(atl::Variable<T>& f) {
         f = this->Evaluate();
     }
     
@@ -192,10 +238,13 @@ int main(int argc, char** argv) {
     objective_function.Initialize();
     
     //create an instance of a L-BFGS minimizer
-    atl::PortMinimizer<REAL> fm;
+    atl::LBFGS<REAL> fm;
     
     //set the objective function
     fm.SetObjectiveFunction(&objective_function);
+    
+    //set output width to 2
+    fm.SetPrintWidth(2);
     
     //run the minimizer
     fm.Run();
