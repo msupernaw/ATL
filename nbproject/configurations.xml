@@ -4,53 +4,94 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp</itemPath>
-      <itemPath>DynamicExpression.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp</itemPath>
-      <itemPath>Tests/FunctionMinimizerTests.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp</itemPath>
-      <itemPath>MatrixUtilities.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp</itemPath>
-      <itemPath>Sign.h</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp</itemPath>
-      <itemPath>Transformations.h</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp</itemPath>
-      <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h</itemPath>
+      <logicalFolder name="ATL" displayName="ATL" projectFiles="true">
+        <logicalFolder name="support" displayName="support" projectFiles="true">
+          <itemPath>ATL/support/cs_sparse.hpp</itemPath>
+          <itemPath>ATL/support/port.hpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="third_party" displayName="third_party" projectFiles="true">
+          <itemPath>ATL/third_party/HashContainers.hpp</itemPath>
+          <itemPath>ATL/third_party/get_numericalsolvers.sh</itemPath>
+        </logicalFolder>
+        <logicalFolder name="Utilities" displayName="Utilities" projectFiles="true">
+          <logicalFolder name="IO" displayName="IO" projectFiles="true">
+            <itemPath>ATL/Utilities/IO/Console.hpp</itemPath>
+            <itemPath>ATL/Utilities/IO/StreamedDataFile.hpp</itemPath>
+          </logicalFolder>
+          <itemPath>ATL/Utilities/BigFloat.hpp</itemPath>
+          <itemPath>ATL/Utilities/CLFAllocator.hpp</itemPath>
+          <itemPath>ATL/Utilities/Combinations.hpp</itemPath>
+          <itemPath>ATL/Utilities/MemoryPool.hpp</itemPath>
+          <itemPath>ATL/Utilities/Platform.hpp</itemPath>
+          <itemPath>ATL/Utilities/Plots.hpp</itemPath>
+          <itemPath>ATL/Utilities/Profile.hpp</itemPath>
+          <itemPath>ATL/Utilities/Profiler.hpp</itemPath>
+          <itemPath>ATL/Utilities/SIMD.hpp</itemPath>
+          <itemPath>ATL/Utilities/StdMath.hpp</itemPath>
+          <itemPath>ATL/Utilities/StringUtil.hpp</itemPath>
+          <itemPath>ATL/Utilities/compressed_vector.hpp</itemPath>
+          <itemPath>ATL/Utilities/flat_map.hpp</itemPath>
+          <itemPath>ATL/Utilities/flat_set.hpp</itemPath>
+          <itemPath>ATL/Utilities/lazyflatset.hpp</itemPath>
+          <itemPath>ATL/Utilities/short_alloc.hpp</itemPath>
+          <itemPath>ATL/Utilities/small_set.hpp</itemPath>
+        </logicalFolder>
+        <itemPath>ATL/ACos.hpp</itemPath>
+        <itemPath>ATL/ASin.hpp</itemPath>
+        <itemPath>ATL/ATL.hpp</itemPath>
+        <itemPath>ATL/ATL_RSD.docx</itemPath>
+        <itemPath>ATL/ATan.hpp</itemPath>
+        <itemPath>ATL/Add.hpp</itemPath>
+        <itemPath>ATL/CLFAllocator.hpp</itemPath>
+        <itemPath>ATL/Ceil.hpp</itemPath>
+        <itemPath>ATL/Cos.hpp</itemPath>
+        <itemPath>ATL/Cosh.hpp</itemPath>
+        <itemPath>ATL/DerivativeChecker.hpp</itemPath>
+        <itemPath>ATL/Divide.hpp</itemPath>
+        <itemPath>ATL/DynamicExpression.hpp</itemPath>
+        <itemPath>ATL/Exp.hpp</itemPath>
+        <itemPath>ATL/Expression.hpp</itemPath>
+        <itemPath>ATL/Fabs.hpp</itemPath>
+        <itemPath>ATL/Floor.hpp</itemPath>
+        <itemPath>ATL/FunctionMinimizer.hpp</itemPath>
+        <itemPath>ATL/Helpers.hpp</itemPath>
+        <itemPath>ATL/LICENSE.md</itemPath>
+        <itemPath>ATL/Live-variables-Hessian.pdf</itemPath>
+        <itemPath>ATL/Log.hpp</itemPath>
+        <itemPath>ATL/Log10.hpp</itemPath>
+        <itemPath>ATL/Makefile</itemPath>
+        <itemPath>ATL/Matrix.hpp</itemPath>
+        <itemPath>ATL/MatrixUtilities.hpp</itemPath>
+        <itemPath>ATL/MinMax.hpp</itemPath>
+        <itemPath>ATL/Multiply.hpp</itemPath>
+        <itemPath>ATL/Optimization.hpp</itemPath>
+        <itemPath>ATL/Optimization.hpp_backup</itemPath>
+        <itemPath>ATL/Optimization.hpp_backup2</itemPath>
+        <itemPath>ATL/Platform.hpp</itemPath>
+        <itemPath>ATL/Pow.hpp</itemPath>
+        <itemPath>ATL/README.md</itemPath>
+        <itemPath>ATL/Real.hpp</itemPath>
+        <itemPath>ATL/SIMD.hpp</itemPath>
+        <itemPath>ATL/Serialize.hpp</itemPath>
+        <itemPath>ATL/Sign.h</itemPath>
+        <itemPath>ATL/Sin.hpp</itemPath>
+        <itemPath>ATL/Sinh.hpp</itemPath>
+        <itemPath>ATL/Sqrt.hpp</itemPath>
+        <itemPath>ATL/Subtract.hpp</itemPath>
+        <itemPath>ATL/Tan.hpp</itemPath>
+        <itemPath>ATL/Tanh.hpp</itemPath>
+        <itemPath>ATL/Tape.hpp</itemPath>
+        <itemPath>ATL/ThreadPool.hpp</itemPath>
+        <itemPath>ATL/Traits.hpp</itemPath>
+        <itemPath>ATL/Transformations.h</itemPath>
+        <itemPath>ATL/Variable.hpp</itemPath>
+        <itemPath>ATL/VariableInfo.hpp</itemPath>
+        <itemPath>ATL/Vector.hpp</itemPath>
+        <itemPath>ATL/ad_cmath.hpp</itemPath>
+        <itemPath>ATL/clfmalloc.h</itemPath>
+        <itemPath>ATL/higher_order_rm_ad.pdf</itemPath>
+        <itemPath>ATL/notes.txt</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -71,11 +112,10 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>Optimization.hpp</itemPath>
-    <itemPath>/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>/Users/matthewsupernaw/NetBeansProjects/ATL_v2</Elem>
+    <Elem>ATL</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -101,232 +141,170 @@
           </linkerDynSerch>
         </linkerTool>
       </compileType>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
+      <item path="ATL/ACos.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ASin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATL.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATan.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Add.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Ceil.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Cos.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Cosh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Divide.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Exp.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Expression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Fabs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Floor.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Helpers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/LICENSE.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Log.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Log10.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Matrix.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/MinMax.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Multiply.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Platform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Pow.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Real.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Serialize.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sign.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sinh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sqrt.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Subtract.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tan.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tanh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tape.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Traits.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Transformations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/IO/StreamedDataFile.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp"
+      <item path="ATL/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/compressed_vector.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp"
+      <item path="ATL/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Variable.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Vector.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/clfmalloc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/notes.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/support/port.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/third_party/get_numericalsolvers.sh"
             ex="false"
             tool="3"
             flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Sign.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Tests/FunctionMinimizerTests.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -362,232 +340,170 @@
           </linkerDynSerch>
         </linkerTool>
       </compileType>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ACos.hpp"
+      <item path="ATL/ACos.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ASin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATL.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ATan.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Add.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Ceil.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Cos.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Cosh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Divide.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Exp.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Expression.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Fabs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Floor.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Helpers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/LICENSE.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Log.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Log10.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Matrix.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/MinMax.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Multiply.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Platform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Pow.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Real.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Serialize.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sign.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sinh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Sqrt.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Subtract.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tan.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tanh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Tape.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Traits.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Transformations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/IO/StreamedDataFile.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ASin.hpp"
+      <item path="ATL/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/compressed_vector.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATL.hpp"
+      <item path="ATL/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Variable.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/Vector.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/clfmalloc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/notes.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/support/port.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ATL/third_party/get_numericalsolvers.sh"
             ex="false"
             tool="3"
             flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ATan.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Add.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/CLFAllocator.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Ceil.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cos.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Cosh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Divide.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Exp.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Expression.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Fabs.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Floor.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/FunctionMinimizer.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Helpers.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Log10.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Matrix.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/MinMax.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Multiply.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Platform.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Pow.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Real.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/SIMD.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Serialize.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sin.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sinh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Sqrt.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Subtract.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tan.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tanh.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tape.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Tests/AutoDiffTests.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ThreadPool.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Traits.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Variable.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/VariableInfo.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/Vector.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/ad_cmath.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/clfmalloc.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/notes.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="/Users/matthewsupernaw/NetBeansProjects/ATL_v2/third_party/HashContainers.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Optimization.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Sign.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Tests/FunctionMinimizerTests.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

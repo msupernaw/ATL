@@ -19,7 +19,7 @@
 #include <sstream>
 #include <iostream>
 #include <random>
-#include "../ATL.hpp"
+#include "../ATL/ATL.hpp"
 #include <cmath>
 #define HESSIAN_USE_AD_GRADIENT
 

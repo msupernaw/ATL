@@ -1,6 +1,6 @@
 
-#include "../../../ATL.hpp"
-#include "../../../Utilities/IO/StreamedDataFile.hpp"
+#include "../../../ATL/ATL.hpp"
+#include "../../../ATL/Utilities/IO/StreamedDataFile.hpp"
 
 template<typename T>
 class ThetaLog : public atl::ObjectiveFunction<T> {

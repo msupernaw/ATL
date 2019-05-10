@@ -1,5 +1,5 @@
-# ATL
-The Analytics Template Library (ATL) is a header-only library for gradient-based optimization. 
+# ATL2
+ATL with redesigned container module
 
 ## Disclaimer
 
@@ -7,10 +7,5 @@ The Analytics Template Library (ATL) is a header-only library for gradient-based
 
 - This project code is made available through GitHub but is managed by NOAA at
 https://vlab.ncep.noaa.gov/redmine/projects/atl/repository
-
-
-### Resources
-* **Developer's Guide**: https://github.com/msupernaw/ATL/blob/master/docs/draft_developers_guide%20.pdf
-* **Doxygen**: https://msupernaw.github.io/ATL/html/index.html
 
 

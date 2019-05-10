@@ -14,7 +14,7 @@
 #ifndef FUNCTIONMINIMIZERTESTS_HPP
 #define FUNCTIONMINIMIZERTESTS_HPP
 
-#include "../Optimization.hpp"
+#include "../ATL/Optimization.hpp"
 #include <vector>
 
 namespace atl {
