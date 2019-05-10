@@ -124,7 +124,8 @@ namespace atl {
         }
 
         inline const std::complex<REAL_T> ComplexEvaluate(uint32_t x, REAL_T h = 1e-20) const {
-            return std::fabs(expr_m.ComplexEvaluate(x, h));
+        throw std::invalid_argument("no fabs for complex numbers");
+//             return expr_m.ComplexEvaluate(x, h);//std::fabs(expr_m.ComplexEvaluate(x, h));
         }
 
         inline const REAL_T Taylor(uint32_t degree) const {
