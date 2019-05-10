@@ -29,23 +29,23 @@ public:
     
     virtual void Initialize() {
         
+        //open data file
         atl::StreamedDataFile data;
         data.open("orange.dat");
         
-        atl::StreamedDataFile pin;
-        pin.open("orange.pin");
+        //read data
         data >> M;
         data >> N;
         
-        //        phi1 = 200.0;
+        //open parameters file
+        atl::StreamedDataFile pin;
+        pin.open("orange.pin");
+        
+        //read initial parameter values
         pin>>phi1;
-        //        phi2 = 800.0;
         pin>>phi2;
-        //        phi3 = 400.0;
         pin>>phi3;
-        //        logSigma = 1.0;
         pin>>logSigma;
-        //        logSigmaB = 0.0;
         pin>>logSigmaB;
         
         
@@ -68,7 +68,7 @@ public:
         }
         b.resize(M);
         for (int i = 0; i < M; i++) {
-            b[i] = 0.000; //variable(0.000);
+            b[i] = variable(0.000);
         }
         
         for (int i = 0; i < M; i++) {
