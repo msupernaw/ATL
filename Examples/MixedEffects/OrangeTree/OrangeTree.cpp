@@ -195,25 +195,7 @@ public:
             }
         }
         jnll += -sum(dnorm(b, variable(0.0), sigmaB, true));
-//        variable f = 0.0;
-//
-//
-//        sigma = atl::exp(logSigma);
-//        sigmaB = atl::exp(logSigmaB);
-//
-//
-//        RSS = 0;
-//        RSS.SetName("RSS");
-//        for (int i = 0; i < M; i++) {
-//            for (int j = 0; j < N; j++) {
-//                yfit[i][j] = (phi1 + b[i]) / (1.0 + atl::exp(-1.0 * (x[j] - phi2) / phi3));
-//                RSS += (y[i][j] - yfit[i][j])*(y[i][j] - yfit[i][ j]);
-//            }
-//        }
-//        variable sumb = sum(square(b));
-//        f = 0.5 * M * N * log(2.0 * M_PI) + T(M * N) * logSigma + RSS / (2.0 * (sigma * sigma));
-//        f += 0.5 * M * log(2.0 * M_PI) + T(M) * logSigmaB + sumb / (2.0 * (sigmaB * sigmaB));
-//
+
         return jnll;
     }
     
