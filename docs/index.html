@@ -19,7 +19,7 @@
               </div>
               
               
-              <div class = "badge" data-md-tooltip="Not Validated" id="greycheck">
+              <div class = "badge" data-md-tooltip="Support Level" id = internal_active >
               <!-- &#10039; -->
               </div>
               
@@ -47,14 +47,13 @@
               
 
               
-              <a href= "https://github.com/msupernaw/ATL" target="_blank" title="link to code repository">
+              <a href= "https://github.com/nmfs-general-modeling-tools/ATL" target="_blank" title="link to code repository">
                 <button class = "codelink">
                 Code Repository
                 </button>
               </a>
               
-              <button class = "IconButton" title="need support?">
-                ?
+              <button class = "IconButton" title="e-mail fisheries.toolbox@noaa.gov" id ="email" onclick='location.href= "mailto:fisheries.toolbox@noaa.gov;"'>
               </button>
 
         </div>
@@ -69,32 +68,35 @@
 
               </div>
 
+
               
               <a class = "pdfIcon" title="download pdf"
-                href="./drafet_developers_guide .pdf" download>
+                href="./draft_developers_guide.pdf" download>
               </a>
               
 
-              <!-- <a class = "githubIcon" href="https://github.com/msupernaw/ATL" target="_blank"></a> -->
+              <!-- <a class = "githubIcon" href="https://github.com/nmfs-general-modeling-tools/ATL" target="_blank"></a> -->
 
               <button class = "versionButton">
               Version 1.0
               </button>
         </div>
+
         <div class ="label">
             
-             Type: model builder
+             Type: Model Builder
             
         </div>
 
         <div class = "authName">
-         author: Matthew Supernaw
+         Author: Matthew Supernaw
 
         </div >
 
         <div class ="mainText">
            The Analytics Template Library (ATL) is a scientific computing library with an emphasis on gradient based optimization. ATL leverages the power of template metaprogramming for flexibility, extensibility, and speed. This guide is intended to give the user a basic understanding of how to develop programs in ATL. The information in this document is intended for anyone interested in scientific computing in C++ and it is expected that the reader will have a basic understanding of the C++ programming language, as well as scientific computing.
         </div>
+
         <div class="mainText">
         
           <div class = "ref">
@@ -115,14 +117,30 @@
             </ul>
           
 
+
           
-            </div>
+
+            
+              <div class = "ref">
+            Code Repository Badges
+          </div>
+             
+
+          </div>
       </div>
 
       <div class = "divider"></div>
-<!--         <footer><a class ="mylink" href="https://www.commerce.gov/">U.S. Department of Commerce</a>
-    <a class ="mylink" href="https://www.noaa.gov">National Oceanographic and Atmospheric Administration</a>
-    <a class ="mylink" href="https://www.fisheries.noaa.gov/">NOAA Fisheries</a></footer> -->
+
+        <footer >
+             <img src="./static/noaa-fisheries-rgb-2line-horizontal-small.png" height="75px">
+         <div class="mywrap_center">
+          <a class ="mylink" id = "line" href="https://www.commerce.gov/">U.S. Department of Commerce</a>
+         <a class ="mylink" id = "line" href="https://www.noaa.gov">National Oceanographic and Atmospheric Administration</a>
+         <a class ="mylink" href="https://www.fisheries.noaa.gov/">NOAA Fisheries</a>
+         </div>
+
+        </footer>
+        <div class ="attribution">Icons by icons8 https://icons8.com/</div>
 
     </div>
 
