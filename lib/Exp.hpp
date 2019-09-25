@@ -323,6 +323,31 @@ namespace atl {
     }
 
 
+  /**
+     * function used to protect overflow in exp calculations.
+     *
+     * Author: Dave Fournier.
+     * Original implementation in ADMB.
+     *
+     * Source: http://admb-project.org/documentation/api/mfexp_8cpp_source.html
+     *
+     * @param expr
+     */
+    template<class REAL_T, class EXPR>
+    inline const atl::Variable<REAL_T> mfexp(const atl::ExpressionBase<REAL_T, EXPR>& expr) {
+
+        REAL_T b = REAL_T(60.0);
+        if (expr.GetValue() <= b && expr.GetValue() >= REAL_T(-1) * b) {
+            return atl::exp(expr);
+        } else if (expr.GetValue() > b) {
+            return /*std::exp(b)*/EXP_OF_B * (REAL_T(1.) + REAL_T(2.) * (expr - b)) / (REAL_T(1.) + expr - b);
+        } else {
+            return std::exp(REAL_T(-1) * b)*(REAL_T(1.) - expr - b) / (REAL_T(1.) + REAL_T(2.) * (REAL_T(-1) * expr - b));
+        }
+    }
+
+
+
 
 }//end namespace atl
 
