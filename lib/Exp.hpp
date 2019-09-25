@@ -35,6 +35,8 @@
 
 #include "Expression.hpp"
 
+#define EXP_OF_B REAL_T(114200738981568423454048256.0)
+
 namespace atl {
 
     /**
