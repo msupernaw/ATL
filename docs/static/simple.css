@@ -3,7 +3,7 @@
   display: flex;
   flex-direction:column;
   height: 100%;
-  color:##0055A4;
+  color:#0055A4;
   margin:60px 100px;
   font-family: Arial Narrow,Arial,sans-serif;
 
@@ -181,12 +181,12 @@ border-radius: 4px;
 width: 97px;
 height: 45px;
 color: #FFFFFF;
-font-size: 14px;
+font-size: 24px;
 font-weight: bold;
 font-style: normal;
 text-decoration: none;
 text-align: center;
-background: rgba(1,1,1,0.5);
+background: #0093D0;
 border: none;
 border-radius: 21px;
 margin-left: auto;
