@@ -32,9 +32,7 @@
 
 namespace atl {
 
-    
-    
-     /**
+    /**
      * Base class for parameter transformations. Used in optimization
      * problems involving bounded parameters.
      * @param val
@@ -139,13 +137,13 @@ namespace atl {
     public:
 
         virtual REAL_T External2Internal(REAL_T val, REAL_T min_, REAL_T max_)const {
-            if(val == min_){
-                val+=std::numeric_limits<REAL_T>::epsilon();
-            }else if(val == max_){
-                val-=std::numeric_limits<REAL_T>::epsilon();
+            if (val == min_) {
+                val += std::numeric_limits<REAL_T>::epsilon();
+            } else if (val == max_) {
+                val -= std::numeric_limits<REAL_T>::epsilon();
             }
-            
-            REAL_T p = ((val)- min_) / (max_ - min_);
+
+            REAL_T p = ((val) - min_) / (max_ - min_);
             return std::log(p / (1.0 - p));
         }
 
@@ -155,15 +153,15 @@ namespace atl {
         }
 
         virtual REAL_T DerivativeInternal2External(REAL_T val, REAL_T min_, REAL_T max_)const {
-//            return ((max_-min_)*std::exp(val))/(std::exp(val)+1.0)-((max_-min_)*std::exp((2.0*val)))/std::pow((std::exp(val)+1.0),2.0);
-//            return ((max_−min_)*std::exp(val)/(std::exp(val)+1.0)−((max_−min_)*std::exp((2.0*val))/std::pow(std::exp(val)+1.0),2.0);
+            //            return ((max_-min_)*std::exp(val))/(std::exp(val)+1.0)-((max_-min_)*std::exp((2.0*val)))/std::pow((std::exp(val)+1.0),2.0);
+            //            return ((max_−min_)*std::exp(val)/(std::exp(val)+1.0)−((max_−min_)*std::exp((2.0*val))/std::pow(std::exp(val)+1.0),2.0);
             return (std::exp(val) * std::log(M_E)*(max_ - min_)) / (std::exp(val) + 1.0)-
                     (std::exp(static_cast<REAL_T> (2.0 * val)) * std::log(M_E)*(max_ - min_)) / std::pow((std::exp(val) + 1), 2.0);
         }
     };
 
-    
-    
+
+
 
     template<typename REAL_T>
     struct Variable;
@@ -427,6 +425,7 @@ namespace atl {
                 size_t j = 0;
                 size_t k = 0;
                 entry.wv = exp.GetValue();
+
                 switch (tape.derivative_trace_level) {
 
                     case FIRST_ORDER_REVERSE:
@@ -437,14 +436,14 @@ namespace atl {
                             i++;
                         }
                         break;
-                        
+
                     case FIRST_ORDER_REVERSE_COMPLEX_STEP:
-                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                            entry.min_id = std::min((*it)->id, entry.min_id);
-                            entry.max_id = std::max((*it)->id, entry.max_id);
-                            entry.first[i] = exp.ComplexEvaluate((*it)->id).imag()/1e-20;
-                            i++;
-                        }
+                        //                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                        //                            entry.min_id = std::min((*it)->id, entry.min_id);
+                        //                            entry.max_id = std::max((*it)->id, entry.max_id);
+                        //                            entry.first[i] = exp.ComplexEvaluate((*it)->id).imag()/1e-20;
+                        //                            i++;
+                        //                        }
                         break;
 
                     case SECOND_ORDER_REVERSE:
@@ -518,6 +517,16 @@ namespace atl {
                             entry.max_id = std::max((*it)->id, entry.max_id);
                         }
                         entry.exp = exp.ToDynamic();
+
+                        break;
+
+                    case FIRST_ORDER_FORWARD:
+
+                        break;
+                    case SECOND_ORDER_FORWARD:
+
+                        break;
+                    case THIRD_ORDER_FORWARD:
 
                         break;
                     default:
@@ -626,15 +635,14 @@ namespace atl {
         ParameterTransformation<REAL_T>& GetParameterTransformation() {
             return this->transformation;
         }
-        
+
         /**
          * Returns the variables transformation functor.
          * @return
          */
         void SetParameterTransformation(ParameterTransformation<REAL_T>* trans) {
-             this->transformation = trans;
+            this->transformation = trans;
         }
-
 
         /**
          * Returns the max boundary.
@@ -668,15 +676,15 @@ namespace atl {
          * Sets the min boundary.
          */
         void SetMinBoundary(REAL_T min_boundary) {
-             this->bounded_m = true;
+            this->bounded_m = true;
             this->min_boundary_m = min_boundary;
         }
 
         bool IsBounded() const {
             return this->bounded_m;
         }
-        
-               /**
+
+        /**
          * Sets the boundary values for this variable. 
          * 
          * @param min_boundary
@@ -992,7 +1000,7 @@ namespace atl {
     bool Variable<REAL_T>::show = false;
 
     template<typename REAL_T>
-    std::shared_ptr<ParameterTransformation<REAL_T> > Variable<REAL_T>::default_transformation(new atl::LogitParameterTransformation<double>());
+    std::shared_ptr<ParameterTransformation<REAL_T> > Variable<REAL_T>::default_transformation(new atl::LogitParameterTransformation<REAL_T>());
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const Variable<REAL_T>& v) {

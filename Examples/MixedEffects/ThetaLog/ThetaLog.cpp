@@ -1,6 +1,6 @@
 
-#include "../../../ATL/ATL.hpp"
-#include "../../../ATL/Utilities/IO/StreamedDataFile.hpp"
+#include "../../../ATL.hpp"
+#include "../../../lib/Utilities/IO/StreamedDataFile.hpp"
 
 template<typename T>
 class ThetaLog : public atl::ObjectiveFunction<T> {
@@ -49,14 +49,30 @@ public:
         logQ.SetName("logQ");
         this->RegisterParameter(logR);
         logR.SetName("logR");
+    
         
         for (int i = 0; i < X.size(); i++) {
+            X[i] = atl::Variable<T>();
+            X[i].SetName("X");
             this->RegisterRandomVariable(X[i]);
+            std::cout<<X[i].info->id<<"\n";
         }
         
     }
     
     const atl::Variable<T> dnorm(const atl::Variable<T>& x,
+                                 const atl::Variable<T>& mean,
+                                 const atl::Variable<T>& sd, int give_log = 0) {
+        if (sd.GetValue() == 0.0) {
+            throw std::overflow_error("Divide by zero exception");
+        }
+        
+        atl::Variable<T> logres = static_cast<T> (-1.0) * atl::log(T(sqrt(2 * M_PI)) * sd) - static_cast<T> (.5) * atl::pow((x - mean) / sd, static_cast<T> (2.0));
+        if (give_log)return logres;
+        else return atl::exp(logres);
+    }
+    
+    const atl::Variable<T> dnorm(const T& x,
                                  const atl::Variable<T>& mean,
                                  const atl::Variable<T>& sd, int give_log = 0) {
         if (sd.GetValue() == 0.0) {
@@ -84,13 +100,27 @@ public:
         atl::Variable<T> m;
         for (int i = 1; i < timeSteps; i++) {
              m = X[i - 1] +r0 * (static_cast<T> (1.0) - atl::pow(atl::exp(X[i - 1]) / K, theta));
-            ans -= this->dnorm(X[i], m, atl::sqrt(Q), true);
+            
+//            atl::Variable<T> dn = this->dnorm(X[i], m, atl::sqrt(Q), true);
+//            std::cout<<dn.info->id<<"\n\n";
+            ans -= this->dnorm(X[i], m, atl::sqrt(Q), true);;
         }
         //        atl::Variable<T> sqrtr = atl::sqrt(R);
         for (int i = 0; i < timeSteps; i++) {
-            ans -= this->dnorm(atl::Variable<T>(Y[i]), X[i], atl::sqrt(R), true);
+            ans -= this->dnorm(Y[i], X[i], atl::sqrt(R), true);
         }
         
+//        typename atl::StackEntry<T>::vi_storage dlist = atl::Variable<T>::tape.IndependentList();
+//        typename atl::StackEntry<T>::vi_iterator it;
+//        for(it =dlist.begin(); it != dlist.end(); ++it){
+//            std::cout<<"x id " <<(*it)->id<<"\n";
+//        }
+        
+//        std::cout<< "atl::Variable<T>::tape.stack_current = "<<atl::Variable<T>::tape.stack_current<<"\n\n";
+//
+//        std::cout<< "atl::Variable<T>::tape.DependentList().size() = "<<atl::Variable<T>::tape.DependentList().size()<<"\n\n";
+//
+//          exit(0);
         //return ans;
     }
     void Report() {

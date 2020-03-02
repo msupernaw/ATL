@@ -28,6 +28,8 @@
 #include <cfloat>
 #include <cmath>
 #include "Utilities/flat_set.hpp"
+#include "third_party/flat_hash_map/bytell_hash_map.hpp"
+#include "Utilities/flat_set.hpp"
 
 namespace atl {
 
@@ -66,8 +68,7 @@ namespace atl {
         uint32_t min_id = std::numeric_limits<uint32_t>::max();
         uint32_t max_id = std::numeric_limits<uint32_t>::min();
 
-        //        std::string exp;
-        typedef std::set<VariableInfoPtr, atl::less_variable_info<REAL_T> > vi_storage;
+        typedef flat_set<VariableInfoPtr, atl::less_variable_info<REAL_T> > vi_storage;
         typedef typename vi_storage::iterator vi_iterator;
         typedef typename vi_storage::reverse_iterator vi_riterator;
         bool is_nl = false;
@@ -112,6 +113,7 @@ namespace atl {
          */
         inline void Prepare() {
 
+id_list.clear();
 
             vi_iterator it;
             for (it = this->ids.begin(); it != ids.end(); ++it) {
@@ -137,14 +139,14 @@ namespace atl {
             //            }
             wv = 0.0;
             is_nl = false;
-            first.clear(); //resize(0);
-            second.clear(); //.resize(0);
-            third.clear(); //.resize(0);
-            ids.clear();
-            pushed_ids.clear();
+            first.resize(0);
+            second.resize(0);
+            third.resize(0);
+            ids.clear_no_resize();//clear();
+//            pushed_ids.clear();
             id_list.clear();
-            nl_ids.clear();
-            taylor_coeff.clear();
+//            nl_ids.clear();
+//            taylor_coeff.clear();
         }
 
         void Forward(const std::vector<uint32_t>& wrt) {
@@ -261,7 +263,7 @@ namespace atl {
     template<typename REAL_T>
     struct ForwardModeDerivativeInfo {
         uint32_t id;
-        std::set<uint32_t> ids;
+        typename atl::StackEntry<REAL_T>::vi_storage ids;
         typedef typename std::unordered_map<uint32_t, REAL_T > first_order_container;
         typedef typename std::unordered_map<uint32_t, first_order_container > second_order_container;
         typedef typename std::unordered_map<uint32_t, second_order_container > third_order_container;
@@ -269,7 +271,7 @@ namespace atl {
         first_order_container first_order_derivtives;
         second_order_container second_order_derivtives;
         third_order_container third_order_derivatives;
-
+        
         void Reset() {
             first_order_derivtives.clear();
             second_order_derivtives.clear();
@@ -288,7 +290,7 @@ namespace atl {
     public:
         typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         //first-order storage
-        typedef std::unordered_map<uint32_t,
+        typedef ska::bytell_hash_map<uint32_t,
         REAL_T,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -300,7 +302,7 @@ namespace atl {
         typedef typename first_order_container::iterator first_order_iterator;
 
         //second-order storage
-        typedef std::unordered_map<uint32_t,
+        typedef ska::bytell_hash_map<uint32_t,
         first_order_container,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -309,7 +311,7 @@ namespace atl {
         typedef typename second_order_container::iterator second_order_iterator;
 
         //third-order storage
-        typedef std::unordered_map<uint32_t,
+        typedef ska::bytell_hash_map<uint32_t,
         second_order_container,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -337,12 +339,12 @@ namespace atl {
          * @param size
          */
         Tape(size_t size = 10000) {
-            stack.reserve(size*1.5);
+            stack.reserve(size * 1.5);
             stack.resize(size);
         }
 
         ~Tape() {
-            std::cout << "Destructing tape " <<this<< std::endl;
+            std::cout << "Destructing tape " << this << std::endl;
         }
 
         void SetRecording(bool record) {
@@ -394,7 +396,7 @@ namespace atl {
 #endif       
             return ret;
         }
-
+        
         /**
          * Extracts the dependent variables from the tape structure and 
          * returns them in a list.
@@ -417,15 +419,15 @@ namespace atl {
          */
         const typename atl::StackEntry<REAL_T>::vi_storage IndependentList() {
             typename atl::StackEntry<REAL_T>::vi_storage dlist;
-            for (int i = 0; i < this->stack_current; i++) {
-                dlist.insert(this->stack[i].w);
-            }
+            //            for (int i = 0; i < this->stack_current; i++) {
+            //                dlist.insert(this->stack[i].w);
+            //            }
 
             typename atl::StackEntry<REAL_T>::vi_storage ilist;
             typename atl::StackEntry<REAL_T>::vi_iterator it;
             for (int i = 0; i < this->stack_current; i++) {
                 for (it = this->stack[i].ids.begin(); it != this->stack[i].ids.end(); ++it) {
-                    if (dlist.find(*it) == dlist.end()) {
+                    if ((*it)->count == 1) {
                         ilist.insert((*it));
                     }
                 }
@@ -452,7 +454,7 @@ namespace atl {
             typename atl::StackEntry<REAL_T>::vi_iterator it;
             for (int i = 0; i < this->stack_current; i++) {
                 for (it = this->stack[i].ids.begin(); it != this->stack[i].ids.end(); ++it) {
-                    if (dependents.find(*it) == dependents.end()) {
+                    if ((*it)->count == 1) {
                         independents.insert((*it));
                     }
                 }
@@ -573,6 +575,7 @@ namespace atl {
         }
 
         std::pair<uint32_t, uint32_t> FindMinMaxIds() {
+               
             std::pair<uint32_t, uint32_t> ret;
             ret.first = std::numeric_limits<uint32_t>::max();
             ret.second = std::numeric_limits<uint32_t>::min();
@@ -593,7 +596,7 @@ namespace atl {
         void Accumulate() {
 
             typename atl::StackEntry<REAL_T>::vi_iterator vit;
-          
+
             std::vector<REAL_T>& W = this->taylor_coeff[this->stack[(stack_current - 1)].w->id];
             if (W.size()<this->taylor_order)W.resize(taylor_order + 1);
             for (int i = 0; i <= this->taylor_order; i++) {
@@ -703,8 +706,9 @@ namespace atl {
             }
         }
 
-        inline void PushLive(std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage >& live_set,
-                typename atl::StackEntry<REAL_T>::VariableInfoPtr a, typename atl::StackEntry<REAL_T>::VariableInfoPtr b) {
+        inline void PushLive(ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage >& live_set,
+                typename atl::StackEntry<REAL_T>::VariableInfoPtr a,
+                typename atl::StackEntry<REAL_T>::VariableInfoPtr b) {
             if (a->count > 1 && (b->id != a->id) && a->is_nl) {
                 live_set[a->id].insert(b);
             }
@@ -736,7 +740,7 @@ namespace atl {
                 VariableInfoPtr vj;
                 VariableInfoPtr vk;
 
-                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
+                ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
 
 
                 for (int i = (stack_current - 1); i >= 0; i--) {
@@ -817,9 +821,9 @@ namespace atl {
 
 
 
-                            if (static_cast<REAL_T>(0.0) != entry) {//h[j][k] needs to be updated
+                            if (static_cast<REAL_T> (0.0) != entry) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
-                                this->PushLive(live_sets, vj, vk);
+                                //                                this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
                             }
 
@@ -847,9 +851,9 @@ namespace atl {
                             }
 
 
-                            if (static_cast<REAL_T>(0.0) != entry) {//h[j][k] needs to be updated
+                            if (static_cast<REAL_T> (0.0) != entry) {//h[j][k] needs to be updated
                                 this->Reference(vj->id, vk->id) += entry;
-                                this->PushLive(live_sets, vj, vk);
+                                //                                this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
                             }
 
@@ -865,17 +869,17 @@ namespace atl {
 
             if (recording) {
 
-                std::unordered_map<uint32_t, typename StackEntry<REAL_T>::vi_storage > dmap;
-                for (int i = 0; i < this->stack_current; i++) {
-                    typename StackEntry<REAL_T>::vi_iterator it;
-                    typename StackEntry<REAL_T>::vi_storage& ids_ = dmap[stack[i].w->id];
-                    for (it = stack[i].ids.begin(); it != stack[i].ids.end(); ++it) {
-
-                        if ((*it)->count == 1) {
-                            ids_.insert((*it));
-                        }
-                    }
-                }
+                //                std::unordered_map<uint32_t, typename StackEntry<REAL_T>::vi_storage > dmap;
+                //                for (int i = 0; i < this->stack_current; i++) {
+                //                    typename StackEntry<REAL_T>::vi_iterator it;
+                //                    typename StackEntry<REAL_T>::vi_storage& ids_ = dmap[stack[i].w->id];
+                //                    for (it = stack[i].ids.begin(); it != stack[i].ids.end(); ++it) {
+                //
+                //                        if ((*it)->count == 1) {
+                //                            ids_.insert((*it));
+                //                        }
+                //                    }
+                //                }
 
                 REAL_T w;
 
@@ -899,7 +903,7 @@ namespace atl {
                 REAL_T d3 = 0.0;
                 REAL_T pjk = 0.0;
 
-                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
+                ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
 
 
                 for (int i = (stack_current - 1); i >= 0; i--) {
@@ -916,7 +920,7 @@ namespace atl {
                     //get h[i][i]
                     hii = Value(vi->id, vi->id);
 
-                    if (hii != static_cast<REAL_T>(0.0)) {
+                    if (hii != static_cast<REAL_T> (0.0)) {
                         Reference(vi->id, vi->id) = 0.0;
                     }
 
@@ -924,7 +928,7 @@ namespace atl {
                     diii = 0.0;
                     diii = Value(vi->id, vi->id, vi->id);
 
-                    if (diii != static_cast<REAL_T>(0.0)) {
+                    if (diii != static_cast<REAL_T> (0.0)) {
                         Reference(vi->id, vi->id, vi->id) = 0.0;
                     }
 
@@ -972,8 +976,8 @@ namespace atl {
 
                         if (std::fabs(vij[j]) > 0.0) {
                             Reference(vi->id, vj->id) = static_cast<REAL_T> (0.0);
-                            this->PushLive(live_sets, vi, vj);
-                            this->PushLive(live_sets, vj, vi);
+                            //                            this->PushLive(live_sets, vi, vj);
+                            //                            this->PushLive(live_sets, vj, vi);
                         }
 
                         viij_[j] = 0.0;
@@ -981,8 +985,8 @@ namespace atl {
 
                         if (std::fabs(viij_[j]) > 0.0) {
                             Reference(vi->id, vi->id, vj->id) = static_cast<REAL_T> (0.0);
-                            this->PushLive(live_sets, vi, vj);
-                            this->PushLive(live_sets, vj, vi);
+                            //                            this->PushLive(live_sets, vi, vj);
+                            //                            this->PushLive(live_sets, vj, vi);
                         }
 
 
@@ -993,7 +997,7 @@ namespace atl {
                             vijk_[(j * ID_LIST_SIZE) + k] = 0.0;
                             vijk_[(j * ID_LIST_SIZE) + k] = Value(vi->id, vj->id, vk->id);
 
-                            if (vijk_[(j * ID_LIST_SIZE) + k] != static_cast<REAL_T>(0.0)) {
+                            if (vijk_[(j * ID_LIST_SIZE) + k] != static_cast<REAL_T> (0.0)) {
                                 Reference(vi->id, vj->id, vk->id) = static_cast<REAL_T> (0.0);
                             }
 
@@ -1036,11 +1040,11 @@ namespace atl {
 
 
                                     if (entry != entry) {
-                                        std::cout << "Derivative signaling NaN\n";
+                                        //                                        std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (/*std::fabs(entry)*/entry != REAL_T(0.0)) {//h[j][k] needs to be updated
                                         this->Reference(vk->id, vl->id) += entry;
-                                        this->PushLive(live_sets, vi, vj);
+                                        //                                        this->PushLive(live_sets, vi, vj);
                                         this->PushLive(live_sets, vj, vi);
                                     }
                                 }
@@ -1056,11 +1060,11 @@ namespace atl {
                                     entry += vij[l] * hdj;
 
                                     if (entry_3 != entry_3) {
-                                        std::cout << "Derivative signaling NaN\n";
+                                        //                                        std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (entry != REAL_T(0.0)) {//h[j][k] needs to be updated
                                         Reference(vk->id, vl->id) += entry;
-                                        this->PushLive(live_sets, vi, vj);
+                                        //                                        this->PushLive(live_sets, vi, vj);
                                         this->PushLive(live_sets, vj, vi);
                                     }
                                 }
@@ -1101,14 +1105,15 @@ namespace atl {
                                 entry_3 += dj * (vijk_[(k * ID_LIST_SIZE + l)] + (pkl * hii)+(dl * viij_[k]) + (dk * viij_[l])
                                         +(dk * dl * diii));
 
-                                if (entry_3 != static_cast<REAL_T>(0.0)) {
+                                if (entry_3 != static_cast<REAL_T> (0.0)) {
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
-                                    this->PushLive(live_sets, vj, vl);
-                                    this->PushLive(live_sets, vj, vk);
+                                    //                                    this->PushLive(live_sets, vj, vl);
+                                    //                                    this->PushLive(live_sets, vj, vk);
                                     this->PushLive(live_sets, vk, vj);
                                     this->PushLive(live_sets, vk, vl);
-                                    this->PushLive(live_sets, vl, vk);
-                                    this->PushLive(live_sets, vl, vj);
+
+                                    //                                    this->PushLive(live_sets, vl, vk);
+                                    //                                    this->PushLive(live_sets, vl, vj);
                                 }
 
                             }
@@ -1132,20 +1137,21 @@ namespace atl {
                                 if (entry_3 != entry_3) {
                                     std::cout << "Derivative signaling NaN\n";
                                 }
-                                if (entry_3 != static_cast<REAL_T>(0.0)) {
+                                if (entry_3 != static_cast<REAL_T> (0.0)) {
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
-                                    this->PushLive(live_sets, vj, vl);
-                                    this->PushLive(live_sets, vj, vk);
+                                    //                                    this->PushLive(live_sets, vj, vl);
+                                    //                                    this->PushLive(live_sets, vj, vk);
                                     this->PushLive(live_sets, vk, vj);
                                     this->PushLive(live_sets, vk, vl);
-                                    this->PushLive(live_sets, vl, vk);
-                                    this->PushLive(live_sets, vl, vj);
+
+                                    //                                    this->PushLive(live_sets, vl, vk);
+                                    //                                    this->PushLive(live_sets, vl, vj);
                                 }
 
                             }
                         }
 
-                        if (dj != static_cast<REAL_T>(0.0)) {
+                        if (dj != static_cast<REAL_T> (0.0)) {
 #pragma unroll
                             for (int k = rows; k < ID_LIST_SIZE; k++) {
                                 VariableInfoPtr vk = current_entry.id_list[k];
@@ -1158,14 +1164,12 @@ namespace atl {
                                     if (entry_3 != entry_3) {
                                         std::cout << "Derivative signaling NaN\n";
                                     }
-                                    if (entry_3 != static_cast<REAL_T>(0.0)) {
+                                    if (entry_3 != static_cast<REAL_T> (0.0)) {
                                         Reference(vj->id, vk->id, vl->id) += entry_3;
-                                        this->PushLive(live_sets, vj, vl);
-                                        this->PushLive(live_sets, vj, vk);
+                                        //                                        this->PushLive(live_sets, vj, vl);
+                                        //                                        this->PushLive(live_sets, vj, vk);
                                         this->PushLive(live_sets, vk, vj);
                                         this->PushLive(live_sets, vk, vl);
-                                        this->PushLive(live_sets, vl, vk);
-                                        this->PushLive(live_sets, vl, vj);
 
                                     }
 
@@ -1181,21 +1185,26 @@ namespace atl {
 
         }
 
-        void Reset(bool empty_trash = true) {
+        void Reset(bool reset_tape = true) {
             this->first_order_derivatives.clear();
             this->range_weights.clear();
             this->second_order_derivatives.clear();
             this->third_order_derivatives.clear();
 
-            for (int i = 0; i < this->stack_current; i++) {
-                stack[i].Reset();
-            }
 
-            if (empty_trash) {
-                //                                                atl::VariableInfo< REAL_T>::FreeAll();
+            if (reset_tape) {
+                for (int i = 0; i < this->stack_current; i++) {
+                    stack[i].Reset();
+                }
+                this->stack_current = 0;
             }
+            //           
 
-            this->stack_current = 0;
+            //            if (empty_trash) {
+            //                //                                                atl::VariableInfo< REAL_T>::FreeAll();
+            //            }
+
+            //            
 
         }
 
@@ -1259,291 +1268,291 @@ namespace atl {
         return out;
     }
 
-//    template<typename REAL_T>
-//    class DerivativeStructure {
-//    public:
-//        atl::Tape<REAL_T>& tape;
-//
-//        typename atl::Tape<REAL_T>::first_order_container gradient;
-//        typename atl::Tape<REAL_T>::second_order_container higher_order;
-//        std::vector< typename atl::Tape<REAL_T>::first_order_container > derivatives;
-//        int order;
-//        uint32_t min;
-//        uint32_t max;
-//        std::vector<std::vector<uint32_t> > indexes;
-//        typename atl::StackEntry<REAL_T>::vi_storage dependents;
-//        typename atl::StackEntry<REAL_T>::vi_storage independents;
-//
-//        DerivativeStructure(atl::Tape<REAL_T>& tape, int order = 1) :
-//        tape(tape), order(order) {
-//            this->derivatives.resize(order);
-//            std::pair<uint32_t, uint32_t> min_max = tape.FindMinMaxIds();
-//            this->min = min_max.first;
-//            this->max = min_max.second;
-//
-//            tape.GetVariableList(this->dependents, this->independents);
-//
-//            for (int i = 1; i <= order; i++) {
-//                indexes.push_back(std::vector<uint32_t>(i));
-//            }
-//
-//            typename atl::StackEntry<REAL_T>::vi_storage dependents = tape.DependentList();
-//
-//            for (int i = 0; i < tape.stack_current; i++) {
-//                tape.stack[i].diff_exp.resize(order + 1);
-//                tape.stack[i].diff_w.resize(order + 1);
-//                tape.stack[i].diff_exp[0] = tape.stack[i].exp;
-//                tape.stack[i].diff_w[0] = tape.stack[i].w;
-//
-//            }
-//
-//
-//            for (int j = 1; j <= order; j++) {
-//                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
-//                typename atl::StackEntry<REAL_T>::vi_iterator it;
-//                for (it = dependents.begin(); it != dependents.end(); ++it) {
-//                    mapped_var_info[(*it)->id] =
-//                            std::shared_ptr<atl::VariableInfo<REAL_T> > (new atl::VariableInfo<REAL_T>((*it)->value));
-//                }
-//                for (int i = 0; i < tape.stack_current; i++) {
-//                    tape.stack[i].diff_w[j] = mapped_var_info[tape.stack[i].w->id];
-//                    tape.stack[i].diff_exp[j] = tape.stack[i].diff_exp[j - 1]->Differentiate();
-//                    tape.stack[i].diff_exp[j]->PushOrder(j);
-//                    tape.stack[i].diff_exp[j]->SwapDependents(mapped_var_info);
-//                    //                    tape.stack[i].diff_w[j]->value = tape.stack[i].diff_exp[j]->GetValue();
-//                }
-//            }
-//
-//
-//
-//        }
-//
-//        void Run() {
-//            int current_order = 1;
-//            gradient[tape.stack[(tape.stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
-//            REAL_T w = static_cast<REAL_T> (0.0);
-//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-//
-//
-//            for (int i = (tape.stack_current - 1); i >= 0; i--) {
-//                REAL_T& GW = gradient[tape.stack[i].w->id];
-//                REAL_T gw = GW;
-//                std::cout << "variable[" << tape.stack[i].w->id << "," << tape.stack[i].w->value << "] = " << tape.stack[i].exp->ToString() << "\n";
-//
-//                GW = static_cast<REAL_T> (0.0);
-//
-//                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-//                    //Gradient 
-//                    gradient[(*vit)->id] += gw * tape.stack[i].exp->EvaluateDerivative((*vit)->id);
-//
-//                    if (this->order > 1) {
-//                        this->Recursive(current_order + 1, i,{(*vit)->id});
-//                    }
-//
-//                }
-//
-//            }
-//
-//            //            for (vit = this->independents.begin(); vit != this->independents.end(); ++vit) {
-//            //                std::vector<uint32_t> ids;
-//            //                ids.push_back((*vit)->id);
-//            //                this->EvalTop(1, ids);
-//            //            }
-//
-//
-//        }
-//
-//        inline REAL_T Value(std::vector<uint32_t> index) {
-//            int order = index.size();
-//            if (order == 1) {
-//                return this->gradient[index[0]];
-//            }
-//            //                        std::sort(index.begin(), index.end());
-//            uint32_t key = this->key(index, this->max);
-//            return this->derivatives[order - 1][key];
-//
-//        }
-//
-//    private:
-//
-//        inline void Eval(const int& current_order,
-//                const typename atl::StackEntry<REAL_T>::VariableInfoPtr& w_,
-//                const std::shared_ptr < atl::DynamicExpressionBase<REAL_T > >& exp_,
-//                const typename atl::StackEntry<REAL_T>::vi_storage& ids_,
-//                const std::vector< typename atl::StackEntry<REAL_T>::vi_iterator >& ids) {
-//
-//            typename atl::StackEntry<REAL_T>::vi_iterator piter = ids[ids.size() - 1];
-//            uint32_t pid = (*ids[ids.size() - 1])->id;
-//            typename atl::StackEntry<REAL_T>::vi_iterator it;
-//
-//            //            std::shared_ptr < atl::DynamicExpressionBase<REAL_T > > exp;
-//
-//
-//            //            uint32_t rank = (current_order % 2);
-//            //            if (rank == 0 && current_order != order) {
-//            //                exp = exp_->Differentiate((*ids[ids.size() - (current_order - 1)])->id);
-//            //            } else {
-//            //                exp = exp_;
-//            //            }
-//
-//            std::vector<uint32_t>& _ids = this->indexes[current_order - 1];
-//
-//            for (int i = 0; i < ids.size(); i++) {
-//                _ids[i] = (*ids[i])->id;
-//            }
-//            exp_->DifferentiatedBy(_ids);
-//
-//
-//
-//            _ids[_ids.size() - 1] = tape.stack[tape.stack_current - 1].w->id;
-//            size_t key = this->key(_ids, this->max);
-//            this->derivatives[current_order - 1][key] = static_cast<REAL_T> (1.0);
-//
-//            _ids[_ids.size() - 1] = w_->id;
-//            key = this->key(_ids, this->max);
-//            REAL_T& W = this->derivatives[current_order - 1][key];
-//
-//            REAL_T w = W;
-//            W = static_cast<REAL_T> (0.0);
-//
-//            REAL_T dx;
-//
-//            //            std::cout << exp->ToString() << " = ";
-//            for (it = ids_.begin(); it != ids_.end(); ++it) {
-//                _ids[_ids.size() - 1] = (*it)->id;
-//
-//                //
-//
-//                dx = w * exp_->EvaluateDerivative((*it)->id);
-//                if (dx != std::fpclassify(0.0)) {
-//                    key = this->key(_ids, this->max);
-//                    std::cout << std::scientific << "D[" << pid << "," << (*it)->id << "]{" << key << "} = ";
-//                    this->derivatives[current_order - 1][key] += dx;
-//                    std::cout << w << " * " << exp_->EvaluateDerivative(pid, _ids[_ids.size() - 1]) << "\n";
-//                    //                    std::cout << this->derivatives[current_order - 1][key] << "\n";
-//                }
-//                if (current_order < this->order) {
-//                    std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
-//                    nids.push_back(it);
-//                    this->Eval(current_order + 1, w_, exp_, ids_, nids);
-//                }
-//            }
-//
-//            //            dx = w * exp_->EvaluateDerivative(pid, pid);
-//            //            std::cout << "w{" << w << "} " << dx << " ";
-//            //            if (dx != std::fpclassify(0.0)) {
-//            //                _ids[_ids.size() - 1] = pid;
-//            //                key = this->key(_ids, this->max);
-//            //                this->derivatives[current_order - 1][key] += dx;
-//            //            }
-//            //
-//            //            if (current_order < this->order) {
-//            //                std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
-//            //                nids.push_back(piter);
-//            //                this->Eval(current_order + 1, w_, exp, ids_, nids);
-//            //            }
-//
-//        }
-//
-//        inline void Recursive(const int& current_order, size_t i, const std::vector<uint32_t>& ids) {
-//            std::vector<uint32_t>& index_l = this->indexes[current_order - 1];
-//
-//            REAL_T w = static_cast<REAL_T> (0.0);
-//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-//            index_l[index_l.size() - 1] = tape.stack[this->tape.stack_current - 1].diff_w[current_order - 1]->id;
-//            size_t key = this->key(index_l, this->max);
-//            this->derivatives[current_order - 1][key] = 1.0;
-//            for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-//                index_l[index_l.size() - 1] = tape.stack[i].diff_w[current_order - 1]->id;
-//                key = this->key(index_l, this->max);
-//                REAL_T& gw = this->derivatives[current_order - 1][key];
-//                index_l[index_l.size() - 1] = (*vit)->id;
-//                key = this->key(index_l, this->max);
-//                tape.stack[i].diff_exp[current_order - 1]->DifferentiatedBy(ids);
-//                this->derivatives[current_order - 1][key] += gw * tape.stack[i].diff_exp[current_order - 1]->EvaluateDerivative((*vit)->id);
-//                std::cout << this->derivatives[current_order - 1][key] << "\n";
-//            }
-//
-//
-//        }
-//
-//        inline void EvalTop(const int& current_order, const std::vector<uint32_t>& ids) {
-//
-//            //forward wrt to ids
-//            for (int i = 0; i < this->tape.stack_current; i++) {
-//                this->tape.stack[i].diff_exp[current_order]->DifferentiatedBy(ids);
-//                //                this->tape.stack[i].diff_w[current_order]->value = this->tape.stack[i].diff_exp[current_order]->GetValue();
-//            }
-//
-//            REAL_T w = static_cast<REAL_T> (0.0);
-//            typename atl::StackEntry< REAL_T>::vi_iterator vit;
-//
-//            std::vector<uint32_t> ids_l(ids.size() + 1);
-//            for (int i = 0; i < ids.size(); i++) {
-//                ids_l[i] = ids[i];
-//            }
-//            std::cout << "w[" << this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id << "] = 1.0" << std::endl;
-//            ids_l[ids_l.size() - 1] = this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id;
-//            higher_order[ids_l[0]][ids_l[1]] = 1.0;
-//            size_t key = this->key(ids_l, this->max);
-//            this->derivatives[current_order][key] = 1.0;
-//
-//            for (int i = (tape.stack_current - 1); i >= 0; i--) {
-//
-//                ids_l[ids_l.size() - 1] = this->tape.stack[i].diff_w[current_order]->id;
-//                size_t key = this->key(ids_l, this->max);
-//                //higher_order[ids_l[0]][ids_l[1]] = 1.0;
-//                REAL_T& GW = higher_order[ids_l[0]][ids_l[1]]; //this->derivatives[current_order][key];
-//                REAL_T gw = GW;
-//
-//                GW = static_cast<REAL_T> (0.0);
-//
-//
-//                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
-//                    ids_l[ids_l.size() - 1] = (*vit)->id;
-//                    size_t key = this->key(ids_l, this->max);
-//
-//                    //Gradient 
-//                    //                    this->derivatives[current_order][key] 
-//                    higher_order[ids_l[0]][ids_l[1]] += gw * this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id);
-//                    //                    if ((ids_l[0] == ids_l[1] && ids_l[0] == 4)) {
-//                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->Differentiate(ids_l[0])->ToString() << "\n";
-//                    //                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->ToString() << "\n";
-//                    //                    std::cout << higher_order[ids_l[0]][ids_l[1]] << "+= " << gw << "*" << this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id) << std::endl;
-//                    //                    }
-//
-//                }
-//
-//            }
-//
-//
-//
-//
-//        }
-//
-//        size_t key(const std::vector< uint32_t>& ids, int max) {
-//            if (ids.size() == 2) {
-//                return higher_order[ids[0]][ids[1]];
-//            }
-//            size_t order = ids.size();
-//            size_t key = 0;
-//            size_t m = max + 1;
-//            size_t no = order - 1;
-//            size_t tmp = 0;
-//            for (int i = 0; i < order - 1; i++) {
-//                tmp = (ids[i]);
-//                tmp *= std::pow(m, no);
-//                key += tmp;
-//                no--;
-//
-//
-//            }
-//            key += (ids[ids.size() - 1]);
-//            //            std::cout<<"key = "<<key<<"\n";
-//            return key;
-//        }
-//    };
-//
+    //    template<typename REAL_T>
+    //    class DerivativeStructure {
+    //    public:
+    //        atl::Tape<REAL_T>& tape;
+    //
+    //        typename atl::Tape<REAL_T>::first_order_container gradient;
+    //        typename atl::Tape<REAL_T>::second_order_container higher_order;
+    //        std::vector< typename atl::Tape<REAL_T>::first_order_container > derivatives;
+    //        int order;
+    //        uint32_t min;
+    //        uint32_t max;
+    //        std::vector<std::vector<uint32_t> > indexes;
+    //        typename atl::StackEntry<REAL_T>::vi_storage dependents;
+    //        typename atl::StackEntry<REAL_T>::vi_storage independents;
+    //
+    //        DerivativeStructure(atl::Tape<REAL_T>& tape, int order = 1) :
+    //        tape(tape), order(order) {
+    //            this->derivatives.resize(order);
+    //            std::pair<uint32_t, uint32_t> min_max = tape.FindMinMaxIds();
+    //            this->min = min_max.first;
+    //            this->max = min_max.second;
+    //
+    //            tape.GetVariableList(this->dependents, this->independents);
+    //
+    //            for (int i = 1; i <= order; i++) {
+    //                indexes.push_back(std::vector<uint32_t>(i));
+    //            }
+    //
+    //            typename atl::StackEntry<REAL_T>::vi_storage dependents = tape.DependentList();
+    //
+    //            for (int i = 0; i < tape.stack_current; i++) {
+    //                tape.stack[i].diff_exp.resize(order + 1);
+    //                tape.stack[i].diff_w.resize(order + 1);
+    //                tape.stack[i].diff_exp[0] = tape.stack[i].exp;
+    //                tape.stack[i].diff_w[0] = tape.stack[i].w;
+    //
+    //            }
+    //
+    //
+    //            for (int j = 1; j <= order; j++) {
+    //                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
+    //                typename atl::StackEntry<REAL_T>::vi_iterator it;
+    //                for (it = dependents.begin(); it != dependents.end(); ++it) {
+    //                    mapped_var_info[(*it)->id] =
+    //                            std::shared_ptr<atl::VariableInfo<REAL_T> > (new atl::VariableInfo<REAL_T>((*it)->value));
+    //                }
+    //                for (int i = 0; i < tape.stack_current; i++) {
+    //                    tape.stack[i].diff_w[j] = mapped_var_info[tape.stack[i].w->id];
+    //                    tape.stack[i].diff_exp[j] = tape.stack[i].diff_exp[j - 1]->Differentiate();
+    //                    tape.stack[i].diff_exp[j]->PushOrder(j);
+    //                    tape.stack[i].diff_exp[j]->SwapDependents(mapped_var_info);
+    //                    //                    tape.stack[i].diff_w[j]->value = tape.stack[i].diff_exp[j]->GetValue();
+    //                }
+    //            }
+    //
+    //
+    //
+    //        }
+    //
+    //        void Run() {
+    //            int current_order = 1;
+    //            gradient[tape.stack[(tape.stack_current - 1)].w->id] = static_cast<REAL_T> (1.0);
+    //            REAL_T w = static_cast<REAL_T> (0.0);
+    //            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+    //
+    //
+    //            for (int i = (tape.stack_current - 1); i >= 0; i--) {
+    //                REAL_T& GW = gradient[tape.stack[i].w->id];
+    //                REAL_T gw = GW;
+    //                std::cout << "variable[" << tape.stack[i].w->id << "," << tape.stack[i].w->value << "] = " << tape.stack[i].exp->ToString() << "\n";
+    //
+    //                GW = static_cast<REAL_T> (0.0);
+    //
+    //                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+    //                    //Gradient 
+    //                    gradient[(*vit)->id] += gw * tape.stack[i].exp->EvaluateDerivative((*vit)->id);
+    //
+    //                    if (this->order > 1) {
+    //                        this->Recursive(current_order + 1, i,{(*vit)->id});
+    //                    }
+    //
+    //                }
+    //
+    //            }
+    //
+    //            //            for (vit = this->independents.begin(); vit != this->independents.end(); ++vit) {
+    //            //                std::vector<uint32_t> ids;
+    //            //                ids.push_back((*vit)->id);
+    //            //                this->EvalTop(1, ids);
+    //            //            }
+    //
+    //
+    //        }
+    //
+    //        inline REAL_T Value(std::vector<uint32_t> index) {
+    //            int order = index.size();
+    //            if (order == 1) {
+    //                return this->gradient[index[0]];
+    //            }
+    //            //                        std::sort(index.begin(), index.end());
+    //            uint32_t key = this->key(index, this->max);
+    //            return this->derivatives[order - 1][key];
+    //
+    //        }
+    //
+    //    private:
+    //
+    //        inline void Eval(const int& current_order,
+    //                const typename atl::StackEntry<REAL_T>::VariableInfoPtr& w_,
+    //                const std::shared_ptr < atl::DynamicExpressionBase<REAL_T > >& exp_,
+    //                const typename atl::StackEntry<REAL_T>::vi_storage& ids_,
+    //                const std::vector< typename atl::StackEntry<REAL_T>::vi_iterator >& ids) {
+    //
+    //            typename atl::StackEntry<REAL_T>::vi_iterator piter = ids[ids.size() - 1];
+    //            uint32_t pid = (*ids[ids.size() - 1])->id;
+    //            typename atl::StackEntry<REAL_T>::vi_iterator it;
+    //
+    //            //            std::shared_ptr < atl::DynamicExpressionBase<REAL_T > > exp;
+    //
+    //
+    //            //            uint32_t rank = (current_order % 2);
+    //            //            if (rank == 0 && current_order != order) {
+    //            //                exp = exp_->Differentiate((*ids[ids.size() - (current_order - 1)])->id);
+    //            //            } else {
+    //            //                exp = exp_;
+    //            //            }
+    //
+    //            std::vector<uint32_t>& _ids = this->indexes[current_order - 1];
+    //
+    //            for (int i = 0; i < ids.size(); i++) {
+    //                _ids[i] = (*ids[i])->id;
+    //            }
+    //            exp_->DifferentiatedBy(_ids);
+    //
+    //
+    //
+    //            _ids[_ids.size() - 1] = tape.stack[tape.stack_current - 1].w->id;
+    //            size_t key = this->key(_ids, this->max);
+    //            this->derivatives[current_order - 1][key] = static_cast<REAL_T> (1.0);
+    //
+    //            _ids[_ids.size() - 1] = w_->id;
+    //            key = this->key(_ids, this->max);
+    //            REAL_T& W = this->derivatives[current_order - 1][key];
+    //
+    //            REAL_T w = W;
+    //            W = static_cast<REAL_T> (0.0);
+    //
+    //            REAL_T dx;
+    //
+    //            //            std::cout << exp->ToString() << " = ";
+    //            for (it = ids_.begin(); it != ids_.end(); ++it) {
+    //                _ids[_ids.size() - 1] = (*it)->id;
+    //
+    //                //
+    //
+    //                dx = w * exp_->EvaluateDerivative((*it)->id);
+    //                if (dx != std::fpclassify(0.0)) {
+    //                    key = this->key(_ids, this->max);
+    //                    std::cout << std::scientific << "D[" << pid << "," << (*it)->id << "]{" << key << "} = ";
+    //                    this->derivatives[current_order - 1][key] += dx;
+    //                    std::cout << w << " * " << exp_->EvaluateDerivative(pid, _ids[_ids.size() - 1]) << "\n";
+    //                    //                    std::cout << this->derivatives[current_order - 1][key] << "\n";
+    //                }
+    //                if (current_order < this->order) {
+    //                    std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+    //                    nids.push_back(it);
+    //                    this->Eval(current_order + 1, w_, exp_, ids_, nids);
+    //                }
+    //            }
+    //
+    //            //            dx = w * exp_->EvaluateDerivative(pid, pid);
+    //            //            std::cout << "w{" << w << "} " << dx << " ";
+    //            //            if (dx != std::fpclassify(0.0)) {
+    //            //                _ids[_ids.size() - 1] = pid;
+    //            //                key = this->key(_ids, this->max);
+    //            //                this->derivatives[current_order - 1][key] += dx;
+    //            //            }
+    //            //
+    //            //            if (current_order < this->order) {
+    //            //                std::vector< typename atl::StackEntry<REAL_T>::vi_iterator > nids = ids;
+    //            //                nids.push_back(piter);
+    //            //                this->Eval(current_order + 1, w_, exp, ids_, nids);
+    //            //            }
+    //
+    //        }
+    //
+    //        inline void Recursive(const int& current_order, size_t i, const std::vector<uint32_t>& ids) {
+    //            std::vector<uint32_t>& index_l = this->indexes[current_order - 1];
+    //
+    //            REAL_T w = static_cast<REAL_T> (0.0);
+    //            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+    //            index_l[index_l.size() - 1] = tape.stack[this->tape.stack_current - 1].diff_w[current_order - 1]->id;
+    //            size_t key = this->key(index_l, this->max);
+    //            this->derivatives[current_order - 1][key] = 1.0;
+    //            for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+    //                index_l[index_l.size() - 1] = tape.stack[i].diff_w[current_order - 1]->id;
+    //                key = this->key(index_l, this->max);
+    //                REAL_T& gw = this->derivatives[current_order - 1][key];
+    //                index_l[index_l.size() - 1] = (*vit)->id;
+    //                key = this->key(index_l, this->max);
+    //                tape.stack[i].diff_exp[current_order - 1]->DifferentiatedBy(ids);
+    //                this->derivatives[current_order - 1][key] += gw * tape.stack[i].diff_exp[current_order - 1]->EvaluateDerivative((*vit)->id);
+    //                std::cout << this->derivatives[current_order - 1][key] << "\n";
+    //            }
+    //
+    //
+    //        }
+    //
+    //        inline void EvalTop(const int& current_order, const std::vector<uint32_t>& ids) {
+    //
+    //            //forward wrt to ids
+    //            for (int i = 0; i < this->tape.stack_current; i++) {
+    //                this->tape.stack[i].diff_exp[current_order]->DifferentiatedBy(ids);
+    //                //                this->tape.stack[i].diff_w[current_order]->value = this->tape.stack[i].diff_exp[current_order]->GetValue();
+    //            }
+    //
+    //            REAL_T w = static_cast<REAL_T> (0.0);
+    //            typename atl::StackEntry< REAL_T>::vi_iterator vit;
+    //
+    //            std::vector<uint32_t> ids_l(ids.size() + 1);
+    //            for (int i = 0; i < ids.size(); i++) {
+    //                ids_l[i] = ids[i];
+    //            }
+    //            std::cout << "w[" << this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id << "] = 1.0" << std::endl;
+    //            ids_l[ids_l.size() - 1] = this->tape.stack[(tape.stack_current - 1)].diff_w[current_order]->id;
+    //            higher_order[ids_l[0]][ids_l[1]] = 1.0;
+    //            size_t key = this->key(ids_l, this->max);
+    //            this->derivatives[current_order][key] = 1.0;
+    //
+    //            for (int i = (tape.stack_current - 1); i >= 0; i--) {
+    //
+    //                ids_l[ids_l.size() - 1] = this->tape.stack[i].diff_w[current_order]->id;
+    //                size_t key = this->key(ids_l, this->max);
+    //                //higher_order[ids_l[0]][ids_l[1]] = 1.0;
+    //                REAL_T& GW = higher_order[ids_l[0]][ids_l[1]]; //this->derivatives[current_order][key];
+    //                REAL_T gw = GW;
+    //
+    //                GW = static_cast<REAL_T> (0.0);
+    //
+    //
+    //                for (vit = tape.stack[i].ids.begin(); vit != tape.stack[i].ids.end(); ++vit) {
+    //                    ids_l[ids_l.size() - 1] = (*vit)->id;
+    //                    size_t key = this->key(ids_l, this->max);
+    //
+    //                    //Gradient 
+    //                    //                    this->derivatives[current_order][key] 
+    //                    higher_order[ids_l[0]][ids_l[1]] += gw * this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id);
+    //                    //                    if ((ids_l[0] == ids_l[1] && ids_l[0] == 4)) {
+    //                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->Differentiate(ids_l[0])->ToString() << "\n";
+    //                    //                    std::cout << tape.stack[i].diff_w[current_order]->id << "+=" << tape.stack[i].diff_exp[current_order]->ToString() << "\n";
+    //                    //                    std::cout << higher_order[ids_l[0]][ids_l[1]] << "+= " << gw << "*" << this->tape.stack[i].diff_exp[current_order]->EvaluateDerivative((*vit)->id) << std::endl;
+    //                    //                    }
+    //
+    //                }
+    //
+    //            }
+    //
+    //
+    //
+    //
+    //        }
+    //
+    //        size_t key(const std::vector< uint32_t>& ids, int max) {
+    //            if (ids.size() == 2) {
+    //                return higher_order[ids[0]][ids[1]];
+    //            }
+    //            size_t order = ids.size();
+    //            size_t key = 0;
+    //            size_t m = max + 1;
+    //            size_t no = order - 1;
+    //            size_t tmp = 0;
+    //            for (int i = 0; i < order - 1; i++) {
+    //                tmp = (ids[i]);
+    //                tmp *= std::pow(m, no);
+    //                key += tmp;
+    //                no--;
+    //
+    //
+    //            }
+    //            key += (ids[ids.size() - 1]);
+    //            //            std::cout<<"key = "<<key<<"\n";
+    //            return key;
+    //        }
+    //    };
+    //
 
 }
 

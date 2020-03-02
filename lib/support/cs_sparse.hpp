@@ -56,7 +56,7 @@ cs_sparse<Type> *cs_compress(const cs_sparse<Type> *T);
 template<typename Type>
 csi cs_dupl(cs_sparse<Type> *A);
 template<typename Type>
-csi cs_entry(cs_sparse<Type> *T, csi i, csi j, Type x);
+csi cs_entry(cs_sparse<Type> *T, csi i, csi j, const Type& x);
 template<typename Type>
 csi cs_gaxpy(const cs_sparse<Type> *A, const Type *x, Type *y);
 template<typename Type>
@@ -629,6 +629,9 @@ cs_numeric<Type> *cs_chol(const cs_sparse<Type> *A, const cs_symbolic<Type> *S) 
     N = (cs_numeric<Type>*) cs_calloc(1, sizeof (cs_numeric<Type>)); /* allocate result */
     c = (csi*) cs_malloc(2 * n, sizeof (csi)); /* get csi workspace */
     x = (Type*) cs_malloc(n, sizeof (Type)); /* get Type workspace */
+    for (int i = 0; i < n; i++) {
+        new (&x[i]) Type();
+    }
     cp = S->cp;
     pinv = S->pinv;
     parent = S->parent;
@@ -1110,10 +1113,13 @@ csi cs_dupl(Type *A) {
 
 /* add an entry to a triplet matrix; return 1 if ok, 0 otherwise */
 template<typename Type>
-csi cs_entry(cs_sparse<Type> *T, csi i, csi j, Type x) {
+csi cs_entry(cs_sparse<Type> *T, csi i, csi j, const Type& x) {
     if (!CS_TRIPLET(T) || i < 0 || j < 0) return (0); /* check inputs */
     if (T->nz >= T->nzmax && !cs_sprealloc(T, 2 * (T->nzmax))) return (0);
-    if (T->x) T->x [T->nz] = x;
+    if (T->x) {
+        new (&T->x[T->nz]) Type();
+        T->x [T->nz] = x;
+    };
     T->i [T->nz] = i;
     T->p [T->nz++] = j;
     T->m = CS_MAX(T->m, i + 1);
@@ -1251,7 +1257,7 @@ Type cs_house(Type *x, Type *beta, csi n) {
         x [0] = 1;
     } else {
         s = sqrt(x [0] * x [0] + sigma); /* s = norm (x) */
-        x [0] = (x [0] <= 0) ? (x [0] - s) : (-sigma / (x [0] + s));
+        x [0] = (x [0] <= 0.0) ? (Type(x [0] - s)) : (-sigma / (x [0] + s));
         (*beta) = -1. / (s * x [0]);
     }
     return (s);
@@ -1690,8 +1696,15 @@ cs_sparse<Type> *cs_multiply(const cs_sparse<Type> *A, const cs_sparse<Type> *B)
     csi p, j, nz = 0, anz, *Cp, *Ci, *Bp, m, n, bnz, *w, values, *Bi;
     Type *x, *Bx, *Cx;
     cs_sparse<Type> *C;
-    if (!CS_CSC(A) || !CS_CSC(B)) return (NULL); /* check inputs */
-    if (A->n != B->m) return (NULL);
+    if (!CS_CSC(A) || !CS_CSC(B)) {
+        std::cout << "(!CS_CSC(A) || !CS_CSC(B)) \n";
+        return (NULL);
+        /* check inputs */
+    }
+    if (A->n != B->m) {
+        std::cout << "(A->n != B->m) ";
+        return (NULL);
+    }
     m = A->m;
     anz = A->p [A->n];
     n = B->n;
@@ -1703,6 +1716,9 @@ cs_sparse<Type> *cs_multiply(const cs_sparse<Type> *A, const cs_sparse<Type> *B)
     values = (A->x != NULL) && (Bx != NULL);
     x = values ? (Type*) cs_malloc(m, sizeof (Type)) : NULL; /* get workspace */
     C = cs_spalloc<Type>(m, n, anz + bnz, values, 0); /* allocate result */
+    for (int i = 0; i < C->nzmax; i++) {
+        new (&C->x[i]) Type();
+    }
     if (!C || !w || (values && !x)) return (cs_done(C, w, x, 0));
     Cp = C->p;
     for (j = 0; j < n; j++) {
@@ -1715,7 +1731,12 @@ cs_sparse<Type> *cs_multiply(const cs_sparse<Type> *A, const cs_sparse<Type> *B)
         for (p = Bp [j]; p < Bp [j + 1]; p++) {
             nz = cs_scatter(A, Bi [p], Bx ? Bx [p] : static_cast<Type> (1), w, x, j + 1, C, nz);
         }
-        if (values) for (p = Cp [j]; p < nz; p++) Cx [p] = x [Ci [p]];
+        if (values) {
+            for (p = Cp [j]; p < nz; p++) {
+                new (& Cx [p]) Type();
+                Cx [p] = x [Ci [p]];
+            }
+        }
     }
     Cp [n] = nz; /* finalize the last column of C */
     cs_sprealloc(C, 0); /* remove extra space from C */
@@ -2042,7 +2063,7 @@ csi cs_scatter(const cs_sparse<Type> *A, csi j, Type beta, csi *w, Type *x, csi 
         if (w [i] < mark) {
             w [i] = mark; /* i is new entry in column j */
             Ci [nz++] = i; /* add i to pattern of C(:,j) */
-            if (x) x [i] = beta * Ax [p]; /* x(i) = beta*A(i,j) */
+            if (x) new (&x[i])Type(beta * Ax [p]); /* x(i) = beta*A(i,j) */
         } else if (x) x [i] += beta * Ax [p]; /* i exists in C(:,j) already */
     }
     return (nz);
@@ -2340,7 +2361,10 @@ csi cs_updown(cs_sparse<Type> *L, csi sigma, const cs_sparse<Type> *C, const csi
         p = Lp [j];
         alpha = w [j] / Lx [p]; /* alpha = w(j) / L(j,j) */
         beta2 = beta * beta + sigma * alpha*alpha;
-        if (beta2 <= 0){ printf("not positive definite");break; }/* not positive definite */
+        if (beta2 <= 0) {
+            printf("not positive definite");
+            break;
+        }/* not positive definite */
         beta2 = sqrt(beta2);
         delta = (sigma > 0) ? (beta / beta2) : (beta2 / beta);
         gamma = sigma * alpha / (beta2 * beta);
@@ -2387,6 +2411,7 @@ cs_sparse<Type> *cs_spalloc(csi m, csi n, csi nzmax, csi values, csi triplet) {
     A->p = (csi*) cs_malloc(triplet ? nzmax : n + 1, sizeof (csi));
     A->i = (csi*) cs_malloc(nzmax, sizeof (csi));
     A->x = values ? (Type*) cs_malloc(nzmax, sizeof (Type)) : NULL;
+
     return ((!A->p || !A->i || (values && !A->x)) ? cs_spfree(A) : A);
 }
 

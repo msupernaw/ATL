@@ -141,7 +141,7 @@ namespace atl {
                 val_[i] = static_cast<REAL_T> (0.0);
                 for (unsigned int j = 0; j < i; ++j) {
                     val_[i] += (static_cast<REAL_T> (1.0) -
-                            static_cast<REAL_T> (j) / static_cast<REAL_T> (i)) *
+                            static_cast<REAL_T> (1.0*j) / static_cast<REAL_T> (1.0*i)) *
                             expr_m.Taylor(i - j) * val_[j];
                 }
             }

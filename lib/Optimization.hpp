@@ -176,7 +176,7 @@ namespace atl {
 
             //2. do numeric factorization
             if (S != NULL) {
-                ret.factor = cs_chol<Type>(ret.A, S);
+                    ret.factor = cs_chol<Type>(ret.A, S);
                 if (ret.factor == NULL) {
                     std::cout << "Cholesky factorization error. " << std::endl;
                 }
@@ -186,14 +186,20 @@ namespace atl {
 
             //cholesky failed
             if (ret.factor == NULL) {
-                ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
+                try {
+                    ret.factor = cs_lu<Type>(ret.A, S, 1e-4);
+                } catch (...) {
+                }
                 if (ret.factor == NULL) {
                     std::cout << "LU factorization error. " << std::endl;
                 }
             }
 
             if (ret.factor == NULL) {
-                ret.factor = cs_qr<Type>(ret.A, S);
+                try {
+                    ret.factor = cs_qr<Type>(ret.A, S);
+                } catch (...) {
+                }
                 if (ret.factor == NULL) {
                     std::cout << "QR factorization error. " << std::endl;
                 }
@@ -205,6 +211,8 @@ namespace atl {
             if (ret.factor != NULL) {
                 inv(ret);
 
+            } else {
+                std::cout << "can't invert, factor is null\n\n";
             }
 
             //4. compute the log determinant
@@ -923,7 +931,7 @@ namespace atl {
     protected:
 
         void Prepare(int phase) {
-
+            atl::Variable<T>::tape.Reset(true);
             if (phase == 1) {
                 this->objective_function_m->ReassignIds();
             }
@@ -954,6 +962,44 @@ namespace atl {
         }
 
         void CallInnerObjectiveFunction(atl::Variable<T>& f) {
+            ////            std::cout<<"statck size = "<<atl::Variable<T>::tape.stack_current<<"\n\n";
+            //            atl::Variable<T>::tape.derivative_trace_level = atl::DYNAMIC_RECORD;
+            //            if (!atl::Variable<T>::tape.stack_current) {
+            //                this->objective_function_m->Objective_Function(f);
+            //            }
+            //            #pragma unroll
+            //            for (int i = 0; i < atl::Variable<T>::tape.stack_current; i++) {
+            //                atl::StackEntry<T>& entry = atl::Variable<T>::tape.stack[i];
+            //                entry.w->value = 0.0;
+            //            }
+            //            if (atl::Variable<T>::tape.recording == true) {
+            //                double v = 0.0;
+            //                #pragma unroll
+            //                for (int i = 0; i < atl::Variable<T>::tape.stack_current; i++) {
+            //                    atl::StackEntry<T>& entry = atl::Variable<T>::tape.stack[i];
+            //                    typename atl::StackEntry<T>::vi_iterator it;
+            //                    int index = 0;
+            //                    entry.first.resize(entry.ids.size());
+            //                    for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+            //                        entry.first[index] = entry.exp->EvaluateDerivative((*it)->id);
+            //                        index++;
+            //                    }
+            //
+            //                    v = entry.exp->GetValue();
+            //                    entry.w->value = v;
+            //                }
+            //            } else {
+            //                double v = 0.0;
+            //                #pragma unroll
+            //                for (int i = 0; i < atl::Variable<T>::tape.stack_current; i++) {
+            //                    atl::StackEntry<T>& entry = atl::Variable<T>::tape.stack[i];
+            //                    v = entry.exp->GetValue();
+            //                    entry.w->value = v;
+            //                }
+            //
+            //
+            //
+            //            }
             atl::Variable<T>::tape.Reset();
             this->objective_function_m->Objective_Function(f);
         }
@@ -963,7 +1009,8 @@ namespace atl {
             if (this->random_variables_m.size() > 0) {//this is a laplace problem
                 this->EvaluateLaplace(f);
             } else {
-                this->objective_function_m->Objective_Function(f);
+                this->CallInnerObjectiveFunction(f);
+                //                this->objective_function_m->Objective_Function(f);
             }
         }
 
@@ -1017,15 +1064,29 @@ namespace atl {
 
     public:
 
+        virtual void Prepare() {
+
+        }
+
         void EvaluateLaplace(atl::Variable<T>& f) {
+
+
+
 
             bool recording = atl::Variable<T>::tape.recording;
             size_t PARAMETERS_SIZE = this->parameters_m.size();
             size_t RANDOM_SIZE = this->random_variables_m.size();
             size_t ALL_SIZE = this->all_variables_m.size();
+
             struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
 
             if (recording) {
+
+
+
+
+
+
                 for (int i = 0; i < RANDOM_SIZE; i++) {
                     this->random_variables_m[i]->SetValue(0.0);
                 }
@@ -1033,17 +1094,20 @@ namespace atl {
 #ifdef USE_TIMER
                 auto inner_start = std::chrono::steady_clock::now();
 #endif
-                std::cout << "Inner Minimization:\n";
-                if (this->NewtonInner(1000, 1e-4)) {
+                //                std::cout << "Inner Minimization:\n";
+                if (this->LBFGSInner(1000, 1e-12)) {
                     std::cout << "Inner converged.\n";
+                    std::cout << "Number of random effects = " << this->random_variables_m.size() << "\n";
                     std::cout << "Inner f = " << this->inner_function_value << "\n";
                     std::cout << "Inner maxg = " << this->inner_maxgc << "\n";
 
                 } else {
                     std::cout << "Inner failed.\n";
+                    std::cout << "Number of random effects = " << this->random_variables_m.size() << "\n";
                     std::cout << "Inner f = " << this->inner_function_value << "\n";
                     std::cout << "Inner maxg = " << this->inner_maxgc << "\n";
                 }
+
 #ifdef USE_TIMER
                 auto inner_end = std::chrono::steady_clock::now();
                 std::chrono::duration<double> inner_time = (inner_end - inner_start);
@@ -1118,7 +1182,8 @@ namespace atl {
                 T ld = cs_log_det(chol->L);
                 log_det = ld;
 
-
+                std::cout << ld << "\n";
+                //                exit(0);
 
                 for (int i = 0; i < PARAMETERS_SIZE; i++) {
                     derivatives_f[this->parameters_m[i]->info] = g[i];
@@ -1156,7 +1221,6 @@ namespace atl {
 
 
 
-                std::cout << "start\nlog det actual:     ";
                 for (int p = 0; p < PARAMETERS_SIZE; p++) {
                     T trace = 0;
                     for (int i = 0; i < RANDOM_SIZE; i++) {
@@ -1176,11 +1240,10 @@ namespace atl {
                         int error = cs_cholsol_x(0, hessian, re_dx.data(), chol, this->S_outer, this->x_scratch.data(), i);
                         trace += re_dx[i];
                     }
-                    //                    std::cout << "{" << this->parameters_m[p]->info->id << ", " << trace << "} ";
+                    std::cout << trace << "......\n";
                     derivatives_logdet[this->parameters_m[p]->info] = trace;
                 }
-                std::cout << "\n";
-
+                exit(0);
 
 
 
@@ -1407,7 +1470,6 @@ namespace atl {
                 size_t in = 0;
                 for (id_it = entry.ids.begin(); id_it != entry.ids.end(); ++id_it) {
                     T dx = derivatives_logdet[(*id_it)];
-                    //                    std::cout<<(*id_it)->id<<" "<<dx<<"\n";
                     entry.first[in] = dx;
                     in++;
                 }
@@ -1444,6 +1506,8 @@ namespace atl {
                 atl::Variable<T> innerf; // = this->objective_function_m->Evaluate();
                 this->objective_function_m->Objective_Function(innerf);
                 atl::Variable<T>::tape.AccumulateSecondOrder();
+
+
                 if (!this->pattern_known) {
 
                     for (int i = 0; i < RANDOM_SIZE; i++) {
@@ -1496,7 +1560,6 @@ namespace atl {
                 log_det = ld;
                 atl::Variable<T>::tape.recording = false;
                 f = 0.0;
-                //                f = this->objective_function_m->Evaluate();
                 this->objective_function_m->Objective_Function(f);
                 f += static_cast<T> (.5) * log_det;
                 f -= static_cast<T> (.5)*(static_cast<T> (RANDOM_SIZE) * std::log((static_cast<T> (2.0 * M_PI))));
@@ -1575,6 +1638,7 @@ namespace atl {
 
             std::cout << "|\n" << ' ' << std::string((print_width * (name_width + 1 + value_width + 1 + grad_width + 1)), '-') << "\n";
             std::cout << "\n\n";
+//            exit(0);
         }
 
         virtual bool Evaluate() = 0;
@@ -1587,6 +1651,276 @@ namespace atl {
             return sum;
         }
 
+        void InnerValue(atl::Variable<T>& f) {
+            f = 0.0;
+            atl::Variable<T>::tape.recording = false;
+            this->objective_function_m->Objective_Function(f);
+        }
+
+        void InnerGradient(atl::Variable<T>& f, std::valarray<T>& gradient, T& maxgc) {
+            f = 0.0;
+            atl::Variable<T>::tape.Reset();
+            atl::Variable<T>::tape.recording = true;
+            this->objective_function_m->Objective_Function(f);
+            atl::Variable<T>::tape.AccumulateFirstOrder();
+            gradient.resize(this->objective_function_m->random_variables_m.size());
+            maxgc = -.0 * std::numeric_limits<T>::min();
+
+            for (int i = 0; i < this->objective_function_m->random_variables_m.size(); i++) {
+                T g = atl::Variable<T>::tape.Value(this->objective_function_m->random_variables_m[i]->info->id);
+                gradient[i] = this->objective_function_m->random_variables_m[i]->GetScaledGradient(
+                        this->objective_function_m->random_variables_m[i]->GetInternalValue()) * g;
+                maxgc = std::max(maxgc, std::fabs(gradient[i]));
+            }
+
+            atl::Variable<T>::tape.Reset();
+        }
+
+        /**
+         * returns the a column of a matrix as a std::valarray.
+         * @param matrix
+         * @param column
+         * @return 
+         */
+        const std::valarray<T> Column(std::valarray<std::valarray<T> > &matrix, size_t column) {
+
+            std::valarray<T> ret(matrix.size());
+
+            for (int i = 0; i < ret.size(); i++) {
+                ret[i] = matrix[i][column];
+            }
+            return ret;
+        }
+
+        bool LBFGSInner(int iterations = 1000, T tol = 1e-4) {
+            typedef atl::Variable<T> variable_t;
+            size_t max_history = 1000;
+            int maxLineSearches_ = 10;
+            bool verbose_m = true;
+            int print_interval_m = 10;
+
+            size_t number_of_parameters_m = this->random_variables_m.size();
+
+
+
+            std::valarray<T> x(number_of_parameters_m);
+            std::valarray<T> best(number_of_parameters_m);
+            //current gradient
+            std::valarray<T> g(number_of_parameters_m);
+
+
+            std::valarray<T> ng(x.size());
+
+            //initial evaluation
+            atl::Variable<T> fx(0.0);
+
+
+
+            //Call the objective function and collect stats..
+            //            this->CallObjectiveFunction(fx);
+            T maxgc;
+            this->InnerGradient(fx, g, maxgc);
+            this->inner_maxgc = maxgc;
+            T function_value_m = fx.GetValue();
+            this->inner_function_value = function_value_m;
+            //            variable nfx(fx);
+            //Historical evaluations
+            std::valarray<T> px(number_of_parameters_m);
+            std::valarray<T> pg(number_of_parameters_m);
+            std::valarray<std::valarray<T> > dxs(std::valarray<T > (max_history), number_of_parameters_m);
+            std::valarray<std::valarray<T> > dgs(std::valarray<T > (max_history), number_of_parameters_m);
+
+            //set parameters
+            for (size_t i = 0; i < g.size(); i++) {
+                x[i] = this->random_variables_m[i]->GetInternalValue();
+            }
+
+            std::valarray<T> z(number_of_parameters_m);
+
+
+
+
+            T step = 0.1;
+            T relative_tolerance;
+            T norm_g;
+            const size_t nop = number_of_parameters_m;
+            std::valarray<T> p;
+            std::valarray<T>a;
+            size_t iteration_m;
+
+
+            for (int i = 0; i < iterations; ++i) {
+
+
+
+
+
+                iteration_m = i + 1;
+
+                norm_g = this->norm(g);
+                //
+                //                // Backtracking using Wolfe's first condition (Armijo condition)
+                step = i ? 1.0 : (1.0 / norm_g); //was just norm2
+                relative_tolerance = tolerance * std::max<T > (T(1.0), norm_g);
+
+                if (verbose_m && ((i % print_interval_m) == 0)) {
+                    std::cout << "Iteration = " << i << ", maxgc = " << maxgc << "\n";
+                }
+
+                if (maxgc <= tol) {
+                    this->InnerValue(fx);
+                    this->inner_function_value = function_value_m;
+                    if (verbose_m) {
+                        std::cout << "\nConvergence: \n";
+
+
+                        std::cout << std::left << "Iteration = " << i << "\nMaxgc = " << maxgc << "\nFunction value = " << fx.GetValue() << "\n";
+                    }
+                    return true;
+                }
+
+                z = g;
+
+
+                if (i > 0) {
+
+                    size_t h = std::min<size_t > (i, max_history);
+                    size_t end = (i - 1) % h;
+
+                    //update histories
+                    for (size_t r = 0; r < nop; r++) {
+                        dxs[r][end] = this->random_variables_m[r]->GetInternalValue() - px[r];
+                        dgs[r][end] = g[r] - pg[r];
+                    }
+
+                    p.resize(h);
+                    a.resize(h);
+
+                    for (size_t j = 0; j < h; ++j) {
+                        const size_t k = (end - j + h) % h;
+                        p[k] = 1.0 / Dot(Column(dxs, k), Column(dgs, k));
+
+                        a[k] = p[k] * Dot(Column(dxs, k), z);
+                        z -= a[k] * Column(dgs, k);
+                    }
+                    // Scaling of initial Hessian (identity matrix)
+                    z *= Dot(Column(dxs, end), Column(dgs, end)) / Dot(Column(dgs, end), Column(dgs, end));
+
+                    for (size_t j = 0; j < h; ++j) {
+                        const size_t k = (end + j + 1) % h;
+                        const T b = p[k] * Dot(Column(dgs, k), z);
+                        z += Column(dxs, k) * (a[k] - b);
+
+
+                    }
+
+                }//end if(i>0)
+
+
+
+
+                T descent = 0;
+                for (size_t j = 0; j < nop; j++) {
+                    px[j] = this->random_variables_m[j]->GetInternalValue();
+                    x[j] = px[j];
+                    pg[j] = g[j];
+                    descent += z[j] * g[j];
+                }//end for
+
+
+                descent *= T(-1.0); // * Dot(z, g);
+                if (descent > T(-0.00001) * relative_tolerance /* tolerance relative_tolerance*/) {
+
+                    z = g;
+                    iterations -= i;
+                    i = 0;
+                    step = 1.0;
+                    descent = -1.0 * Dot(z, g);
+                }//end if
+
+
+
+                bool down = false;
+
+                int ls;
+
+                int fails = 0;
+
+                variable_t::tape.recording = false;
+                best = x;
+                for (ls = 0; ls < maxLineSearches_; ++ls) {
+                    // Tentative solution, gradient and loss
+                    std::valarray<T> nx = x - step * z;
+
+                    for (size_t j = 0; j < nop; j++) {
+                        this->random_variables_m[j]->UpdateValue(nx[j]);
+                    }
+
+
+
+                    this->InnerValue(fx);
+
+                    if (fx != fx) {
+
+                        for (size_t j = 0; j < nop; j++) {
+                            this->random_variables_m[j]->UpdateValue(best[j]);
+                        }
+                        variable_t::tape.recording = true;
+
+                        return false;
+                    }
+
+
+                    if (fx <= function_value_m + tol * T(10e-4) * step * descent) { // First Wolfe condition
+
+                        if (fx.GetValue() == function_value_m) {
+                            fails++;
+                        }
+
+                        variable_t::tape.recording = true;
+                        this->InnerGradient(fx, ng, maxgc);
+                        this->inner_maxgc = maxgc;
+                        this->inner_function_value = fx.GetValue();
+                        if (down || (-1.0 * Dot(z, ng) >= 0.9 * descent)) { // Second Wolfe condition
+                            x = nx;
+                            g = ng;
+                            //                            fx = fx;
+                            function_value_m = fx.GetValue();
+                            this->inner_function_value = function_value_m;
+                            break;
+                        } else {
+                            variable_t::tape.recording = false;
+                            step *= 10.0;
+                        }
+                    } else {
+                        step /= 10.0;
+                        down = true;
+                    }
+
+
+                    //                    if (fails >= 5) {
+                    //                        return false;
+                    //                    }
+                }
+
+
+                if (ls == maxLineSearches_) {
+                    for (size_t j = 0; j < nop; j++) {
+                        this->random_variables_m[j]->UpdateValue(best[j]);
+                    }
+                    variable_t::tape.recording = true;
+                    if (verbose_m) {
+                        std::cout << "Inner Max line searches!\n";
+                    }
+                    return false;
+                }
+
+            }
+            variable_t::tape.recording = true;
+
+            return false;
+        }
+
         bool NewtonInner(int max_iter = 20, T tol = 1e-12) {
 
             atl::Variable<T> fx;
@@ -1596,6 +1930,14 @@ namespace atl {
             std::vector<T> gradient_(nops);
 
             struct cs_symbolic<T>* S = NULL;
+
+
+            T lambda = 1.0;
+            T error = std::numeric_limits<T>::max();
+            T error_change = std::numeric_limits<T>::max();
+            T err;
+            T previous;
+
             for (int iter = 0; iter < max_iter; iter++) {
 
 
@@ -1606,6 +1948,22 @@ namespace atl {
                 fx = 0.0;
                 this->objective_function_m->Objective_Function(fx);
                 this->inner_function_value = fx.GetValue();
+
+                if (iter) {
+
+                    err = (fx.GetValue() - previous) / previous;
+
+                    if (err < error) {
+                        error_change = error - err;
+                        lambda /= T(10.0);
+                    } else {
+                        error_change = err - error;
+                        lambda *= T(10.0);
+                    }
+                    error = err;
+                    previous = fx.GetValue();
+
+                }
 
                 atl::Variable<T>::tape.AccumulateSecondOrder();
                 struct cs_sparse<T>* RHessian = cs_spalloc<T>(0, 0, 1, 1, 1);
@@ -1635,7 +1993,11 @@ namespace atl {
                         gradient_[i] = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id);
                         std::vector<int>& hm = this->hessian_pattern_map[i];
                         for (int j = 0; j < hm.size(); j++) {
+
                             T dxx = atl::Variable<T>::tape.Value(this->random_variables_m[i]->info->id, this->random_variables_m[hm[j]]->info->id);
+                            if (dxx != dxx) {
+                                return false;
+                            }
                             cs_entry(RHessian, i, hm[j], dxx);
                         }
                     }
@@ -1660,7 +2022,8 @@ namespace atl {
 
 
                 cs_free(hessian);
-                std::cout << "  Newton raphson " << iter << ", inner maxgc = " << this->inner_maxgc << std::endl;
+                if ((iter % 10) == 0)
+                    std::cout << "  Newton raphson " << iter << ", inner maxgc = " << this->inner_maxgc << std::endl;
                 if (this->inner_maxgc <= tol) {
                     return true;
                 }
@@ -1668,7 +2031,7 @@ namespace atl {
 
 
                 for (int j = 0; j < random_variables_m.size(); j++) {
-                    random_variables_m[j]->SetValue(random_variables_m[j]->GetValue() - gradient_[j]);
+                    random_variables_m[j]->SetValue(random_variables_m[j]->GetValue() - lambda * gradient_[j]);
                 }
             }
 
@@ -1678,6 +2041,7 @@ namespace atl {
         }
 
         bool line_search(std::vector<atl::Variable<T>* >& parameters,
+                atl::Variable<T>& fx,
                 T& function_value,
                 std::valarray<T>& x,
                 std::valarray<T>& best,
@@ -1726,10 +2090,13 @@ namespace atl {
                 best[j] = parameters[j]->GetValue();
             }
 
-            atl::Variable<T> fx;
+            //            atl::Variable<T> fx;
+
             for (ls = 0; ls < this->max_line_searches; ++ls) {
 
-
+                if (((this->outer_iteration + ls) % this->print_interval) == 0) {
+                    this->Print();
+                }
 
                 // Tentative solution, gradient and loss
                 std::valarray<T> nx = x - step * z;
@@ -1774,7 +2141,7 @@ namespace atl {
                     }
 
                     atl::Variable<T>::tape.Reset();
-                    if (down || (-1.0 * Dot(z, nwg) >= 0.9 * descent)) { // Second Wolfe condition
+                    if (down || (-1.0 * Dot(z, ng) >= 0.9 * descent)) { // Second Wolfe condition
                         x = nx;
                         gradient = ng;
                         function_value = fx.GetValue();
@@ -1975,6 +2342,7 @@ namespace atl {
 
                 T fv = this->function_value;
                 if (!this->line_search(this->parameters_m,
+                        fx,
                         this->function_value,
                         this->x,
                         this->best,
@@ -1984,13 +2352,14 @@ namespace atl {
                         this->maxgc,
                         iteration, false)) {
                     std::cout << "Outer Max line searches (" << this->max_line_searches << ").";
+                    this->Print();
                     return false;
 
                 }
                 if ((fv - this->function_value) == 0.0 && no_progress_count == 5) {
                     std::cout << "Not progressing...bailing out!\n";
                     return false;
-                }else{
+                } else {
                     no_progress_count++;
                 }
 

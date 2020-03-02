@@ -58,8 +58,8 @@ namespace atl {
                 } else {
 
                     if (lhs_m.GetRows() != rhs_m.GetColumns()) {//check for vector element multiply
-                        assert(lhs_m.GetRows() == 1);
-                        assert(rhs_m.GetRows() == 1);
+//                        assert(lhs_m.GetRows() == 1);
+//                        assert(rhs_m.GetRows() == 1);
                         mm_multiply = false;
                     } else {
                         assert(lhs_m.GetRows() == rhs_m.GetColumns());

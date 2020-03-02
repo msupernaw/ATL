@@ -1225,7 +1225,7 @@ namespace atl {
 
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate(uint32_t id) = 0;
         virtual std::shared_ptr<DynamicExpressionBase<REAL_T> > Differentiate() = 0;
-        virtual const REAL_T GetValue() const = 0;
+        virtual inline const REAL_T GetValue() const = 0;
         virtual const REAL_T EvaluateDerivative(uint32_t id) const = 0;
         virtual const REAL_T EvaluateDerivative(uint32_t x, uint32_t y) const = 0;
         virtual void PushOrder(int i) = 0;
@@ -1429,7 +1429,7 @@ namespace atl {
             return neg_one * exp->Differentiate() / atl::sqrt(one - exp->Clone() * exp->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::acos(exp->GetValue());
         }
 
@@ -1512,7 +1512,7 @@ namespace atl {
             return exp->Differentiate() / atl::sqrt(one - exp->Clone() * exp->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::asin(this->exp->GetValue());
         }
 
@@ -1583,7 +1583,7 @@ namespace atl {
             return exp->Differentiate() / (exp->Clone() * exp->Clone() + one);
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::atan(this->exp->GetValue());
         }
 
@@ -1663,7 +1663,7 @@ namespace atl {
             return lhs_m->Differentiate() + rhs_m->Differentiate();
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return lhs_m->GetValue() + rhs_m->GetValue();
         }
 
@@ -1750,7 +1750,7 @@ namespace atl {
             return DYNAMIC_EXPRESSION;
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::ceil(this->exp->GetValue());
         }
 
@@ -1821,7 +1821,7 @@ namespace atl {
             return neg_one * expr_m->Differentiate() * atl::sin(expr_m);
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::cos(expr_m->GetValue());
         }
 
@@ -1904,7 +1904,7 @@ namespace atl {
             return exp_m->Differentiate() * atl::sinh(exp_m->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::cosh(exp_m->GetValue());
         }
 
@@ -1973,7 +1973,7 @@ namespace atl {
                     rhs_m->Differentiate() * lhs_m->Clone()) / (rhs_m->Clone() * rhs_m->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return lhs_m->GetValue() / rhs_m->GetValue();
         }
 
@@ -2054,7 +2054,7 @@ namespace atl {
             return exp_m->Differentiate() * this->Clone();
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::exp(exp_m->GetValue());
         }
 
@@ -2120,7 +2120,7 @@ namespace atl {
             return (exp_m->Differentiate() * exp_m->Clone()) / this->Clone();
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::fabs(exp_m->GetValue());
         }
 
@@ -2186,7 +2186,7 @@ namespace atl {
             return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(0.0));
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::floor(this->exp->GetValue());
         }
 
@@ -2251,7 +2251,7 @@ namespace atl {
             return exp_m->Differentiate() / exp_m;
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::log(this->exp_m->GetValue());
         }
 
@@ -2318,7 +2318,7 @@ namespace atl {
             return (exp->Differentiate() / (std::shared_ptr<DynamicExpressionBase<REAL_T> >(new RealDynamic<REAL_T>(AD_LOG10)) * exp->Clone()));
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::log10(exp->GetValue());
         }
 
@@ -2394,7 +2394,7 @@ namespace atl {
                     lhs_m->Differentiate() * rhs_m->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return lhs_m->GetValue() * rhs_m->GetValue();
         }
 
@@ -2518,7 +2518,7 @@ namespace atl {
             return NULL; //suppress warning
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::pow(lhs_m->GetValue(), rhs_m->GetValue());
         }
 
@@ -2642,7 +2642,7 @@ namespace atl {
             return std::make_shared<RealDynamic<REAL_T> >(0.0);
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return this->value_m;
         }
 
@@ -2694,7 +2694,7 @@ namespace atl {
             return exp_m->Differentiate() * atl::cos(exp_m->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::sin(exp_m->GetValue());
         }
 
@@ -2756,7 +2756,7 @@ namespace atl {
             return exp_m->Differentiate() * atl::cosh(exp_m->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::sinh(exp_m->GetValue());
         }
 
@@ -2820,7 +2820,7 @@ namespace atl {
             return exp_m->Differentiate() / (two * this->Clone());
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::sqrt(this->exp_m->GetValue());
         }
 
@@ -2884,7 +2884,7 @@ namespace atl {
             return lhs_m->Differentiate() - rhs_m->Differentiate();
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return lhs_m->GetValue() - rhs_m->GetValue();
         }
 
@@ -2952,7 +2952,7 @@ namespace atl {
             return exp_m->Differentiate() * (one / atl::cos(exp_m->Clone()))*(one / atl::cos(exp_m->Clone()));
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::tan(exp_m->GetValue());
         }
 
@@ -3019,7 +3019,7 @@ namespace atl {
             return exp_m->Differentiate() * sech*sech;
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return std::tanh(exp_m->GetValue());
         }
 
@@ -3096,7 +3096,7 @@ namespace atl {
             return std::shared_ptr<DynamicExpressionBase<REAL_T> >(new DifferentiatedVariableDynamic<REAL_T>(info, 1));
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return info->value;
         }
 
@@ -3182,7 +3182,7 @@ namespace atl {
             return std::make_shared<RealDynamic<REAL_T> >(static_cast<REAL_T> (0.0));
         }
 
-        virtual const REAL_T GetValue() const {
+        virtual inline const REAL_T GetValue() const {
             return this->info->id == diff_id ? static_cast<REAL_T> (1.0) : static_cast<REAL_T> (0.0);
         }
 
@@ -3229,8 +3229,8 @@ namespace atl {
             return ss.str();
         }
     };
-
-
+    
+ 
 
 }
 #endif
