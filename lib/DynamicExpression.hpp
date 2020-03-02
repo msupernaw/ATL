@@ -3201,8 +3201,8 @@ namespace atl {
         }
 
         virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
-            assert(order<=id.size());
-            this->diff_id = id[order-1];
+            assert(order <= id.size());
+            this->diff_id = id[order - 1];
         }
 
         virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
@@ -3229,6 +3229,11 @@ namespace atl {
             return ss.str();
         }
     };
+
+    template<typename REAL_T>
+    struct DynamicExpressionPostIterator {
+    };
+
 
 
 

@@ -14,6 +14,10 @@
 #ifndef ATL_HPP
 #define ATL_HPP
 
+//SEMANTIC VERSIONING
+#define ATL_VERSION_MAJOR 1
+#define ATL_VERSION_MINOR 01
+#define ATL_VERSION_PATCH 0
 
 //#include "lib/MinMax.hpp"
 
