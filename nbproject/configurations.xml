@@ -4,94 +4,392 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="ATL" displayName="ATL" projectFiles="true">
-        <logicalFolder name="support" displayName="support" projectFiles="true">
-          <itemPath>ATL/support/cs_sparse.hpp</itemPath>
-          <itemPath>ATL/support/port.hpp</itemPath>
-        </logicalFolder>
-        <logicalFolder name="third_party" displayName="third_party" projectFiles="true">
-          <itemPath>ATL/third_party/HashContainers.hpp</itemPath>
-          <itemPath>ATL/third_party/get_numericalsolvers.sh</itemPath>
-        </logicalFolder>
-        <logicalFolder name="Utilities" displayName="Utilities" projectFiles="true">
-          <logicalFolder name="IO" displayName="IO" projectFiles="true">
-            <itemPath>ATL/Utilities/IO/Console.hpp</itemPath>
-            <itemPath>ATL/Utilities/IO/StreamedDataFile.hpp</itemPath>
-          </logicalFolder>
-          <itemPath>ATL/Utilities/BigFloat.hpp</itemPath>
-          <itemPath>ATL/Utilities/CLFAllocator.hpp</itemPath>
-          <itemPath>ATL/Utilities/Combinations.hpp</itemPath>
-          <itemPath>ATL/Utilities/MemoryPool.hpp</itemPath>
-          <itemPath>ATL/Utilities/Platform.hpp</itemPath>
-          <itemPath>ATL/Utilities/Plots.hpp</itemPath>
-          <itemPath>ATL/Utilities/Profile.hpp</itemPath>
-          <itemPath>ATL/Utilities/Profiler.hpp</itemPath>
-          <itemPath>ATL/Utilities/SIMD.hpp</itemPath>
-          <itemPath>ATL/Utilities/StdMath.hpp</itemPath>
-          <itemPath>ATL/Utilities/StringUtil.hpp</itemPath>
-          <itemPath>ATL/Utilities/compressed_vector.hpp</itemPath>
-          <itemPath>ATL/Utilities/flat_map.hpp</itemPath>
-          <itemPath>ATL/Utilities/flat_set.hpp</itemPath>
-          <itemPath>ATL/Utilities/lazyflatset.hpp</itemPath>
-          <itemPath>ATL/Utilities/short_alloc.hpp</itemPath>
-          <itemPath>ATL/Utilities/small_set.hpp</itemPath>
-        </logicalFolder>
-        <itemPath>ATL/ACos.hpp</itemPath>
-        <itemPath>ATL/ASin.hpp</itemPath>
-        <itemPath>ATL/ATL.hpp</itemPath>
-        <itemPath>ATL/ATL_RSD.docx</itemPath>
-        <itemPath>ATL/ATan.hpp</itemPath>
-        <itemPath>ATL/Add.hpp</itemPath>
-        <itemPath>ATL/CLFAllocator.hpp</itemPath>
-        <itemPath>ATL/Ceil.hpp</itemPath>
-        <itemPath>ATL/Cos.hpp</itemPath>
-        <itemPath>ATL/Cosh.hpp</itemPath>
-        <itemPath>ATL/DerivativeChecker.hpp</itemPath>
-        <itemPath>ATL/Divide.hpp</itemPath>
-        <itemPath>ATL/DynamicExpression.hpp</itemPath>
-        <itemPath>ATL/Exp.hpp</itemPath>
-        <itemPath>ATL/Expression.hpp</itemPath>
-        <itemPath>ATL/Fabs.hpp</itemPath>
-        <itemPath>ATL/Floor.hpp</itemPath>
-        <itemPath>ATL/FunctionMinimizer.hpp</itemPath>
-        <itemPath>ATL/Helpers.hpp</itemPath>
-        <itemPath>ATL/LICENSE.md</itemPath>
-        <itemPath>ATL/Live-variables-Hessian.pdf</itemPath>
-        <itemPath>ATL/Log.hpp</itemPath>
-        <itemPath>ATL/Log10.hpp</itemPath>
-        <itemPath>ATL/Makefile</itemPath>
-        <itemPath>ATL/Matrix.hpp</itemPath>
-        <itemPath>ATL/MatrixUtilities.hpp</itemPath>
-        <itemPath>ATL/MinMax.hpp</itemPath>
-        <itemPath>ATL/Multiply.hpp</itemPath>
-        <itemPath>ATL/Optimization.hpp</itemPath>
-        <itemPath>ATL/Optimization.hpp_backup</itemPath>
-        <itemPath>ATL/Optimization.hpp_backup2</itemPath>
-        <itemPath>ATL/Platform.hpp</itemPath>
-        <itemPath>ATL/Pow.hpp</itemPath>
-        <itemPath>ATL/README.md</itemPath>
-        <itemPath>ATL/Real.hpp</itemPath>
-        <itemPath>ATL/SIMD.hpp</itemPath>
-        <itemPath>ATL/Serialize.hpp</itemPath>
-        <itemPath>ATL/Sign.h</itemPath>
-        <itemPath>ATL/Sin.hpp</itemPath>
-        <itemPath>ATL/Sinh.hpp</itemPath>
-        <itemPath>ATL/Sqrt.hpp</itemPath>
-        <itemPath>ATL/Subtract.hpp</itemPath>
-        <itemPath>ATL/Tan.hpp</itemPath>
-        <itemPath>ATL/Tanh.hpp</itemPath>
-        <itemPath>ATL/Tape.hpp</itemPath>
-        <itemPath>ATL/ThreadPool.hpp</itemPath>
-        <itemPath>ATL/Traits.hpp</itemPath>
-        <itemPath>ATL/Transformations.h</itemPath>
-        <itemPath>ATL/Variable.hpp</itemPath>
-        <itemPath>ATL/VariableInfo.hpp</itemPath>
-        <itemPath>ATL/Vector.hpp</itemPath>
-        <itemPath>ATL/ad_cmath.hpp</itemPath>
-        <itemPath>ATL/clfmalloc.h</itemPath>
-        <itemPath>ATL/higher_order_rm_ad.pdf</itemPath>
-        <itemPath>ATL/notes.txt</itemPath>
+    </logicalFolder>
+    <logicalFolder name="lib" displayName="lib" projectFiles="true">
+      <logicalFolder name="support" displayName="support" projectFiles="true">
+        <itemPath>lib/support/cs_sparse.hpp</itemPath>
+        <itemPath>lib/support/port.hpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="third_party" displayName="third_party" projectFiles="true">
+        <logicalFolder name="EASTL" displayName="EASTL" projectFiles="true">
+          <logicalFolder name="benchmark" displayName="benchmark" projectFiles="true">
+            <logicalFolder name="source" displayName="source" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkAlgorithm.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkBitset.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkDeque.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkHash.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkHeap.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkList.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkMap.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkSet.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkSort.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkString.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkTupleVector.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/BenchmarkVector.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/EASTLBenchmark.cpp</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/EASTLBenchmark.h</itemPath>
+              <itemPath>lib/third_party/EASTL/benchmark/source/main.cpp</itemPath>
+            </logicalFolder>
+            <itemPath>lib/third_party/EASTL/benchmark/CMakeLists.txt</itemPath>
+          </logicalFolder>
+          <logicalFolder name="doc" displayName="doc" projectFiles="true">
+            <logicalFolder name="Bonus" displayName="Bonus" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/doc/Bonus/tuple_vector_readme.md</itemPath>
+            </logicalFolder>
+            <logicalFolder name="CMake" displayName="CMake" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/doc/CMake/EASTL_Project_Integration.md</itemPath>
+            </logicalFolder>
+            <logicalFolder name="html" displayName="html" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Benchmarks.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Best Practices.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Design.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL FAQ.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Glossary.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Gotchas.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Introduction.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Maintenance.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTL Modules.html</itemPath>
+              <itemPath>lib/third_party/EASTL/doc/html/EASTLDoc.css</itemPath>
+            </logicalFolder>
+            <itemPath>lib/third_party/EASTL/doc/Benchmarks.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/BestPractices.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Design.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/EASTL.natvis</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/FAQ.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Glossary.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Gotchas.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Introduction.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Maintenance.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/Modules.md</itemPath>
+            <itemPath>lib/third_party/EASTL/doc/quick-reference.pdf</itemPath>
+          </logicalFolder>
+          <logicalFolder name="EABase" displayName="EABase" projectFiles="true">
+            <logicalFolder name="doc" displayName="doc" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/EABase/doc/EABase.html</itemPath>
+            </logicalFolder>
+            <logicalFolder name="include" displayName="include" projectFiles="true">
+              <logicalFolder name="Common" displayName="Common" projectFiles="true">
+                <logicalFolder name="EABase" displayName="EABase" projectFiles="true">
+                  <logicalFolder name="config" displayName="config" projectFiles="true">
+                    <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompiler.h</itemPath>
+                    <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompilertraits.h</itemPath>
+                    <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/config/eaplatform.h</itemPath>
+                  </logicalFolder>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/eabase.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/eahave.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/earesult.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/eastdarg.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/eaunits.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/int128.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/nullptr.h</itemPath>
+                  <itemPath>lib/third_party/EASTL/EABase/include/Common/EABase/version.h</itemPath>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
+            <itemPath>lib/third_party/EASTL/EABase/.gitignore</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/.gitmodules</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/.p4ignore</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/.travis.yml</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/CMakeLists.txt</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/CONTRIBUTING.md</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/LICENSE</itemPath>
+            <itemPath>lib/third_party/EASTL/EABase/README.md</itemPath>
+          </logicalFolder>
+          <logicalFolder name="include" displayName="include" projectFiles="true">
+            <logicalFolder name="EASTL" displayName="EASTL" projectFiles="true">
+              <logicalFolder name="bonus" displayName="bonus" projectFiles="true">
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/adaptors.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/call_traits.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/compressed_pair.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/fixed_ring_buffer.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/fixed_tuple_vector.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/intrusive_sdlist.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/intrusive_slist.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/list_map.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/lru_cache.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/ring_buffer.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/sort_extra.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/sparse_matrix.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/bonus/tuple_vector.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="internal" displayName="internal" projectFiles="true">
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/allocator_traits.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/allocator_traits_fwd_decls.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/char_traits.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/config.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/copy_help.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/enable_shared.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/fill_help.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/fixed_pool.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/function.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/function_detail.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/function_help.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/functional_base.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/generic_iterator.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/hashtable.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/in_place_t.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/integer_sequence.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/intrusive_hashtable.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/mem_fn.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/memory_base.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/meta.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/move_help.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/pair_fwd_decls.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/piecewise_construct_t.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/red_black_tree.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/smart_ptr.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/thread_support.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/tuple_fwd_decls.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/type_compound.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/type_fundamental.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/type_pod.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/type_properties.h</itemPath>
+                <itemPath>lib/third_party/EASTL/include/EASTL/internal/type_transformations.h</itemPath>
+              </logicalFolder>
+              <itemPath>lib/third_party/EASTL/include/EASTL/algorithm.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/allocator.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/allocator_malloc.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/any.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/array.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/bitset.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/bitvector.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/chrono.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/core_allocator.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/core_allocator_adapter.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/deque.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/finally.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_allocator.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_function.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_hash_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_hash_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_list.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_slist.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_string.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_substring.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/fixed_vector.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/functional.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/hash_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/hash_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/heap.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/initializer_list.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/intrusive_hash_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/intrusive_hash_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/intrusive_list.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/intrusive_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/iterator.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/linked_array.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/linked_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/list.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/memory.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/meta.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/numeric.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/numeric_limits.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/optional.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/priority_queue.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/queue.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/random.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/ratio.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/safe_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/scoped_array.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/scoped_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/segmented_vector.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/shared_array.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/shared_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/slist.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/sort.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/span.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/stack.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/string.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/string_hash_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/string_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/string_view.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/tuple.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/type_traits.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/unique_ptr.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/unordered_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/unordered_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/utility.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/variant.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/vector.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/vector_map.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/vector_multimap.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/vector_multiset.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/vector_set.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/version.h</itemPath>
+              <itemPath>lib/third_party/EASTL/include/EASTL/weak_ptr.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="scripts" displayName="scripts" projectFiles="true">
+            <logicalFolder name="CMake" displayName="CMake" projectFiles="true">
+              <itemPath>lib/third_party/EASTL/scripts/CMake/CommonCppFlags.cmake</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="source" displayName="source" projectFiles="true">
+            <itemPath>lib/third_party/EASTL/source/allocator_eastl.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/assert.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/fixed_pool.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/hashtable.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/intrusive_list.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/numeric_limits.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/red_black_tree.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/string.cpp</itemPath>
+            <itemPath>lib/third_party/EASTL/source/thread_support.cpp</itemPath>
+          </logicalFolder>
+          <itemPath>lib/third_party/EASTL/.clang-format</itemPath>
+          <itemPath>lib/third_party/EASTL/.gitattributes</itemPath>
+          <itemPath>lib/third_party/EASTL/.gitignore</itemPath>
+          <itemPath>lib/third_party/EASTL/.gitmodules</itemPath>
+          <itemPath>lib/third_party/EASTL/.p4ignore</itemPath>
+          <itemPath>lib/third_party/EASTL/.travis.yml</itemPath>
+          <itemPath>lib/third_party/EASTL/3RDPARTYLICENSES.TXT</itemPath>
+          <itemPath>lib/third_party/EASTL/CMakeLists.txt</itemPath>
+          <itemPath>lib/third_party/EASTL/CONTRIBUTING.md</itemPath>
+          <itemPath>lib/third_party/EASTL/LICENSE</itemPath>
+          <itemPath>lib/third_party/EASTL/README.md</itemPath>
+          <itemPath>lib/third_party/EASTL/build.sh</itemPath>
+        </logicalFolder>
+        <logicalFolder name="flat_hash_map"
+                       displayName="flat_hash_map"
+                       projectFiles="true">
+          <itemPath>lib/third_party/flat_hash_map/bytell_hash_map.hpp</itemPath>
+          <itemPath>lib/third_party/flat_hash_map/flat_hash_map.hpp</itemPath>
+          <itemPath>lib/third_party/flat_hash_map/unordered_map.hpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="hat-trie-master"
+                       displayName="hat-trie-master"
+                       projectFiles="true">
+          <logicalFolder name="include" displayName="include" projectFiles="true">
+            <logicalFolder name="tsl" displayName="tsl" projectFiles="true">
+              <logicalFolder name="array-hash" displayName="array-hash" projectFiles="true">
+                <itemPath>lib/third_party/hat-trie-master/include/tsl/array-hash/array_growth_policy.h</itemPath>
+                <itemPath>lib/third_party/hat-trie-master/include/tsl/array-hash/array_hash.h</itemPath>
+                <itemPath>lib/third_party/hat-trie-master/include/tsl/array-hash/array_map.h</itemPath>
+                <itemPath>lib/third_party/hat-trie-master/include/tsl/array-hash/array_set.h</itemPath>
+              </logicalFolder>
+              <itemPath>lib/third_party/hat-trie-master/include/tsl/htrie_hash.h</itemPath>
+              <itemPath>lib/third_party/hat-trie-master/include/tsl/htrie_map.h</itemPath>
+              <itemPath>lib/third_party/hat-trie-master/include/tsl/htrie_set.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <itemPath>lib/third_party/hat-trie-master/.codecov.yml</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/.travis.yml</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/CMakeLists.txt</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/LICENSE</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/README.md</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/appveyor.yml</itemPath>
+          <itemPath>lib/third_party/hat-trie-master/doxygen.conf</itemPath>
+        </logicalFolder>
+        <logicalFolder name="hopscotch-map"
+                       displayName="hopscotch-map"
+                       projectFiles="true">
+          <logicalFolder name="cmake" displayName="cmake" projectFiles="true">
+            <itemPath>lib/third_party/hopscotch-map/cmake/tsl-hopscotch-mapConfig.cmake.in</itemPath>
+          </logicalFolder>
+          <logicalFolder name="include" displayName="include" projectFiles="true">
+            <logicalFolder name="tsl" displayName="tsl" projectFiles="true">
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/bhopscotch_map.h</itemPath>
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/bhopscotch_set.h</itemPath>
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/hopscotch_growth_policy.h</itemPath>
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/hopscotch_hash.h</itemPath>
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/hopscotch_map.h</itemPath>
+              <itemPath>lib/third_party/hopscotch-map/include/tsl/hopscotch_set.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <itemPath>lib/third_party/hopscotch-map/.codecov.yml</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/.travis.yml</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/CMakeLists.txt</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/LICENSE</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/README.md</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/appveyor.yml</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/doxygen.conf</itemPath>
+          <itemPath>lib/third_party/hopscotch-map/tsl-hopscotch-map.natvis</itemPath>
+        </logicalFolder>
+        <itemPath>lib/third_party/HashContainers.hpp</itemPath>
+        <itemPath>lib/third_party/SparseCholesky.hpp</itemPath>
+        <itemPath>lib/third_party/get_numericalsolvers.sh</itemPath>
+      </logicalFolder>
+      <logicalFolder name="Utilities" displayName="Utilities" projectFiles="true">
+        <logicalFolder name="IO" displayName="IO" projectFiles="true">
+          <itemPath>lib/Utilities/IO/Console.hpp</itemPath>
+          <itemPath>lib/Utilities/IO/StreamedDataFile.hpp</itemPath>
+        </logicalFolder>
+        <itemPath>lib/Utilities/BigFloat.hpp</itemPath>
+        <itemPath>lib/Utilities/CLFAllocator.hpp</itemPath>
+        <itemPath>lib/Utilities/Combinations.hpp</itemPath>
+        <itemPath>lib/Utilities/MemoryPool.hpp</itemPath>
+        <itemPath>lib/Utilities/Platform.hpp</itemPath>
+        <itemPath>lib/Utilities/Plots.hpp</itemPath>
+        <itemPath>lib/Utilities/Profile.hpp</itemPath>
+        <itemPath>lib/Utilities/Profiler.hpp</itemPath>
+        <itemPath>lib/Utilities/SIMD.hpp</itemPath>
+        <itemPath>lib/Utilities/StdMath.hpp</itemPath>
+        <itemPath>lib/Utilities/StringUtil.hpp</itemPath>
+        <itemPath>lib/Utilities/compressed_vector.hpp</itemPath>
+        <itemPath>lib/Utilities/flat_map.hpp</itemPath>
+        <itemPath>lib/Utilities/flat_set.hpp</itemPath>
+        <itemPath>lib/Utilities/lazyflatset.hpp</itemPath>
+        <itemPath>lib/Utilities/short_alloc.hpp</itemPath>
+        <itemPath>lib/Utilities/small_set.hpp</itemPath>
+      </logicalFolder>
+      <itemPath>lib/ACos.hpp</itemPath>
+      <itemPath>lib/ASin.hpp</itemPath>
+      <itemPath>lib/ATL.hpp</itemPath>
+      <itemPath>lib/ATL_RSD.docx</itemPath>
+      <itemPath>lib/ATan.hpp</itemPath>
+      <itemPath>lib/Add.hpp</itemPath>
+      <itemPath>lib/CLFAllocator.hpp</itemPath>
+      <itemPath>lib/Ceil.hpp</itemPath>
+      <itemPath>lib/Cos.hpp</itemPath>
+      <itemPath>lib/Cosh.hpp</itemPath>
+      <itemPath>lib/DerivativeChecker.hpp</itemPath>
+      <itemPath>lib/Divide.hpp</itemPath>
+      <itemPath>lib/DynamicExpression.hpp</itemPath>
+      <itemPath>lib/Exp.hpp</itemPath>
+      <itemPath>lib/Expression.hpp</itemPath>
+      <itemPath>lib/Fabs.hpp</itemPath>
+      <itemPath>lib/Floor.hpp</itemPath>
+      <itemPath>lib/FunctionMinimizer.hpp</itemPath>
+      <itemPath>lib/Helpers.hpp</itemPath>
+      <itemPath>lib/LICENSE.md</itemPath>
+      <itemPath>lib/Live-variables-Hessian.pdf</itemPath>
+      <itemPath>lib/Log.hpp</itemPath>
+      <itemPath>lib/Log10.hpp</itemPath>
+      <itemPath>lib/Makefile</itemPath>
+      <itemPath>lib/Matrix.hpp</itemPath>
+      <itemPath>lib/MatrixUtilities.hpp</itemPath>
+      <itemPath>lib/MinMax.hpp</itemPath>
+      <itemPath>lib/Multiply.hpp</itemPath>
+      <itemPath>lib/Optimization.hpp</itemPath>
+      <itemPath>lib/Optimization.hpp_backup</itemPath>
+      <itemPath>lib/Optimization.hpp_backup2</itemPath>
+      <itemPath>lib/Platform.hpp</itemPath>
+      <itemPath>lib/Pow.hpp</itemPath>
+      <itemPath>lib/README.md</itemPath>
+      <itemPath>lib/Real.hpp</itemPath>
+      <itemPath>lib/SIMD.hpp</itemPath>
+      <itemPath>lib/Serialize.hpp</itemPath>
+      <itemPath>lib/Sign.h</itemPath>
+      <itemPath>lib/Sin.hpp</itemPath>
+      <itemPath>lib/Sinh.hpp</itemPath>
+      <itemPath>lib/Sqrt.hpp</itemPath>
+      <itemPath>lib/Subtract.hpp</itemPath>
+      <itemPath>lib/Tan.hpp</itemPath>
+      <itemPath>lib/Tanh.hpp</itemPath>
+      <itemPath>lib/Tape.hpp</itemPath>
+      <itemPath>lib/ThreadPool.hpp</itemPath>
+      <itemPath>lib/Traits.hpp</itemPath>
+      <itemPath>lib/Transformations.h</itemPath>
+      <itemPath>lib/Variable.hpp</itemPath>
+      <itemPath>lib/VariableInfo.hpp</itemPath>
+      <itemPath>lib/Vector.hpp</itemPath>
+      <itemPath>lib/ad_cmath.hpp</itemPath>
+      <itemPath>lib/clfmalloc.h</itemPath>
+      <itemPath>lib/higher_order_rm_ad.pdf</itemPath>
+      <itemPath>lib/notes.txt</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -112,10 +410,12 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>ATL.hpp</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>/Users/matthewsupernaw/NetBeansProjects/ATL_v2</Elem>
     <Elem>ATL</Elem>
+    <Elem>lib</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -141,167 +441,1312 @@
           </linkerDynSerch>
         </linkerTool>
       </compileType>
-      <item path="ATL/ACos.hpp" ex="false" tool="3" flavor2="0">
+      <item path="ATL.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ASin.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ACos.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATL.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ASin.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATL.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATan.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Add.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATan.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Add.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Ceil.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Cos.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Ceil.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Cosh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Cos.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Cosh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Divide.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Divide.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Exp.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Expression.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Exp.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Fabs.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Expression.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Floor.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Fabs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Floor.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Helpers.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/LICENSE.md" ex="false" tool="3" flavor2="0">
+      <item path="lib/Helpers.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
+      <item path="lib/LICENSE.md" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Log.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Log10.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Log.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Makefile" ex="false" tool="3" flavor2="0">
+      <item path="lib/Log10.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Matrix.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Makefile" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Matrix.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/MinMax.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Multiply.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/MinMax.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Multiply.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Platform.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Pow.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Platform.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/README.md" ex="false" tool="3" flavor2="0">
+      <item path="lib/Pow.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Real.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/README.md" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Real.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Serialize.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/SIMD.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sign.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/Serialize.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sin.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sign.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sinh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sin.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sqrt.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sinh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Subtract.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sqrt.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tan.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Subtract.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tanh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tan.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tape.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tanh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tape.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Traits.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Transformations.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/Traits.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/IO/StreamedDataFile.hpp"
+      <item path="lib/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utilities/IO/StreamedDataFile.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="ATL/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/compressed_vector.hpp"
+      <item path="lib/Utilities/compressed_vector.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="ATL/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Variable.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Variable.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Vector.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Vector.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/clfmalloc.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/clfmalloc.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
+      <item path="lib/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/notes.txt" ex="false" tool="3" flavor2="0">
+      <item path="lib/notes.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/support/port.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/support/port.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/third_party/EASTL/.clang-format"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="ATL/third_party/get_numericalsolvers.sh"
+      <item path="lib/third_party/EASTL/.gitattributes"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.gitmodules" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.p4ignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.travis.yml" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/3RDPARTYLICENSES.TXT"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/CONTRIBUTING.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.gitignore"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.gitmodules"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.p4ignore"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/CONTRIBUTING.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/doc/EABase.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompiler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompilertraits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eaplatform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eabase.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eahave.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/earesult.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eastdarg.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eaunits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/int128.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/nullptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/version.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/LICENSE" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkAlgorithm.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkBitset.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkDeque.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkHash.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkHeap.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkList.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkMap.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkSet.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkSort.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkString.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkTupleVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/EASTLBenchmark.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/EASTLBenchmark.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/build.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Benchmarks.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/BestPractices.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Bonus/tuple_vector_readme.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/CMake/EASTL_Project_Integration.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Design.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/EASTL.natvis"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/FAQ.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Glossary.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Gotchas.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Introduction.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Maintenance.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Modules.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Benchmarks.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Best Practices.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Design.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL FAQ.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Glossary.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Gotchas.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Introduction.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Maintenance.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Modules.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTLDoc.css"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/quick-reference.pdf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/algorithm.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/allocator_malloc.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/any.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bitset.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bitvector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/adaptors.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/call_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/compressed_pair.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/fixed_ring_buffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/fixed_tuple_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/intrusive_sdlist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/intrusive_slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/list_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/lru_cache.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/ring_buffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/sort_extra.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/sparse_matrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/tuple_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/chrono.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/core_allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/core_allocator_adapter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/deque.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/finally.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_function.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_string.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_substring.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/functional.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/heap.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/initializer_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/allocator_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/allocator_traits_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/char_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/config.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/copy_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/enable_shared.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/fill_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/fixed_pool.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function_detail.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/functional_base.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/generic_iterator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/hashtable.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/in_place_t.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/integer_sequence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/intrusive_hashtable.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/mem_fn.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/memory_base.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/meta.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/move_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/pair_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/piecewise_construct_t.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/red_black_tree.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/smart_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/thread_support.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/tuple_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_compound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_fundamental.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_pod.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_properties.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_transformations.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/iterator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/linked_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/linked_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/memory.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/meta.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/numeric.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/numeric_limits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/optional.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/priority_queue.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/queue.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/random.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/ratio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/safe_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/scoped_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/scoped_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/segmented_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/shared_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/shared_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/sort.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/span.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/stack.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_view.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/tuple.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/type_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unique_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unordered_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unordered_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/utility.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/variant.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_multimap.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_multiset.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/version.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/weak_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/scripts/CMake/CommonCppFlags.cmake"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/allocator_eastl.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/assert.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/fixed_pool.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/hashtable.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/intrusive_list.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/numeric_limits.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/red_black_tree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/string.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/thread_support.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/SparseCholesky.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/bytell_hash_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/flat_hash_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/unordered_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/get_numericalsolvers.sh"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/.codecov.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/appveyor.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/doxygen.conf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_growth_policy.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/.codecov.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/appveyor.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/cmake/tsl-hopscotch-mapConfig.cmake.in"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/doxygen.conf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/bhopscotch_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/bhopscotch_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_growth_policy.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/tsl-hopscotch-map.natvis"
             ex="false"
             tool="3"
             flavor2="0">
@@ -340,167 +1785,1312 @@
           </linkerDynSerch>
         </linkerTool>
       </compileType>
-      <item path="ATL/ACos.hpp" ex="false" tool="3" flavor2="0">
+      <item path="ATL.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ASin.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ACos.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATL.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ASin.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATL.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ATan.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATL_RSD.docx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Add.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ATan.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Add.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Ceil.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Cos.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Ceil.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Cosh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Cos.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Cosh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Divide.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/DerivativeChecker.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Divide.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Exp.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/DynamicExpression.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Expression.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Exp.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Fabs.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Expression.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Floor.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Fabs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Floor.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Helpers.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/FunctionMinimizer.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/LICENSE.md" ex="false" tool="3" flavor2="0">
+      <item path="lib/Helpers.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
+      <item path="lib/LICENSE.md" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Log.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Live-variables-Hessian.pdf" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Log10.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Log.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Makefile" ex="false" tool="3" flavor2="0">
+      <item path="lib/Log10.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Matrix.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Makefile" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Matrix.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/MinMax.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/MatrixUtilities.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Multiply.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/MinMax.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Multiply.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp_backup" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Platform.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Optimization.hpp_backup2" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Pow.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Platform.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/README.md" ex="false" tool="3" flavor2="0">
+      <item path="lib/Pow.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Real.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/README.md" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Real.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Serialize.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/SIMD.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sign.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/Serialize.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sin.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sign.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sinh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sin.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Sqrt.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sinh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Subtract.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Sqrt.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tan.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Subtract.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tanh.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tan.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Tape.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tanh.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Tape.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Traits.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ThreadPool.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Transformations.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/Traits.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Transformations.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/BigFloat.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/CLFAllocator.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Combinations.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/IO/StreamedDataFile.hpp"
+      <item path="lib/Utilities/IO/Console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utilities/IO/StreamedDataFile.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="ATL/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/MemoryPool.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Platform.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Plots.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Profile.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/Profiler.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/SIMD.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/StdMath.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/StringUtil.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/compressed_vector.hpp"
+      <item path="lib/Utilities/compressed_vector.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="ATL/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/flat_map.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/flat_set.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/short_alloc.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Utilities/small_set.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Variable.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Variable.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/VariableInfo.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/Vector.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/Vector.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/ad_cmath.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/clfmalloc.h" ex="false" tool="3" flavor2="0">
+      <item path="lib/clfmalloc.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
+      <item path="lib/higher_order_rm_ad.pdf" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/notes.txt" ex="false" tool="3" flavor2="0">
+      <item path="lib/notes.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/support/cs_sparse.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/support/port.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/support/port.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ATL/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      <item path="lib/third_party/EASTL/.clang-format"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="ATL/third_party/get_numericalsolvers.sh"
+      <item path="lib/third_party/EASTL/.gitattributes"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.gitmodules" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.p4ignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/.travis.yml" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/3RDPARTYLICENSES.TXT"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/CONTRIBUTING.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.gitignore"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.gitmodules"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.p4ignore"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/CONTRIBUTING.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/doc/EABase.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompiler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eacompilertraits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/config/eaplatform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eabase.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eahave.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/earesult.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eastdarg.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/eaunits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/int128.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/nullptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/EABase/include/Common/EABase/version.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/LICENSE" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkAlgorithm.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkBitset.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkDeque.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkHash.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkHeap.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkList.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkMap.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkSet.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkSort.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkString.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkTupleVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/BenchmarkVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/EASTLBenchmark.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/EASTLBenchmark.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/benchmark/source/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/build.sh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Benchmarks.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/BestPractices.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Bonus/tuple_vector_readme.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/CMake/EASTL_Project_Integration.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Design.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/EASTL.natvis"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/FAQ.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Glossary.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Gotchas.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Introduction.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Maintenance.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/Modules.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Benchmarks.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Best Practices.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Design.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL FAQ.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Glossary.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Gotchas.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Introduction.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Maintenance.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTL Modules.html"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/html/EASTLDoc.css"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/doc/quick-reference.pdf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/algorithm.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/allocator_malloc.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/any.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bitset.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bitvector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/adaptors.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/call_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/compressed_pair.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/fixed_ring_buffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/fixed_tuple_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/intrusive_sdlist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/intrusive_slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/list_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/lru_cache.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/ring_buffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/sort_extra.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/sparse_matrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/bonus/tuple_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/chrono.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/core_allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/core_allocator_adapter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/deque.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/finally.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_allocator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_function.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_string.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_substring.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/fixed_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/functional.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/heap.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/initializer_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/allocator_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/allocator_traits_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/char_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/config.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/copy_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/enable_shared.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/fill_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/fixed_pool.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function_detail.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/function_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/functional_base.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/generic_iterator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/hashtable.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/in_place_t.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/integer_sequence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/intrusive_hashtable.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/mem_fn.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/memory_base.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/meta.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/move_help.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/pair_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/piecewise_construct_t.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/red_black_tree.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/smart_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/thread_support.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/tuple_fwd_decls.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_compound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_fundamental.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_pod.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_properties.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/internal/type_transformations.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_hash_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/intrusive_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/iterator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/linked_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/linked_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/list.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/memory.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/meta.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/numeric.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/numeric_limits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/optional.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/priority_queue.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/queue.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/random.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/ratio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/safe_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/scoped_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/scoped_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/segmented_vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/shared_array.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/shared_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/slist.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/sort.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/span.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/stack.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_hash_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/string_view.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/tuple.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/type_traits.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unique_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unordered_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/unordered_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/utility.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/variant.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_multimap.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_multiset.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/vector_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/version.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/include/EASTL/weak_ptr.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/scripts/CMake/CommonCppFlags.cmake"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/allocator_eastl.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/assert.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/fixed_pool.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/hashtable.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/intrusive_list.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/numeric_limits.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/red_black_tree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/string.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/EASTL/source/thread_support.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/SparseCholesky.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/bytell_hash_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/flat_hash_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/flat_hash_map/unordered_map.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/get_numericalsolvers.sh"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/.codecov.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/appveyor.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/doxygen.conf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_growth_policy.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/array-hash/array_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hat-trie-master/include/tsl/htrie_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/.codecov.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/.travis.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/CMakeLists.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/LICENSE"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/README.md"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/appveyor.yml"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/cmake/tsl-hopscotch-mapConfig.cmake.in"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/doxygen.conf"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/bhopscotch_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/bhopscotch_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_growth_policy.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_hash.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_map.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/include/tsl/hopscotch_set.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="lib/third_party/hopscotch-map/tsl-hopscotch-map.natvis"
             ex="false"
             tool="3"
             flavor2="0">

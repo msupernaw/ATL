@@ -5,13 +5,14 @@
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>ATL_v2</name>
             <c-extensions/>
-            <cpp-extensions/>
+            <cpp-extensions>cpp</cpp-extensions>
             <header-extensions>h,hpp</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>/Users/matthewsupernaw/NetBeansProjects/ATL_v2</sourceRootElem>
                 <sourceRootElem>ATL</sourceRootElem>
+                <sourceRootElem>lib</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
