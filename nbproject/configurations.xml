@@ -252,13 +252,6 @@
           <itemPath>lib/third_party/EASTL/README.md</itemPath>
           <itemPath>lib/third_party/EASTL/build.sh</itemPath>
         </logicalFolder>
-        <logicalFolder name="flat_hash_map"
-                       displayName="flat_hash_map"
-                       projectFiles="true">
-          <itemPath>lib/third_party/flat_hash_map/bytell_hash_map.hpp</itemPath>
-          <itemPath>lib/third_party/flat_hash_map/flat_hash_map.hpp</itemPath>
-          <itemPath>lib/third_party/flat_hash_map/unordered_map.hpp</itemPath>
-        </logicalFolder>
         <logicalFolder name="hat-trie-master"
                        displayName="hat-trie-master"
                        projectFiles="true">
@@ -1585,21 +1578,6 @@
       <item path="lib/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="lib/third_party/SparseCholesky.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/bytell_hash_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/flat_hash_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/unordered_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="lib/third_party/get_numericalsolvers.sh"
             ex="false"
@@ -2929,21 +2907,6 @@
       <item path="lib/third_party/HashContainers.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="lib/third_party/SparseCholesky.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/bytell_hash_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/flat_hash_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="lib/third_party/flat_hash_map/unordered_map.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="lib/third_party/get_numericalsolvers.sh"
             ex="false"
