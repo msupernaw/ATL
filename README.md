@@ -15,10 +15,15 @@ https://vlab.ncep.noaa.gov/redmine/projects/atl/repository
 * **Doxygen**: https://msupernaw.github.io/ATL/html/index.html
 
 #Automatic Differentiation
+
 #Reverse-Mode Automatic Differentiation
+
 #L-BFGS
+
 #Function Minimization
+
 #Optimization
+
 #Constrained Optimization
 
 
