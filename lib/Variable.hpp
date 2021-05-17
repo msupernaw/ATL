@@ -1008,7 +1008,13 @@ namespace atl {
         return out;
     }
 
-
+    template<typename REAL_T>
+    std::istream& operator >> (std::istream& in, Variable<REAL_T>& v) {
+        REAL_T in_v;
+        in >> in_v;
+        v.SetValue(in_v);
+        return in;
+    }
 
 
 }
