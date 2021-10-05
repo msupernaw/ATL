@@ -263,13 +263,7 @@ inline size_t next_power_of_two(size_t i)
     return i;
 }
 
-//template<typename...> using void_t = void;
-    
-template <typename...>
-struct voider { using type = void; };
-
-template <typename... Ts>
-using void_t = typename voider<Ts...>::type;
+template<typename...> using void_t = void;
 
 template<typename T, typename = void>
 struct HashPolicySelector

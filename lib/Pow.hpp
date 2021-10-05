@@ -711,49 +711,49 @@ namespace atl {
 
 
 }
-
-namespace std {
-
-    /**
-     * Returns a expression template representing pow.
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    template <class REAL_T, class LHS, class RHS>
-    inline const atl::Pow<REAL_T, LHS, RHS> pow(const atl::ExpressionBase<REAL_T, LHS>& a,
-            const atl::ExpressionBase<REAL_T, RHS>& b) {
-        return atl::Pow<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
-    }
-
-    /**
-     * Returns a expression template representing pow.
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    template <class REAL_T, class LHS>
-    inline const atl::Pow<REAL_T, LHS, atl::Real<REAL_T> > pow(const atl::ExpressionBase<REAL_T, LHS>& a,
-            REAL_T b) {
-
-        return atl::Pow<REAL_T, LHS, atl::Real<REAL_T> > (a.Cast(), b);
-    }
-
-    /**
-     * Returns a expression template representing pow.
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    template <class REAL_T, class RHS>
-    inline const atl::Pow<REAL_T, atl::Real<REAL_T>, RHS> pow(const REAL_T& a,
-            const atl::ExpressionBase<REAL_T, RHS>& b) {
-        return atl::Pow<REAL_T, atl::Real<REAL_T>, RHS > (a, b.Cast());
-    }
-}
+//
+//namespace std {
+//
+//    /**
+//     * Returns a expression template representing pow.
+//     * 
+//     * @param a
+//     * @param b
+//     * @return 
+//     */
+//    template <class REAL_T, class LHS, class RHS>
+//    inline const atl::Pow<REAL_T, LHS, RHS> pow(const atl::ExpressionBase<REAL_T, LHS>& a,
+//            const atl::ExpressionBase<REAL_T, RHS>& b) {
+//        return atl::Pow<REAL_T, LHS, RHS > (a.Cast(), b.Cast());
+//    }
+//
+//    /**
+//     * Returns a expression template representing pow.
+//     * 
+//     * @param a
+//     * @param b
+//     * @return 
+//     */
+//    template <class REAL_T, class LHS>
+//    inline const atl::Pow<REAL_T, LHS, atl::Real<REAL_T> > pow(const atl::ExpressionBase<REAL_T, LHS>& a,
+//            REAL_T b) {
+//
+//        return atl::Pow<REAL_T, LHS, atl::Real<REAL_T> > (a.Cast(), b);
+//    }
+//
+//    /**
+//     * Returns a expression template representing pow.
+//     * 
+//     * @param a
+//     * @param b
+//     * @return 
+//     */
+//    template <class REAL_T, class RHS>
+//    inline const atl::Pow<REAL_T, atl::Real<REAL_T>, RHS> pow(const REAL_T& a,
+//            const atl::ExpressionBase<REAL_T, RHS>& b) {
+//        return atl::Pow<REAL_T, atl::Real<REAL_T>, RHS > (a, b.Cast());
+//    }
+//}
 
 
 #endif /* POW_HPP */

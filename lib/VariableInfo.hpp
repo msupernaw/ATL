@@ -17,6 +17,8 @@
 #include <mutex>
 #include <vector>
 #include <iostream>
+#include "Utilities/MemoryPool.hpp"
+
 
 namespace atl {
 
@@ -69,12 +71,12 @@ namespace atl {
             return ret; //(++_id);
         }
 
-        void reset(){
+        void reset() {
             this->available = std::stack<uint32_t>();
-            available_size =0;
-            _id =1;
+            available_size = 0;
+            _id = 1;
         }
-        
+
         void release(const uint32_t& id) {
 #ifdef ATL_THREAD_SAFE
             lock.lock();
@@ -144,6 +146,7 @@ namespace atl {
         bool is_nl = false;
         long index = -999;
         std::vector<REAL_T> tayor_coefficients;
+        static util::MemoryPool<VariableInfo<REAL_T> >* memory_pool;
 
         /**
          * Constructor 
@@ -151,7 +154,7 @@ namespace atl {
          * @param value
          */
         VariableInfo(REAL_T value = static_cast<REAL_T> (0.0)) :
-        id(VariableIdGenerator::instance()->next()),live(1), count(1), value(value) {
+        id(VariableIdGenerator::instance()->next()), live(1), count(1), value(value) {
         }
 
         VariableInfo(const VariableInfo<REAL_T>& other) :
@@ -162,9 +165,17 @@ namespace atl {
          * Destructor. 
          */
         ~VariableInfo() {
-          
+
             //            if(VariableIdGenerator::instance(). != 0)
             //            VariableIdGenerator::instance()->release(id);
+        }
+
+        inline void* operator new(size_t size){
+            return VariableInfo::memory_pool->malloc();
+        }
+
+        inline void operator delete(void* ptr) {
+            VariableInfo::memory_pool->free(ptr);
         }
 
         inline void Aquire() {
@@ -208,6 +219,10 @@ namespace atl {
 
     };
 
+    template<typename REAL_T>
+    util::MemoryPool<VariableInfo<REAL_T> >* VariableInfo<REAL_T>::memory_pool = new util::MemoryPool<VariableInfo<REAL_T> >(1000000);
+    
+    
     template<typename REAL_T>
     std::vector<std::shared_ptr<VariableInfo<REAL_T> > > VariableInfo<REAL_T>::ptrs;
 

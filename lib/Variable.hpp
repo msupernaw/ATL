@@ -138,9 +138,9 @@ namespace atl {
 
         virtual REAL_T External2Internal(REAL_T val, REAL_T min_, REAL_T max_)const {
             if (val == min_) {
-                val += std::numeric_limits<REAL_T>::epsilon();
+                val += static_cast<REAL_T>(1e-8);
             } else if (val == max_) {
-                val -= std::numeric_limits<REAL_T>::epsilon();
+                val -= static_cast<REAL_T>(1e-8);
             }
 
             REAL_T p = ((val) - min_) / (max_ - min_);
@@ -175,8 +175,222 @@ namespace atl {
     template<>
     ExpressionType ExpressionTrait<Variable<long double> >::et_type = atl::VARIABLE_SCALAR;
 
+    template<typename REAL_T, int DERIVATIVE_TRACE_LEVEL>
+    struct AssignmentTrait {
+
+        template<class A>
+        static Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            return var;
+        }
+    };
+
+    template<typename REAL_T>
+    struct AssignmentTrait<REAL_T, atl::NO_DERIVATIVES> {
+
+        template<class A>
+        static Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            var.SetValue(exp.GetValue());
+            return var;
+        }
+    };
+
+    template<typename REAL_T >
+    struct AssignmentFunctor {
+        typedef AssignmentTrait<REAL_T, atl::NO_DERIVATIVES> assign;
+        assign functor;
+
+        template<class A>
+        Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            //            std::cout << "FIRST_ORDER_REVERSE" << std::endl;
+            atl::StackEntry<REAL_T>& entry = tape.stack[index];
+            exp.PushIds(entry.ids);
+
+            entry.w = var.info;
+            entry.w->count++;
+            entry.w->is_nl = exp.IsNonlinear();
+            entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            size_t i = 0;
+            entry.wv = exp.GetValue();
+
+
+            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                entry.min_id = std::min((*it)->id, entry.min_id);
+                entry.max_id = std::max((*it)->id, entry.max_id);
+                entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                i++;
+            }
+            var.SetValue(exp.GetValue());
+
+            return var;
+            return var;
+        }
+
+    };
+
+    template<typename REAL_T>
+    struct AssignmentTrait<REAL_T, atl::FIRST_ORDER_REVERSE> {
+
+        template<class A>
+        static Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            //            std::cout << "FIRST_ORDER_REVERSE" << std::endl;
+            atl::StackEntry<REAL_T>& entry = tape.stack[index];
+            exp.PushIds(entry.ids);
+
+            entry.w = var.info;
+            entry.w->count++;
+            entry.w->is_nl = exp.IsNonlinear();
+            entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            size_t i = 0;
+            entry.wv = exp.GetValue();
+
+
+            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                entry.min_id = std::min((*it)->id, entry.min_id);
+                entry.max_id = std::max((*it)->id, entry.max_id);
+                entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                i++;
+            }
+            var.SetValue(exp.GetValue());
+
+            return var;
+        }
+    };
+
+    template<typename REAL_T >
+    struct FirstOrderAssignemnt : AssignmentFunctor<REAL_T> {
+        typedef AssignmentTrait<REAL_T, atl::FIRST_ORDER_REVERSE> assign;
+        assign functor;
+
+        template<class A>
+        Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            return assign::Assign(var, tape, exp, index);
+        }
+    };
+
+    template<typename REAL_T>
+    struct AssignmentTrait<REAL_T, atl::SECOND_ORDER_REVERSE> {
+
+        template<class A>
+        static Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+
+            std::cout << "SECOND_ORDER_REVERSE" << std::endl;
+            atl::StackEntry<REAL_T>& entry = tape.stack[index];
+            exp.PushIds(entry.ids);
+
+            entry.w = var.info;
+            entry.w->count++;
+            entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            typename atl::StackEntry<REAL_T>::vi_iterator jt;
+            size_t i = 0;
+            size_t j = 0;
+
+            entry.wv = exp.GetValue();
+            entry.w->is_nl = exp.IsNonlinear();
+            entry.is_nl = exp.IsNonlinear();
+
+            entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
+
+            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+
+                entry.min_id = std::min((*it)->id, entry.min_id);
+                entry.max_id = std::max((*it)->id, entry.max_id);
+                entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                j = 0;
+                for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                    entry.second[i * entry.ids.size() + j] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
+                    j++;
+                }
+                i++;
+            }
+
+            var.SetValue(exp.GetValue());
+
+            return var;
+        }
+    };
+
+    template<typename REAL_T >
+    struct SecondOrderAssignemnt : AssignmentFunctor<REAL_T> {
+        typedef AssignmentTrait<REAL_T, atl::SECOND_ORDER_REVERSE> assign;
+        assign functor;
+
+        template<class A>
+        Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            return assign::Assign(var, tape, exp, index);
+        }
+    };
+
+    template<typename REAL_T>
+    struct AssignmentTrait<REAL_T, atl::THIRD_ORDER_REVERSE> {
+
+        template<class A>
+        static Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+
+            std::cout << "THIRD_ORDER_REVERSE" << std::endl;
+            atl::StackEntry<REAL_T>& entry = tape.stack[index];
+            exp.PushIds(entry.ids);
+
+            entry.w = var.info;
+            entry.w->count++;
+            entry.w->is_nl = true;
+            entry.first.resize(entry.ids.size(), static_cast<REAL_T> (0.0));
+            typename atl::StackEntry<REAL_T>::vi_iterator it;
+            typename atl::StackEntry<REAL_T>::vi_iterator jt;
+            typename atl::StackEntry<REAL_T>::vi_iterator kt;
+            size_t i = 0;
+            size_t j = 0;
+            size_t k = 0;
+            entry.wv = exp.GetValue();
+
+            entry.w->is_nl = exp.IsNonlinear();
+            entry.is_nl = exp.IsNonlinear();
+
+            entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
+            entry.third.resize(entry.ids.size() * entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
+            for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                (*it)->live++;
+                entry.min_id = std::min((*it)->id, entry.min_id);
+                entry.max_id = std::max((*it)->id, entry.max_id);
+                entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                j = 0;
+                for (jt = entry.ids.begin(); jt != entry.ids.end(); ++jt) {
+                    entry.second[i * entry.ids.size() + j] = exp.EvaluateSecondDerivative((*it)->id, (*jt)->id);
+                    k = 0;
+                    for (kt = entry.ids.begin(); kt != entry.ids.end(); ++kt) {
+
+                        entry.third[i * entry.ids.size() * entry.ids.size() + j * entry.ids.size() + k] =
+                                exp.EvaluateThirdDerivative((*it)->id, (*jt)->id, (*kt)->id);
+                        k++;
+                    }
+                    j++;
+                }
+                i++;
+            }
+
+            var.SetValue(exp.GetValue());
+
+            return var;
+        }
+    };
+
+    template<typename REAL_T >
+    struct ThirdOrderAssignemnt : AssignmentFunctor<REAL_T> {
+        typedef AssignmentTrait<REAL_T, atl::THIRD_ORDER_REVERSE> assign;
+        assign functor;
+
+        template<class A>
+        Variable<REAL_T>& Assign(Variable<REAL_T>& var, atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+            return assign::Assign(var, tape, exp, index);
+        }
+    };
+
     template<typename REAL_T>
     struct Variable : atl::ExpressionBase<REAL_T, Variable<REAL_T> > {
+        static std::vector<AssignmentFunctor<REAL_T>* > assignment_operators;
+
         typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         static Tape<REAL_T> tape;
         typedef REAL_T base_type;
@@ -388,7 +602,7 @@ namespace atl {
          * @return 
          */
         template<class A>
-        inline Variable& Assign(const ExpressionBase<REAL_T, A>& exp, size_t index) {
+        inline Variable& Assign(const ExpressionBase<REAL_T, A>& exp, const size_t& index) {
 
             if (Variable<REAL_T>::tape.recording) {
                 this->Assign(atl::Variable<REAL_T>::tape, exp, index);
@@ -407,9 +621,10 @@ namespace atl {
          * @return 
          */
         template<class A>
-        inline Variable& Assign(atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, size_t index) {
+        inline Variable& Assign(atl::Tape<REAL_T>& tape, const ExpressionBase<REAL_T, A>& exp, const size_t& index) {
 
             if (tape.recording) {
+
 
                 atl::StackEntry<REAL_T>& entry = tape.stack[index];
                 exp.PushIds(entry.ids);
@@ -433,23 +648,23 @@ namespace atl {
                             entry.min_id = std::min((*it)->id, entry.min_id);
                             entry.max_id = std::max((*it)->id, entry.max_id);
                             entry.first[i] = exp.EvaluateFirstDerivative((*it)->id);
+                          
                             i++;
                         }
                         break;
 
-                    case FIRST_ORDER_REVERSE_COMPLEX_STEP:
-                        //                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
-                        //                            entry.min_id = std::min((*it)->id, entry.min_id);
-                        //                            entry.max_id = std::max((*it)->id, entry.max_id);
-                        //                            entry.first[i] = exp.ComplexEvaluate((*it)->id).imag()/1e-20;
-                        //                            i++;
-                        //                        }
-                        break;
+                        //                    case FIRST_ORDER_REVERSE_COMPLEX_STEP:
+                        //                        //                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+                        //                        //                            entry.min_id = std::min((*it)->id, entry.min_id);
+                        //                        //                            entry.max_id = std::max((*it)->id, entry.max_id);
+                        //                        //                            entry.first[i] = exp.ComplexEvaluate((*it)->id).imag()/1e-20;
+                        //                        //                            i++;
+                        //                        //                        }
+                        //                        break;
 
                     case SECOND_ORDER_REVERSE:
                         entry.w->is_nl = exp.IsNonlinear();
                         entry.is_nl = exp.IsNonlinear();
-
                         entry.second.resize(entry.ids.size() * entry.ids.size(), static_cast<REAL_T> (0.0));
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
@@ -492,6 +707,7 @@ namespace atl {
                             i++;
                         }
                         break;
+
                     case atl::UTPM_REVERSE:
 
                         for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
@@ -521,10 +737,16 @@ namespace atl {
                         break;
 
                     case FIRST_ORDER_FORWARD:
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
+
+                        }
+
 
                         break;
                     case SECOND_ORDER_FORWARD:
+                        for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
 
+                        }
                         break;
                     case THIRD_ORDER_FORWARD:
 
@@ -762,7 +984,7 @@ namespace atl {
         }
 
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids)const {
-            ids.insert(info);
+            ids.insert(std::move(info));
         }
 
         inline void PushIds(typename atl::StackEntry<REAL_T>::vi_storage& ids, size_t i, size_t j = 0)const {
@@ -997,10 +1219,17 @@ namespace atl {
     Tape<REAL_T> Variable<REAL_T>::tape(10000);
 
     template<typename REAL_T>
+    std::vector<atl::AssignmentFunctor<REAL_T>* > Variable<REAL_T>::assignment_operators = {
+        new FirstOrderAssignemnt<REAL_T>(),
+        new SecondOrderAssignemnt<REAL_T>(),
+        new ThirdOrderAssignemnt<REAL_T>()
+    };
+
+    template<typename REAL_T>
     bool Variable<REAL_T>::show = false;
 
     template<typename REAL_T>
-    std::shared_ptr<ParameterTransformation<REAL_T> > Variable<REAL_T>::default_transformation(new atl::LogitParameterTransformation<REAL_T>());
+    std::shared_ptr<ParameterTransformation<REAL_T> > Variable<REAL_T>::default_transformation(new atl::SinParameterTransformation<REAL_T>());
 
     template<typename REAL_T>
     std::ostream& operator<<(std::ostream& out, const Variable<REAL_T>& v) {
@@ -1008,13 +1237,7 @@ namespace atl {
         return out;
     }
 
-    template<typename REAL_T>
-    std::istream& operator >> (std::istream& in, Variable<REAL_T>& v) {
-        REAL_T in_v;
-        in >> in_v;
-        v.SetValue(in_v);
-        return in;
-    }
+
 
 
 }

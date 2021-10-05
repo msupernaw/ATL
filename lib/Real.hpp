@@ -237,7 +237,8 @@ namespace atl {
          */
         const std::string ToExpressionTemplateString() const {
             std::stringstream ss;
-            ss << "atl::Real<T>";
+            ss << "atl::Real<T>["<<this->value<<"]";
+
             return ss.str();
         }
 

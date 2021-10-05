@@ -13,7 +13,7 @@
 
 #ifndef TAPE_HPP
 #define TAPE_HPP
-#define ATL_THREAD_SAFE
+//#define ATL_THREAD_SAFE
 
 #include "Platform.hpp"
 
@@ -28,21 +28,24 @@
 #include <cfloat>
 #include <cmath>
 #include "Utilities/flat_set.hpp"
-#include "third_party/flat_hash_map/bytell_hash_map.hpp"
-#include "Utilities/flat_set.hpp"
+//#include "third_party/flat_hash_map/bytell_hash_map.hpp"
+#include "Utilities/flat_map.hpp"
 
 namespace atl {
 
     enum DerivativeTraceLevel {
         FIRST_ORDER_REVERSE = 0,
-        FIRST_ORDER_REVERSE_COMPLEX_STEP,
+        // FIRST_ORDER_REVERSE_COMPLEX_STEP,
         SECOND_ORDER_REVERSE,
         THIRD_ORDER_REVERSE,
+        UTPM_REVERSE,
+        DYNAMIC_RECORD,
+        DYNAMIC_RECORD_NO_DERIVATIVES,
         FIRST_ORDER_FORWARD,
         SECOND_ORDER_FORWARD,
         THIRD_ORDER_FORWARD,
-        UTPM_REVERSE,
-        DYNAMIC_RECORD
+        NO_DERIVATIVES
+
     };
 
     template<typename REAL_T>
@@ -77,10 +80,10 @@ namespace atl {
         vi_storage pushed_ids;
         std::vector<VariableInfoPtr > id_list;
         std::vector<REAL_T> first;
-#warning use unordered_map here?????
+#warning use  std::unordered_map  here?????
         std::vector<REAL_T> second;
         std::vector<REAL_T> third;
-        std::unordered_map<uint32_t, std::vector<REAL_T> > taylor_coeff;
+         std::unordered_map <uint32_t, std::vector<REAL_T> > taylor_coeff;
 
         StackEntry() {
 
@@ -113,7 +116,7 @@ namespace atl {
          */
         inline void Prepare() {
 
-id_list.clear();
+            id_list.clear();
 
             vi_iterator it;
             for (it = this->ids.begin(); it != ids.end(); ++it) {
@@ -142,11 +145,11 @@ id_list.clear();
             first.resize(0);
             second.resize(0);
             third.resize(0);
-            ids.clear_no_resize();//clear();
-//            pushed_ids.clear();
+            ids.clear_no_resize(); //clear();
+            pushed_ids.clear();
             id_list.clear();
-//            nl_ids.clear();
-//            taylor_coeff.clear();
+            //            nl_ids.clear();
+            //            taylor_coeff.clear();
         }
 
         void Forward(const std::vector<uint32_t>& wrt) {
@@ -264,14 +267,14 @@ id_list.clear();
     struct ForwardModeDerivativeInfo {
         uint32_t id;
         typename atl::StackEntry<REAL_T>::vi_storage ids;
-        typedef typename std::unordered_map<uint32_t, REAL_T > first_order_container;
-        typedef typename std::unordered_map<uint32_t, first_order_container > second_order_container;
-        typedef typename std::unordered_map<uint32_t, second_order_container > third_order_container;
+        typedef typename  std::unordered_map <uint32_t, REAL_T > first_order_container;
+        typedef typename  std::unordered_map <uint32_t, first_order_container > second_order_container;
+        typedef typename  std::unordered_map <uint32_t, second_order_container > third_order_container;
 
         first_order_container first_order_derivtives;
         second_order_container second_order_derivtives;
         third_order_container third_order_derivatives;
-        
+
         void Reset() {
             first_order_derivtives.clear();
             second_order_derivtives.clear();
@@ -290,7 +293,7 @@ id_list.clear();
     public:
         typedef typename std::shared_ptr<VariableInfo<REAL_T> > VariableInfoPtr;
         //first-order storage
-        typedef ska::bytell_hash_map<uint32_t,
+        typedef  std::unordered_map <uint32_t,
         REAL_T,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -302,7 +305,7 @@ id_list.clear();
         typedef typename first_order_container::iterator first_order_iterator;
 
         //second-order storage
-        typedef ska::bytell_hash_map<uint32_t,
+        typedef  std::unordered_map <uint32_t,
         first_order_container,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -311,7 +314,7 @@ id_list.clear();
         typedef typename second_order_container::iterator second_order_iterator;
 
         //third-order storage
-        typedef ska::bytell_hash_map<uint32_t,
+        typedef  std::unordered_map <uint32_t,
         second_order_container,
         std::hash<uint32_t>,
         std::equal_to<uint32_t>,
@@ -319,13 +322,23 @@ id_list.clear();
         third_order_container third_order_derivatives;
         typedef typename third_order_container::iterator third_order_iterator;
 
-        std::unordered_map<uint32_t, std::vector<REAL_T> > taylor_coeff;
+        //        typedef  std::unordered_map <uint32_t,
+        //        second_order_container,
+        //        std::hash<uint32_t>,
+        //        std::equal_to<uint32_t>,
+        //        atl::clfallocator<std::pair<const uint32_t, third_order_container> > > fourth_order_container;
+        //        fourth_order_container third_order_derivatives;
+        //        typedef typename fourth_order_container::iterator fourth_order_iterator;
+
+        typename  std::unordered_map <uint32_t, typename atl::StackEntry<REAL_T>::vi_storage> forward_dependencies; //ids used in forward mode derivatives
+
+         std::unordered_map <uint32_t, std::vector<REAL_T> > taylor_coeff;
         int taylor_order = 1;
 
         bool recording = true;
         DerivativeTraceLevel derivative_trace_level = FIRST_ORDER_REVERSE;
         //forward mode derivative info
-        std::unordered_map<uint32_t, ForwardModeDerivativeInfo<REAL_T> > forward_mode_derivative_info;
+         std::unordered_map <uint32_t, ForwardModeDerivativeInfo<REAL_T> > forward_mode_derivative_info;
 
 
         std::vector<StackEntry<REAL_T>, atl::clfallocator<StackEntry<REAL_T> > > stack;
@@ -396,7 +409,7 @@ id_list.clear();
 #endif       
             return ret;
         }
-        
+
         /**
          * Extracts the dependent variables from the tape structure and 
          * returns them in a list.
@@ -575,7 +588,7 @@ id_list.clear();
         }
 
         std::pair<uint32_t, uint32_t> FindMinMaxIds() {
-               
+
             std::pair<uint32_t, uint32_t> ret;
             ret.first = std::numeric_limits<uint32_t>::max();
             ret.second = std::numeric_limits<uint32_t>::min();
@@ -648,6 +661,7 @@ id_list.clear();
                 for (it = entry.ids.begin(); it != entry.ids.end(); ++it) {
                     entry.min_id = std::min((*it)->id, entry.min_id);
                     entry.max_id = std::max((*it)->id, entry.max_id);
+                    entry.first[index++] = entry.exp->DifferentiatedBy((*it));
                 }
 
                 REAL_T v = entry.exp->GetValue();
@@ -706,12 +720,22 @@ id_list.clear();
             }
         }
 
-        inline void PushLive(ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage >& live_set,
+        inline void PushLive( std::unordered_map <uint32_t, typename atl::StackEntry<REAL_T>::vi_storage >& live_set,
                 typename atl::StackEntry<REAL_T>::VariableInfoPtr a,
                 typename atl::StackEntry<REAL_T>::VariableInfoPtr b) {
             if (a->count > 1 && (b->id != a->id) && a->is_nl) {
                 live_set[a->id].insert(b);
             }
+            //
+            //            if ((b->id != a->id)) {
+            //                if (a->value != 0.0) {
+            //                    if (b->value != 0.0) {
+            //                        if (a->count > 1 && a->is_nl) {
+            //                            live_set[a->id].insert(b);
+            //                        }
+            //                    }
+            //                }
+            //            }
         }
 
         void AccumulateSecondOrder() {
@@ -740,7 +764,7 @@ id_list.clear();
                 VariableInfoPtr vj;
                 VariableInfoPtr vk;
 
-                ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
+                 std::unordered_map <uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
 
 
                 for (int i = (stack_current - 1); i >= 0; i--) {
@@ -798,7 +822,7 @@ id_list.clear();
                     }
 
                     for (int j = 0; j < rows; j++) {
-                        vj = current_entry.id_list[j];
+
                         dj = current_entry.first[j];
                         REAL_T hij = vij[j]; //h[i][j]
                         REAL_T entry = static_cast<REAL_T> (0.0);
@@ -807,7 +831,7 @@ id_list.clear();
 
                             gh[j * ID_LIST_SIZE + k] = false;
                             gh[k * ID_LIST_SIZE + j] = false;
-                            vk = current_entry.id_list[k];
+
 
                             entry = 0.0; //the entry value for h[j][k]
 
@@ -822,6 +846,8 @@ id_list.clear();
 
 
                             if (static_cast<REAL_T> (0.0) != entry) {//h[j][k] needs to be updated
+                                vj = current_entry.id_list[j];
+                                vk = current_entry.id_list[k];
                                 this->Reference(vj->id, vk->id) += entry;
                                 //                                this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
@@ -833,7 +859,7 @@ id_list.clear();
 
                             gh[j * ID_LIST_SIZE + k] = false;
                             gh[k * ID_LIST_SIZE + j] = false;
-                            vk = current_entry.id_list[k];
+
 
                             entry = static_cast<REAL_T> (0.0); //the entry value for h[j][k]
 
@@ -852,6 +878,7 @@ id_list.clear();
 
 
                             if (static_cast<REAL_T> (0.0) != entry) {//h[j][k] needs to be updated
+                                vk = current_entry.id_list[k];
                                 this->Reference(vj->id, vk->id) += entry;
                                 //                                this->PushLive(live_sets, vj, vk);
                                 this->PushLive(live_sets, vk, vj);
@@ -869,7 +896,7 @@ id_list.clear();
 
             if (recording) {
 
-                //                std::unordered_map<uint32_t, typename StackEntry<REAL_T>::vi_storage > dmap;
+                //                 std::unordered_map <uint32_t, typename StackEntry<REAL_T>::vi_storage > dmap;
                 //                for (int i = 0; i < this->stack_current; i++) {
                 //                    typename StackEntry<REAL_T>::vi_iterator it;
                 //                    typename StackEntry<REAL_T>::vi_storage& ids_ = dmap[stack[i].w->id];
@@ -903,7 +930,7 @@ id_list.clear();
                 REAL_T d3 = 0.0;
                 REAL_T pjk = 0.0;
 
-                ska::bytell_hash_map<uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
+                 std::unordered_map <uint32_t, typename atl::StackEntry<REAL_T>::vi_storage > live_sets;
 
 
                 for (int i = (stack_current - 1); i >= 0; i--) {
@@ -1025,7 +1052,7 @@ id_list.clear();
 
                                 for (int l = k; l < rows; l++) {
 
-                                    vl = current_entry.id_list[l];
+
                                     hdk = 0;
 
                                     entry = 0.0; //the entry value for h[j][k]
@@ -1043,15 +1070,16 @@ id_list.clear();
                                         //                                        std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (/*std::fabs(entry)*/entry != REAL_T(0.0)) {//h[j][k] needs to be updated
+                                        vl = current_entry.id_list[l];
                                         this->Reference(vk->id, vl->id) += entry;
-                                        //                                        this->PushLive(live_sets, vi, vj);
-                                        this->PushLive(live_sets, vj, vi);
+                                        this->PushLive(live_sets, vi, vj);
+                                        //                                        this->PushLive(live_sets, vj, vi);
                                     }
                                 }
 
                                 for (int l = rows; l < ID_LIST_SIZE; l++) {
 
-                                    vl = current_entry.id_list[l];
+
 
                                     hdk = 0;
 
@@ -1063,9 +1091,10 @@ id_list.clear();
                                         //                                        std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (entry != REAL_T(0.0)) {//h[j][k] needs to be updated
+                                        vl = current_entry.id_list[l];
                                         Reference(vk->id, vl->id) += entry;
-                                        //                                        this->PushLive(live_sets, vi, vj);
-                                        this->PushLive(live_sets, vj, vi);
+                                        this->PushLive(live_sets, vi, vj);
+                                        //                                        this->PushLive(live_sets, vj, vi);
                                     }
                                 }
                             }
@@ -1073,14 +1102,14 @@ id_list.clear();
 
 #pragma unroll
                         for (int k = j; k < rows; k++) {
-                            vk = current_entry.id_list[k];
+
 
                             dk = current_entry.first[k];
                             pjk = current_entry.second[j * rows + k];
                             int ind = (j * rows * rows) + (k * rows);
                             for (int l = k; l < rows; l++) {
 
-                                vl = current_entry.id_list[l];
+
                                 entry_3 = 0.0;
 
                                 dl = current_entry.first[l];
@@ -1106,11 +1135,13 @@ id_list.clear();
                                         +(dk * dl * diii));
 
                                 if (entry_3 != static_cast<REAL_T> (0.0)) {
+                                    vk = current_entry.id_list[k];
+                                    vl = current_entry.id_list[l];
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
-                                    //                                    this->PushLive(live_sets, vj, vl);
-                                    //                                    this->PushLive(live_sets, vj, vk);
-                                    this->PushLive(live_sets, vk, vj);
-                                    this->PushLive(live_sets, vk, vl);
+                                    this->PushLive(live_sets, vj, vl);
+                                    this->PushLive(live_sets, vj, vk);
+                                    //                                    this->PushLive(live_sets, vk, vj);
+                                    //                                    this->PushLive(live_sets, vk, vl);
 
                                     //                                    this->PushLive(live_sets, vl, vk);
                                     //                                    this->PushLive(live_sets, vl, vj);
@@ -1120,7 +1151,7 @@ id_list.clear();
 
                             for (int l = rows; l < ID_LIST_SIZE; l++) {
 
-                                vl = current_entry.id_list[l];
+
                                 entry_3 = 0;
 
                                 dl = 0.0;
@@ -1138,11 +1169,12 @@ id_list.clear();
                                     std::cout << "Derivative signaling NaN\n";
                                 }
                                 if (entry_3 != static_cast<REAL_T> (0.0)) {
+                                    vl = current_entry.id_list[l];
                                     Reference(vj->id, vk->id, vl->id) += entry_3;
-                                    //                                    this->PushLive(live_sets, vj, vl);
-                                    //                                    this->PushLive(live_sets, vj, vk);
-                                    this->PushLive(live_sets, vk, vj);
-                                    this->PushLive(live_sets, vk, vl);
+                                    this->PushLive(live_sets, vj, vl);
+                                    this->PushLive(live_sets, vj, vk);
+                                    //                                    this->PushLive(live_sets, vk, vj);
+                                    //                                    this->PushLive(live_sets, vk, vl);
 
                                     //                                    this->PushLive(live_sets, vl, vk);
                                     //                                    this->PushLive(live_sets, vl, vj);
@@ -1154,22 +1186,24 @@ id_list.clear();
                         if (dj != static_cast<REAL_T> (0.0)) {
 #pragma unroll
                             for (int k = rows; k < ID_LIST_SIZE; k++) {
-                                VariableInfoPtr vk = current_entry.id_list[k];
+
 #pragma unroll
                                 for (int l = k; l < ID_LIST_SIZE; l++) {
 
-                                    VariableInfoPtr vl = current_entry.id_list[l];
+
                                     entry_3 = dj * (vijk_[(k * ID_LIST_SIZE + l)]);
 
                                     if (entry_3 != entry_3) {
                                         std::cout << "Derivative signaling NaN\n";
                                     }
                                     if (entry_3 != static_cast<REAL_T> (0.0)) {
+                                        VariableInfoPtr vk = current_entry.id_list[k];
+                                        VariableInfoPtr vl = current_entry.id_list[l];
                                         Reference(vj->id, vk->id, vl->id) += entry_3;
-                                        //                                        this->PushLive(live_sets, vj, vl);
-                                        //                                        this->PushLive(live_sets, vj, vk);
-                                        this->PushLive(live_sets, vk, vj);
-                                        this->PushLive(live_sets, vk, vl);
+                                        this->PushLive(live_sets, vj, vl);
+                                        this->PushLive(live_sets, vj, vk);
+                                        //                                        this->PushLive(live_sets, vk, vj);
+                                        //                                        this->PushLive(live_sets, vk, vl);
 
                                     }
 
@@ -1308,7 +1342,7 @@ id_list.clear();
     //
     //
     //            for (int j = 1; j <= order; j++) {
-    //                std::unordered_map<uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
+    //                 std::unordered_map <uint32_t, typename atl::StackEntry<REAL_T>::VariableInfoPtr > mapped_var_info;
     //                typename atl::StackEntry<REAL_T>::vi_iterator it;
     //                for (it = dependents.begin(); it != dependents.end(); ++it) {
     //                    mapped_var_info[(*it)->id] =
