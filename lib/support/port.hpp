@@ -52,7 +52,7 @@ namespace port {
     static double c_b5 = 0.;
     static double c_b23 = 1.;
     
-    int stopx_(integer* i) {
+   inline int stopx_(integer* i) {
         
         return 0;
     }
@@ -463,7 +463,7 @@ namespace port {
     
     //
     
-    integer i7mdcn_(integer *k) {
+    inline integer i7mdcn_(integer *k) {
         /* Initialized data */
         
         static integer mdperm[3] = {2, 4, 1};
@@ -3606,7 +3606,7 @@ namespace port {
         return 0;
     } /* dv7shf_ */
     
-    int i7shft_(integer *n, integer *k, integer *x) {
+    inline int i7shft_(integer *n, integer *k, integer *x) {
         /* System generated locals */
         integer i__1;
         

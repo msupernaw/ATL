@@ -22,9 +22,8 @@
 
 #include "Platform.hpp"
 
-#ifndef ATL_WINDOWS
-#include "../AutoDiff/third_party/clfmalloc.h"
-#endif
+#include "../clfmalloc.h"
+
 
 
 namespace atl {

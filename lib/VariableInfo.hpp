@@ -13,12 +13,13 @@
 
 #ifndef VARIABLEINFO_HPP
 #define VARIABLEINFO_HPP
+
 #include <stack>
 #include <mutex>
 #include <vector>
 #include <iostream>
 #include "Utilities/MemoryPool.hpp"
-
+#include "Utilities/intrusive_ptr.hpp"
 
 namespace atl {
 
@@ -29,7 +30,7 @@ namespace atl {
     class VariableIdGenerator {
         std::stack<uint32_t> available;
         std::atomic<uint32_t> available_size;
-        static std::mutex mutex_g;
+//        static std::mutex mutex_g;
 
         class SpinLock {
             std::atomic_flag locked = ATOMIC_FLAG_INIT;
@@ -103,7 +104,8 @@ namespace atl {
 
 
 
-    std::mutex VariableIdGenerator::mutex_g;
+//    std::mutex VariableIdGenerator::mutex_g;
+
     static std::shared_ptr<VariableIdGenerator> only_copy;
 
     inline std::shared_ptr<VariableIdGenerator>
@@ -136,7 +138,7 @@ namespace atl {
      */
     template<typename REAL_T>
     struct VariableInfo {
-        static std::vector<std::shared_ptr<VariableInfo<REAL_T> > > ptrs;
+        static std::vector<atl::intrusive_ptr<VariableInfo<REAL_T> > > ptrs;
         static VISpinLock vinfo_mutex_g;
         static std::vector<VariableInfo<REAL_T>* > freed;
         std::atomic<int> count;
@@ -145,6 +147,7 @@ namespace atl {
         REAL_T value;
         bool is_nl = false;
         long index = -999;
+        int references = 0;
         std::vector<REAL_T> tayor_coefficients;
         static util::MemoryPool<VariableInfo<REAL_T> >* memory_pool;
 
@@ -170,13 +173,13 @@ namespace atl {
             //            VariableIdGenerator::instance()->release(id);
         }
 
-        inline void* operator new(size_t size){
-            return VariableInfo::memory_pool->malloc();
-        }
+         inline void* operator new(size_t size){
+             return VariableInfo::memory_pool->malloc();
+         }
 
-        inline void operator delete(void* ptr) {
-            VariableInfo::memory_pool->free(ptr);
-        }
+         inline void operator delete(void* ptr) {
+             VariableInfo::memory_pool->free(ptr);
+         }
 
         inline void Aquire() {
             count++;
@@ -224,7 +227,7 @@ namespace atl {
     
     
     template<typename REAL_T>
-    std::vector<std::shared_ptr<VariableInfo<REAL_T> > > VariableInfo<REAL_T>::ptrs;
+    std::vector<atl::intrusive_ptr<VariableInfo<REAL_T> > > VariableInfo<REAL_T>::ptrs;
 
     template<typename REAL_T>
     VISpinLock VariableInfo<REAL_T>::vinfo_mutex_g;

@@ -67,7 +67,7 @@ namespace io {
 #endif
 
    
-    std::ostream & operator<<(std::ostream &out, const Color &c) {
+    inline std::ostream & operator<<(std::ostream &out, const Color &c) {
 
 #ifdef WINDOWS_OS
         switch (c) {

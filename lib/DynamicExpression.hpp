@@ -25,6 +25,8 @@
 #include <functional>
 #include <cmath>
 #include "VariableInfo.hpp"
+#include "Utilities/intrusive_ptr.hpp"
+
 
 namespace atl {
 
@@ -3069,13 +3071,13 @@ namespace atl {
 
     template<typename REAL_T>
     struct VariableDynamic : DynamicExpressionBase<REAL_T> {
-        std::shared_ptr<atl::VariableInfo<REAL_T> > info;
+    	atl::intrusive_ptr<atl::VariableInfo<REAL_T> > info;
         //        static util::MemoryPool<VariableDynamic<REAL_T> > pool;
 
         VariableDynamic() {
         }
 
-        VariableDynamic(std::shared_ptr<atl::VariableInfo<REAL_T> > info) :
+        VariableDynamic(atl::intrusive_ptr<atl::VariableInfo<REAL_T> > info) :
         info(info) {
 
         }
@@ -3119,8 +3121,8 @@ namespace atl {
         virtual void DifferentiatedBy(const std::vector<uint32_t>& id) {
         }
 
-        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
-            typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, atl::intrusive_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            typename std::unordered_map<uint32_t, atl::intrusive_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
             it = vmap.find(this->info->id);
             if (it != vmap.end()) {
                 this->info = (*it).second;
@@ -3154,14 +3156,14 @@ namespace atl {
 
     template<typename REAL_T>
     struct DifferentiatedVariableDynamic : DynamicExpressionBase<REAL_T> {
-        std::shared_ptr<atl::VariableInfo<REAL_T> > info;
+        atl::intrusive_ptr<atl::VariableInfo<REAL_T> > info;
         uint32_t diff_id = 0;
         int order = 0;
 
         DifferentiatedVariableDynamic() {
         }
 
-        DifferentiatedVariableDynamic(std::shared_ptr<atl::VariableInfo<REAL_T> > info, int order) :
+        DifferentiatedVariableDynamic(atl::intrusive_ptr<atl::VariableInfo<REAL_T> > info, int order) :
         info(info), order(order) {
 
         }
@@ -3205,8 +3207,8 @@ namespace atl {
             this->diff_id = id[order-1];
         }
 
-        virtual void SwapDependents(const typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
-            typename std::unordered_map<uint32_t, std::shared_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
+        virtual void SwapDependents(const typename std::unordered_map<uint32_t, atl::intrusive_ptr<atl::VariableInfo<REAL_T> > >& vmap) {
+            typename std::unordered_map<uint32_t, atl::intrusive_ptr<atl::VariableInfo<REAL_T> > >::const_iterator it;
             it = vmap.find(this->info->id);
             if (it != vmap.end()) {
                 this->info = (*it).second;

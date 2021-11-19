@@ -132,7 +132,7 @@ namespace atl {
             return val_[degree];
         }
 
-        atl::intrusive_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
+        std::shared_ptr<DynamicExpressionBase<REAL_T> > ToDynamic() const {
             return atl::asin(expr_m.ToDynamic());
         }
 

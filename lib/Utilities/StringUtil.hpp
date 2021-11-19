@@ -8,7 +8,7 @@
 namespace util {
     
     /* Convert double to string with specified number of places after the decimal. */
-    std::string prd(const double &x, const int decDigits) {
+    inline std::string prd(const double &x, const int decDigits) {
         std::stringstream ss;
         ss << std::fixed;
         ss.precision(decDigits); // set # places after decimal
@@ -18,7 +18,7 @@ namespace util {
     
     /* Convert double to string with specified number of places after the decimal
      and left padding. */
-    std::string prd(const double &x, const int decDigits, const int width) {
+    inline std::string prd(const double &x, const int decDigits, const int width) {
         std::stringstream ss;
         ss << std::fixed << std::right;
         ss.fill(' '); // fill space around displayed #
@@ -30,7 +30,7 @@ namespace util {
     
     /*! Center-aligns string within a field of width w. Pads with blank spaces
      to enforce alignment. */
-    std::string center(const std::string &s, const int w) {
+    inline std::string center(const std::string &s, const int w) {
         std::stringstream ss, spaces;
         int padding = w - s.size(); // count excess room to pad
         for (int i = 0; i < padding / 2; ++i)
@@ -101,7 +101,7 @@ namespace util {
     }
     
     template <typename T>
-    T StringToNumber(const std::string &Text) {
+    inline T StringToNumber(const std::string &Text) {
         std::istringstream ss(Text);
         T result;
         return (ss >> result) ? result : 0;

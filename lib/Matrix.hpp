@@ -1045,6 +1045,78 @@ namespace atl {
 
             return *this;
         }
+        
+        
+
+	inline void swaprows(RealMatrix<T> &m, size_t row0, size_t row1,
+			std::vector<T> &temp) {
+
+		for (int i = 0; i < m.columns; i++) {
+			temp[i] = m(row0, i);
+			m(row0, i) = m(row1, i);
+			m(row1, i) = temp[i];
+		}
+	}
+
+	void Invert() {
+		if (this->columns != this->rows) {
+			std::cout << "Matrix not square, can't be inverted.\n";
+			return;
+		}
+
+		atl::RealMatrix<T> &A = (*this);
+		atl::RealMatrix<T> B(A.GetRows() ,A.GetColumns());
+		size_t nrows = A.GetRows();
+		std::vector<T> temp(nrows);
+		for (size_t i = 0; i < A.GetRows(); i++) {
+			B(i, i) = 1.0;
+		}
+
+		/*
+		 * Gaussian elimination start
+		 */
+		for (size_t dindex = 0; dindex < nrows; ++dindex) {
+
+			if (A(dindex, dindex) == 0) {
+				swaprows(A, dindex, dindex + 1, temp);
+				swaprows(B, dindex, dindex + 1, temp);
+			}
+
+			T tempval = 1.0 / A(dindex, dindex);
+
+			for (size_t col = 0; col < nrows; col++) {
+				A(dindex, col) *= tempval;
+				B(dindex, col) *= tempval;
+			}
+
+			for (size_t row = (dindex + 1); row < nrows; ++row) {
+				T wval = A(row, dindex);
+				for (size_t col = 0; col < nrows; col = col + 1) {
+					A(row, col) -= wval * A(dindex, col);
+					B(row, col) -= wval * B(dindex, col);
+				}
+			}
+
+		}
+
+		//back substitution
+		for (long dindex = nrows - 1; dindex >= 0; --dindex) {
+			for (long row = dindex - 1; row >= 0; --row) {
+				T wval = A(row, dindex);
+				for (size_t col = 0; col < nrows; col = col + 1) {
+					A(row, col) -= wval * A(dindex, col);
+					B(row, col) -= wval * B(dindex, col);
+				}
+			}
+		}
+
+		for(size_t i = 0; i < this->GetRows(); i++){
+			for(size_t j =0; j < this->GetColumns(); j++){
+				A(i,j)=B(i,j);
+			}
+		}
+	}
+
 
         /**
          * Assignment function for concurrent assignment. This function 

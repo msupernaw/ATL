@@ -6,6 +6,26 @@
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Multiply.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Utilities/flat_map.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Cosh.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Tape.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/support/cs_sparse.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Expression.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Utilities/flat_set.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/DynamicExpression.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Variable.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/third_party/hat-trie-master/include/tsl/htrie_set.h</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/ThreadPool.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Tan.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Pow.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/VariableInfo.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Makefile</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Divide.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Optimization.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Add.hpp</file>
+            <file>file:/Users/mattadmin/NetBeansProjects/mas/third_party/ATL/lib/Exp.hpp</file>
+        </group>
     </open-files>
 </project-private>
