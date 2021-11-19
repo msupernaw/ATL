@@ -557,6 +557,17 @@ namespace atl {
         return Multiply<REAL_T, Real<REAL_T>, RHS > (a, b.Cast());
     }
 
+/**
+   *
+   * @param a
+   * @param b
+   * @return
+   */
+  template <class REAL_T, class RHS>
+  inline const Multiply<REAL_T, Real<REAL_T>, RHS> operator-(
+          const ExpressionBase<REAL_T, RHS>& exp) {
+      return static_cast<REAL_T>(-1.0)*exp;
+  }
 
 }
 
