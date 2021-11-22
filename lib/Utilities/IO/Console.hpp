@@ -62,7 +62,7 @@ namespace io {
 
     };
 
-    DefaultColors defaultColors;
+    static DefaultColors defaultColors;
 
 #endif
 
