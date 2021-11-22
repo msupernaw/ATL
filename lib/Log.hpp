@@ -340,19 +340,19 @@ namespace atl {
 }//end namespace atl
 
 
-namespace std {
+// namespace std {
 
-    /**
-     * Returns an expression template representing log. 
-     * 
-     * @param exp
-     * @return 
-     */
-    template<class REAL_T, class EXPR>
-    inline const atl::Log<REAL_T, EXPR> log(const atl::ExpressionBase<REAL_T, EXPR>& exp) {
-        return atl::Log<REAL_T, EXPR>(exp.Cast());
-    }
-}
+//     /**
+//      * Returns an expression template representing log. 
+//      * 
+//      * @param exp
+//      * @return 
+//      */
+//     template<class REAL_T, class EXPR>
+//     inline const atl::Log<REAL_T, EXPR> log(const atl::ExpressionBase<REAL_T, EXPR>& exp) {
+//         return atl::Log<REAL_T, EXPR>(exp.Cast());
+//     }
+// }
 
 #endif
 
